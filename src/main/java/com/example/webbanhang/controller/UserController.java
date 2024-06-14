@@ -5,6 +5,7 @@ import com.example.webbanhang.cto.request.UserCreationRequest;
 import com.example.webbanhang.cto.request.UserUpdateRequest;
 import com.example.webbanhang.entity.User;
 import com.example.webbanhang.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class UserController {
 
 
     @PostMapping
-    User create(@RequestBody UserCreationRequest request){
+    User create(@RequestBody @Valid UserCreationRequest request){
         return userService.createUser(request);
     }
 
