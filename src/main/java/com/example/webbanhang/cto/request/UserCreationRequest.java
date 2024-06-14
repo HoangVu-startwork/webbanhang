@@ -1,10 +1,14 @@
 package com.example.webbanhang.cto.request;
 
 
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class UserCreationRequest {
     private String username;
+
+//    @Size(min = 8, message = "Tài khoản phải hơn 8 ký tự trở lên")
     private String password;
     private String email;
     private String firsName;

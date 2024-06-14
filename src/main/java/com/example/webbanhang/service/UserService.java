@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService {
@@ -17,9 +19,17 @@ public class UserService {
     private UserRepository userRepository;
 
     public User createUser(UserCreationRequest request){
+        // Kiểm tra xem email đã tồn tại hay chưa
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email đã tồn tại");
+        }
+
         // Kiểm tra mật khẩu
-        if (!isPasswordValid(request.getPassword())) {
-            throw new RuntimeException("Mật khẩu không hợp lệ");
+        validatePassword(request.getPassword());
+
+
+        if (!isEmailValid(request.getEmail())) {
+            throw new RuntimeException("Email không hợp lệ");
         }
 
         // LocalDate currentDate = LocalDate.now(); // Tạo một đối tượng LocalDate từ ngày tháng năm hiện tại
@@ -33,6 +43,15 @@ public class UserService {
         user.setLastName(request.getLastName());
         user.setDob(currentDateTime);
         return userRepository.save(user);
+    }
+
+    // Phương thức kiểm tra định dạng email
+    private boolean isEmailValid(String email) {
+        // Biểu thức chính quy kiểm tra định dạng email
+        String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches() && email.endsWith("@gmail.com");
     }
 
     // kiểm tra điều kiện của password
@@ -60,16 +79,13 @@ public class UserService {
 
         return message.toString().trim();
     }
-
-    // Trả thông báo
-    private boolean isPasswordValid(String password){
+    private void validatePassword(String password) {
         String message = getPasswordValidationMessage(password);
         if (!message.isEmpty()) {
-            System.out.println("Thông báo lỗi: " + message);
-            return false;
+            throw new RuntimeException(message);
         }
-        return true;
     }
+    // Trả thông báo
 
     public List<User> getUser(){
         return userRepository.findAll(); // lấy toàn bộ csdl
@@ -83,9 +99,8 @@ public class UserService {
     // cập nhật thông tin
     public User updateUser(String userId, UserUpdateRequest request){
 
-        if (!isPasswordValid(request.getPassword())) {
-            throw new RuntimeException("Mật khẩu không hợp lệ");
-        }
+        // Kiểm tra mật khẩu
+        validatePassword(request.getPassword());
 
         User user = getUserid(userId);
 

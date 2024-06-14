@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Entity
 public class  User {
 
-
     //Id Đây là một annotation khác của JPA, được sử dụng để đánh dấu thuộc tính id là trường định danh (primary key) của entity
     @Id
     @GeneratedValue(strategy = GenerationType.UUID) // Đây là một annotation của JPA được sử dụng để chỉ định cách sinh giá trị cho trường id. Trong trường hợp này,
