@@ -1,9 +1,11 @@
 package com.example.webbanhang.service;
 
 
-import com.example.webbanhang.cto.request.UserCreationRequest;
-import com.example.webbanhang.cto.request.UserUpdateRequest;
+import com.example.webbanhang.dto.request.UserCreationRequest;
+import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.entity.User;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,8 @@ public class UserService {
     public User createUser(UserCreationRequest request){
         // Kiểm tra xem email đã tồn tại hay chưa
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email đã tồn tại");
+            // trường hợp khác thì sử dụng RuntimeException("--") để bắt lỗi RuntimeException là truong hơp không bắt được
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         // Kiểm tra mật khẩu
@@ -59,22 +62,22 @@ public class UserService {
         StringBuilder message = new StringBuilder();
 
         if (password.length() < 8) {
-            message.append("Mật khẩu phải có ít nhất 8 ký tự. ");
+            throw new AppException(ErrorCode.SIZE_PASSWORD);
         }
         if (!password.matches(".*[0-9].*")){
-            message.append("Mật khẩu phải chứa ít nhất một chữ số. ");
+            throw new AppException(ErrorCode.SO_PASSWORD);
         }
         if (!password.matches(".*[a-z].*")){
-            message.append("Mật khẩu phải chứa ít nhất một chữ thưởng. ");
+            throw new AppException(ErrorCode.CHUTHUONG_PASSWORD);
         }
         if (!password.matches(".*[A-Z].*")) {
-            message.append("Mật khẩu phải chứa ít nhất một chữ hoa. ");
+            throw new AppException(ErrorCode.CHUHOA_PASSWORD);
         }
         if (!password.matches(".*[@#$%^!&+=|}{<>].*")) {
-            message.append("Mật khẩu phải chứa ít nhất một ký tự đặc biệt. ");
+            throw new AppException(ErrorCode.KYTUDATBIET_PASSWORD);
         }
         if (!password.matches("\\S+")) {
-            message.append("Mật khẩu không được chứa khoảng trắng. ");
+            throw new AppException(ErrorCode.KHOANGTRANG_PASSWORD);
         }
 
         return message.toString().trim();
