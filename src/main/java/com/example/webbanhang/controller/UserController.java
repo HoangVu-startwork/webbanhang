@@ -1,8 +1,9 @@
 package com.example.webbanhang.controller;
 
 
-import com.example.webbanhang.cto.request.UserCreationRequest;
-import com.example.webbanhang.cto.request.UserUpdateRequest;
+import com.example.webbanhang.dto.request.ApiResponse;
+import com.example.webbanhang.dto.request.UserCreationRequest;
+import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.entity.User;
 import com.example.webbanhang.service.UserService;
 import jakarta.validation.Valid;
@@ -20,8 +21,11 @@ public class UserController {
 
 
     @PostMapping
-    User create(@RequestBody @Valid UserCreationRequest request){
-        return userService.createUser(request);
+    ApiResponse<User> create(@RequestBody @Valid UserCreationRequest request){
+        ApiResponse<User> apiResponse = new ApiResponse<>();
+
+        apiResponse.setResult(userService.createUser(request));
+        return apiResponse;
     }
 
     @GetMapping
