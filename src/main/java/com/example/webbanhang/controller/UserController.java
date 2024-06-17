@@ -4,20 +4,24 @@ package com.example.webbanhang.controller;
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
+import com.example.webbanhang.dto.response.UserResponse;
 import com.example.webbanhang.entity.User;
 import com.example.webbanhang.service.UserService;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/users")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-
-    @Autowired
-    private UserService userService;
+    UserService userService;
 
 
     @PostMapping
@@ -34,12 +38,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    User getUserid(@PathVariable("userId") String userId){
+    UserResponse getUserid(@PathVariable("userId") String userId){
         return userService.getUserid(userId);
     }
 
     @PutMapping("/{userId}")
-    User updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request){
+    UserResponse updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request){
         return userService.updateUser(userId, request);
     }
 

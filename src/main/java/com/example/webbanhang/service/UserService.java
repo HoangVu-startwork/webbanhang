@@ -3,22 +3,29 @@ package com.example.webbanhang.service;
 
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
+import com.example.webbanhang.dto.response.UserResponse;
 import com.example.webbanhang.entity.User;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
+import com.example.webbanhang.mapper.UserMapper;
 import com.example.webbanhang.repository.UserRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
+
+    UserMapper userMapper;
 
     public User createUser(UserCreationRequest request){
         // Kiểm tra xem email đã tồn tại hay chưa
@@ -30,20 +37,14 @@ public class UserService {
         // Kiểm tra mật khẩu
         validatePassword(request.getPassword());
 
-
         if (!isEmailValid(request.getEmail())) {
             throw new RuntimeException("Email không hợp lệ");
         }
 
         // LocalDate currentDate = LocalDate.now(); // Tạo một đối tượng LocalDate từ ngày tháng năm hiện tại
         LocalDateTime currentDateTime = LocalDateTime.now();
-        User user = new User();
+        User user = userMapper.toUser(request);
 
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setEmail(request.getEmail());
-        user.setFirsName(request.getFirsName());
-        user.setLastName(request.getLastName());
         user.setDob(currentDateTime);
         return userRepository.save(user);
     }
@@ -95,24 +96,20 @@ public class UserService {
     }
 
 
-    public User getUserid(String id){ // lấy dữ liệu theo id
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không có dữ liệu"));
+    public UserResponse getUserid(String id){ // lấy dữ liệu theo id
+        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không có dữ liệu")));
     }
 
     // cập nhật thông tin
-    public User updateUser(String userId, UserUpdateRequest request){
+    public UserResponse updateUser(String userId, UserUpdateRequest request){
 
         // Kiểm tra mật khẩu
         validatePassword(request.getPassword());
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-        User user = getUserid(userId);
+        userMapper.updateUser(user, request);
 
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setFirsName(request.getFirsName());
-        user.setLastName(request.getLastName());
-
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public void deleteUser(String userId){
