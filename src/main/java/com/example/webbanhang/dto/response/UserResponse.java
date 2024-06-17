@@ -1,4 +1,5 @@
-package com.example.webbanhang.dto.request;
+package com.example.webbanhang.dto.response;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserUpdateRequest {
+public class UserResponse {
+    private String id;
     private String username;
     private String password;
+    private String email;
     private String firsName;
     private String lastName;
+    private String dob;
 }

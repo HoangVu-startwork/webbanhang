@@ -1,0 +1,20 @@
+package com.example.webbanhang.mapper;
+
+
+import com.example.webbanhang.dto.request.UserCreationRequest;
+import com.example.webbanhang.dto.request.UserUpdateRequest;
+import com.example.webbanhang.dto.response.UserResponse;
+import com.example.webbanhang.entity.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+    User toUser(UserCreationRequest request);
+
+    //@Mapping(source = "firstName", target = "lastName") // gán giá trị của lastName vào firstName
+    //@Mapping(source = "firstName", ignore = true) // cái này làm không cho giá tri  firstName không hien lên khi trã dữ liệu về
+    UserResponse toUserResponse(User user);
+    void updateUser(@MappingTarget User user, UserUpdateRequest request);
+}
