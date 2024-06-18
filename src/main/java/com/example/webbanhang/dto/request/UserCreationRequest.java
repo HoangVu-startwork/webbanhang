@@ -1,10 +1,5 @@
 package com.example.webbanhang.dto.request;
-
-
-import jakarta.validation.constraints.Size;
-
 import java.time.LocalDate;
-
 import lombok.*;
 
 @Data

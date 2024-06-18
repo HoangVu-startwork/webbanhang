@@ -1,6 +1,4 @@
 package com.example.webbanhang.service;
-
-
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
@@ -12,6 +10,8 @@ import com.example.webbanhang.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
@@ -44,6 +44,9 @@ public class UserService {
         // LocalDate currentDate = LocalDate.now(); // Tạo một đối tượng LocalDate từ ngày tháng năm hiện tại
         LocalDateTime currentDateTime = LocalDateTime.now();
         User user = userMapper.toUser(request);
+        // mã hóa password
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         user.setDob(currentDateTime);
         return userRepository.save(user);
