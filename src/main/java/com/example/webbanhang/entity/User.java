@@ -1,18 +1,12 @@
 package com.example.webbanhang.entity;
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
 import java.time.LocalDateTime;
-
-
 //Entity là một annotation của JPA (Java Persistence API), được sử dụng để đánh dấu lớp User là một entity, tức là một đối tượng có thể được lưu trữ vào cơ sở dữ liệu.
 @Entity
 public class  User {
-
     //Id Đây là một annotation khác của JPA, được sử dụng để đánh dấu thuộc tính id là trường định danh (primary key) của entity
     @Id
     @GeneratedValue(strategy = GenerationType.UUID) // Đây là một annotation của JPA được sử dụng để chỉ định cách sinh giá trị cho trường id. Trong trường hợp này,

@@ -1,9 +1,7 @@
 package com.example.webbanhang;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-
 
 // @SpringBootApplication được sử dụng với một tham số exclude, với mục đích loại bỏ một số cấu hình tự động mặc định mà
 // Spring Boot cung cấp. Trong trường hợp này, SecurityAutoConfiguration.class được loại bỏ, điều này có nghĩa là cấu
