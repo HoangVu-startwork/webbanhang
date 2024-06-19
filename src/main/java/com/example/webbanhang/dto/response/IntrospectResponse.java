@@ -1,4 +1,5 @@
 package com.example.webbanhang.dto.response;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthenticationResponse {
-    private String token;
-    private boolean authenticated;
+public class IntrospectResponse {
+    private boolean valid;
 }

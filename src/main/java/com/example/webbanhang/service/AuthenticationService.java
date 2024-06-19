@@ -1,26 +1,103 @@
 package com.example.webbanhang.service;
+import ch.qos.logback.classic.Logger;
 import com.example.webbanhang.dto.request.AuthenticationRequest;
+import com.example.webbanhang.dto.request.IntrospectRequest;
+import com.example.webbanhang.dto.response.AuthenticationResponse;
+import com.example.webbanhang.dto.response.IntrospectResponse;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.repository.UserRepository;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import org.jboss.logging.BasicLogger;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
     UserRepository userRepository;
 
-    public boolean authenticate(AuthenticationRequest request){
+    @NonFinal
+    protected static final String SIGNER_KEY = "xNjJg5nVCR+1+oz01ciOzFkcAoh0P0L4LzWqlLgyhzIkcdSFWShalKLylOlasmI4";
+
+    public IntrospectResponse introspect(IntrospectRequest request)
+            throws JOSEException, ParseException {
+        var token = request.getToken();
+
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        return IntrospectResponse.builder()
+                .valid(verified && expiryTime.after(new Date()))
+                .build();
+    }
+
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request){
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        // Tìm kiếm người dùng trong cơ sở dữ liệu theo email. Nếu không tìm thấy, ném ra ngoại lệ AppException với mã lỗi USER_NOT_EXISTED.
+
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        return passwordEncoder.matches(request.getPassword(), user.getPassword());
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        // Khởi tạo một đối tượng PasswordEncoder sử dụng thuật toán BCrypt với độ mạnh là 10. So sánh mật khẩu người dùng nhập vào với mật khẩu đã mã hóa trong cơ sở dữ liệu.
+
+        if (!authenticated)
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        // Nếu mật khẩu không khớp, ném ra ngoại lệ AppException với mã lỗi UNAUTHENTICATED.
+
+        var token = generateToken(request.getEmail());
+        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        // Nếu mật khẩu khớp, tạo một JWT bằng phương thức generateToken và trả về đối tượng AuthenticationResponse chứa token và trạng thái xác thực thành công.
     }
+
+    private String generateToken(String email) {
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+        // Tạo header cho JWT sử dụng thuật toán ký HS512.
+
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder().subject(email).issuer("devteria.com").issueTime(new Date(
+                Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+        ))
+                .claim("customClaim", "Custom").build();
+        // Tạo payload cho JWT với các thông tin:
+        //subject: email của người dùng.
+        //issuer: thông tin về nơi phát hành token (ở đây là "devteria.com").
+        //issueTime: thời gian phát hành token (hiện tại cộng thêm 1 giờ).
+        //customClaim: một custom claim.
+
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+        JWSObject jwsObject = new JWSObject(header, payload);
+        try {
+            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
+        // Tạo đối tượng JWSObject từ header và payload. Sử dụng khóa bí mật (SIGNER_KEY) để ký token.
+        // Trả về chuỗi JWT đã ký nếu ký thành công, nếu không, ném ra ngoại lệ RuntimeException.
+    }
+
 
 }
