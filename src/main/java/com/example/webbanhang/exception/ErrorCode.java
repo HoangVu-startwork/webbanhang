@@ -9,8 +9,8 @@ public enum ErrorCode {
     KHOANGTRANG_PASSWORD(1007, "Mật khẩu không được chứa khoảng trắng."),
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),
     USER_EXISTED(1001, "User existed --- "),
-
     USER_NOT_EXISTED(1008, "User not existed"),
+    UNAUTHENTICATED(1006, "Đăng nhập thành công"),
     INVALID_KEY(1999, "Lỗi Key không đúng");
 
     ErrorCode(int code, String message) {
