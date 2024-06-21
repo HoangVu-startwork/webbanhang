@@ -19,3 +19,17 @@ spring:
     username: root
     password: 0903075545
 
+jwt:
+  signerKey: "Vabsn1UFPMGt9i0mKDaqRU2NdNwEw+VIZg8/Qa+37L521P1gqO4bRBEJyem2R7Zy"
+
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: hoangvu.startwork@gmail.com
+  password: gmsc erhf egck ecqd # cbuvybhourxuqnna
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true

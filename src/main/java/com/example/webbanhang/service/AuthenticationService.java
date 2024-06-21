@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.logging.BasicLogger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,8 @@ public class AuthenticationService {
     UserRepository userRepository;
 
     @NonFinal
-    protected static final String SIGNER_KEY = "xNjJg5nVCR+1+oz01ciOzFkcAoh0P0L4LzWqlLgyhzIkcdSFWShalKLylOlasmI4";
-
+    @Value("${jwt.signerKey}")
+    protected String SIGNER_KEY;
     public IntrospectResponse introspect(IntrospectRequest request)
             throws JOSEException, ParseException {
         var token = request.getToken();
@@ -73,11 +74,13 @@ public class AuthenticationService {
         // Nếu mật khẩu khớp, tạo một JWT bằng phương thức generateToken và trả về đối tượng AuthenticationResponse chứa token và trạng thái xác thực thành công.
     }
 
-    private String generateToken(String email) {
+    private String generateToke(String email) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         // Tạo header cho JWT sử dụng thuật toán ký HS512.
 
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder().subject(email).issuer("devteria.com").issueTime(new Date(
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder().subject(email)
+                .issuer("devteria.com")
+                .issueTime(new Date(
                 Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
         ))
                 .claim("customClaim", "Custom").build();
@@ -99,5 +102,29 @@ public class AuthenticationService {
         // Trả về chuỗi JWT đã ký nếu ký thành công, nếu không, ném ra ngoại lệ RuntimeException.
     }
 
+    private String generateToken(String email) {
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject(email)
+                .issuer("devteria.com")
+                .issueTime(new Date())
+                .expirationTime(new Date(
+                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                ))
+                .claim("userId", "Custom")
+                .build();
+
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+
+        JWSObject jwsObject = new JWSObject(header, payload);
+
+        try {
+            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            log.error("Cannot create token", e);
+            throw new RuntimeException(e);
+        }
+    }
 }
