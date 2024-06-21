@@ -11,7 +11,11 @@ public enum ErrorCode {
     USER_EXISTED(1001, "User existed --- "),
     USER_NOT_EXISTED(1008, "User not existed"),
     UNAUTHENTICATED(1006, "Đăng nhập thành công"),
+
+    INTERNAL_SERVER_ERROR(1010, "Gửi email bị lỗi"),
     INVALID_KEY(1999, "Lỗi Key không đúng");
+
+
 
     ErrorCode(int code, String message) {
         this.code = code;

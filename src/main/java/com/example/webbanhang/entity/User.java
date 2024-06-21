@@ -3,8 +3,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 //Entity là một annotation của JPA (Java Persistence API), được sử dụng để đánh dấu lớp User là một entity, tức là một đối tượng có thể được lưu trữ vào cơ sở dữ liệu.
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 public class  User {
     //Id Đây là một annotation khác của JPA, được sử dụng để đánh dấu thuộc tính id là trường định danh (primary key) của entity
@@ -16,6 +26,9 @@ public class  User {
     private String username;
     private String password;
     private String email;
+
+    private String phone;
+    private String ngaysinh;
     private String firsName;
     private String lastName;
     private String dob;
@@ -75,5 +88,21 @@ public class  User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getNgaysinh() {
+        return ngaysinh;
+    }
+
+    public void setNgaysinh(String ngaysinh) {
+        this.ngaysinh = ngaysinh;
     }
 }

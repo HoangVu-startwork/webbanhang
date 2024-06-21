@@ -1,10 +1,12 @@
 package com.example.webbanhang.exception;
 
 import com.example.webbanhang.dto.request.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity; // ResponseEntity: dùng để đại diện cho toàn bộ HTTP response bao gồm mã trạng thái (status code), header, và body.
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice; // ControllerAdvice: là một annotation đặc biệt của @Component, cho phép xử lý ngoại lệ trên toàn bộ ứng dụng trong một component xử lý toàn cục.
 import org.springframework.web.bind.annotation.ExceptionHandler; // ExceptionHandler: là một annotation dùng để xử lý các ngoại lệ cụ thể và gửi phản hồi tuỳ chỉnh về cho client.\
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.Objects;
 
@@ -53,6 +55,15 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<String>> handlingRuntimeException(RuntimeException ex, WebRequest request) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setMessage(ex.getMessage());
+        response.setResult("Failure");
+
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

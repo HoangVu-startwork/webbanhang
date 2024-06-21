@@ -6,9 +6,11 @@ import com.example.webbanhang.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
     User toUser(UserCreationRequest request);
 
     //@Mapping(source = "firstName", target = "lastName") // gán giá trị của lastName vào firstName
