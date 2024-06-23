@@ -10,7 +10,6 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
     User toUser(UserCreationRequest request);
 
     //@Mapping(source = "firstName", target = "lastName") // gán giá trị của lastName vào firstName

@@ -34,9 +34,16 @@ public class UserController {
         return apiResponse;
     }
 
+//    @GetMapping
+//    List<User> getUser(){
+//        return userService.getUser();
+//    }
+
     @GetMapping
-    List<User> getUser(){
-        return userService.getUser();
+    ApiResponse<List<UserResponse>> getUsers(){
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userService.getUser())
+                .build();
     }
 
     @GetMapping("/{userId}")

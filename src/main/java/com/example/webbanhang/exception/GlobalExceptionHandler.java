@@ -66,6 +66,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    public ResponseEntity<ApiResponse> t(RuntimeException ex) {
+        ApiResponse response = new ApiResponse();
+        response.setMessage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR));
+        response.setMessage(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
 // ResponseEntity.badRequest() là một cách viết tắt để tạo một ResponseEntity với trạng thái 400.
 // .body(exception.getMessage()) thiết lập nội dung của phản hồi là thông báo của ngoại lệ.

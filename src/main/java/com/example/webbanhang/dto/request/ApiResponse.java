@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,7 @@ public class ApiResponse <T> {
     private int code = 1000;
     private String message;
     private T result;
+
 
 }
 
