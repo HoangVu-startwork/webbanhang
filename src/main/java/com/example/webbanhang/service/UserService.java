@@ -9,7 +9,6 @@ import com.example.webbanhang.mapper.UserMapper;
 import com.example.webbanhang.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -94,10 +93,10 @@ public class UserService {
     }
     // Trả thông báo
 
-    public List<User> getUser(){
-        return userRepository.findAll(); // lấy toàn bộ csdl
+    public List<UserResponse> getUser(){
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserResponse).toList();
     }
-
 
     public UserResponse getUserid(String id){ // lấy dữ liệu theo id
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không có dữ liệu")));
