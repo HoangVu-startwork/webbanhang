@@ -3,6 +3,7 @@ import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
 import com.example.webbanhang.entity.User;
+import com.example.webbanhang.enums.Role;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.UserMapper;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +27,8 @@ public class UserService {
     UserRepository userRepository;
 
     UserMapper userMapper;
+
+    PasswordEncoder passwordEncoder;
 
     public User createUser(UserCreationRequest request){
         // Kiểm tra xem email đã tồn tại hay chưa
@@ -44,10 +48,13 @@ public class UserService {
         LocalDateTime currentDateTime = LocalDateTime.now();
         User user = userMapper.toUser(request);
         // mã hóa password
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
         user.setDob(currentDateTime);
+
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+
+        user.setRoles(roles);
         return userRepository.save(user);
     }
 

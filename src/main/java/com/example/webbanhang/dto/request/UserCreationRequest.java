@@ -1,5 +1,7 @@
 package com.example.webbanhang.dto.request;
 import java.time.LocalDate;
+import java.util.Set;
+
 import lombok.*;
 
 @Data
@@ -17,5 +19,5 @@ public class UserCreationRequest {
     private String phone;
     private String ngaysinh;
     private LocalDate dob;
-
+    private Set<String> roles;
 }
