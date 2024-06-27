@@ -3,6 +3,7 @@ package com.example.webbanhang.exception;
 import com.example.webbanhang.dto.request.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity; // ResponseEntity: dùng để đại diện cho toàn bộ HTTP response bao gồm mã trạng thái (status code), header, và body.
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice; // ControllerAdvice: là một annotation đặc biệt của @Component, cho phép xử lý ngoại lệ trên toàn bộ ứng dụng trong một component xử lý toàn cục.
 import org.springframework.web.bind.annotation.ExceptionHandler; // ExceptionHandler: là một annotation dùng để xử lý các ngoại lệ cụ thể và gửi phản hồi tuỳ chỉnh về cho client.\
@@ -34,8 +35,10 @@ public class GlobalExceptionHandler {
 
         apiResponse.setCode(errorCode.getCode());
 
-        apiResponse.setMessage(exception.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        apiResponse.setMessage(errorCode.getMessage());
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 
     // trả thông báo trong UserCretionRequest
@@ -55,6 +58,18 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception){
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build()
+        );
     }
 
     @ExceptionHandler(RuntimeException.class)
