@@ -19,5 +19,4 @@ public class UserCreationRequest {
     private String phone;
     private String ngaysinh;
     private LocalDate dob;
-    private Set<String> roles;
 }

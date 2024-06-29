@@ -8,12 +8,25 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
+//@Mapper(componentModel = "spring")
+//public interface UserMapper {
+//    User toUser(UserCreationRequest request);
+//
+//    //@Mapping(source = "firstName", target = "lastName") // gán giá trị của lastName vào firstName
+//    //@Mapping(source = "firstName", ignore = true) // cái này làm không cho giá tri  firstName không hien lên khi trã dữ liệu về
+//    UserResponse toUserResponse(User user);
+//
+//    @Mapping(target = "roles", ignore = true)
+//    void updateUser(@MappingTarget User user, UserUpdateRequest request);
+//}
+
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     User toUser(UserCreationRequest request);
 
-    //@Mapping(source = "firstName", target = "lastName") // gán giá trị của lastName vào firstName
-    //@Mapping(source = "firstName", ignore = true) // cái này làm không cho giá tri  firstName không hien lên khi trã dữ liệu về
     UserResponse toUserResponse(User user);
+
+    @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 }

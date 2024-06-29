@@ -19,5 +19,5 @@ public class UserResponse {
     private String phone;
     private String ngaysinh;
     private String dob;
-    private Set<String> roles;
+    private Set<RoleResponse> roles;
 }

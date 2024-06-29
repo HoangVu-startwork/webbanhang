@@ -34,7 +34,7 @@ public class ApplicationInitConfig {
                 User user = User.builder()
                         .email("hoangvu.startwork@gmail.com")
                         .password(passwordEncoder.encode("0903075546Vu!"))
-                        .roles(roles)
+                        //.roles(roles)
                         .build();
 
 

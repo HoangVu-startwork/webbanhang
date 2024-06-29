@@ -1,9 +1,7 @@
 package com.example.webbanhang.entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -15,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class  User {
     //Id Đây là một annotation khác của JPA, được sử dụng để đánh dấu thuộc tính id là trường định danh (primary key) của entity
     @Id
@@ -30,7 +29,9 @@ public class  User {
     private String firsName;
     private String lastName;
     private String dob;
-    private Set<String> roles;
+
+    @ManyToMany
+    Set<Role> roles;
 
     public void setDob(LocalDateTime dob) {
         this.dob = String.valueOf(dob);
