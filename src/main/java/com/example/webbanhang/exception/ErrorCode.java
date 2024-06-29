@@ -19,8 +19,8 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Đăng nhập thành công", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(10011, "You do not have permission", HttpStatus.FORBIDDEN),
     INTERNAL_SERVER_ERROR(1010, "Gửi email bị lỗi", HttpStatus.BAD_GATEWAY),
-    INVALID_KEY(1999, "Lỗi Key không đúng", HttpStatus.BAD_GATEWAY);
-
+    INVALID_KEY(1999, "Lỗi Key không đúng", HttpStatus.BAD_GATEWAY),
+    INVALID_DOB(2010, "Ngày sinh không hợp lệ", HttpStatus.BAD_REQUEST);
 
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
