@@ -38,11 +38,6 @@ public class UserController {
         return apiResponse;
     }
 
-//    @GetMapping
-//    List<User> getUser(){
-//        return userService.getUser();
-//    }
-
     @GetMapping
     ApiResponse<List<UserResponse>> getUsers(){
 
