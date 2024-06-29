@@ -2,6 +2,7 @@ package com.example.webbanhang.dto.request;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.example.webbanhang.validator.DobConstraint;
 import lombok.*;
 
 @Data
@@ -17,6 +18,9 @@ public class UserCreationRequest {
     private String firsName;
     private String lastName;
     private String phone;
-    private String ngaysinh;
+
+    @DobConstraint(min = 18, message = "INVALID_DOB")
+    private LocalDate ngaysinh;
+
     private LocalDate dob;
 }
