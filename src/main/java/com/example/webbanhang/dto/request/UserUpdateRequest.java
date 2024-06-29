@@ -1,13 +1,14 @@
 package com.example.webbanhang.dto.request;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
     private String username;
     private String password;
@@ -15,4 +16,6 @@ public class UserUpdateRequest {
     private String lastName;
     private String phone;
     private String ngaysinh;
+    List<String> roles;
+
 }
