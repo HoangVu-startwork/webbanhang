@@ -76,4 +76,10 @@ public class UserController {
         userService.deleteUser(userId);
         return "User has been deleted";
     }
+
+    @PutMapping("password/{userId}")
+    UserResponse updatePasswrd(@PathVariable String userId, @RequestBody UserUpdateRequest request){
+        return userService.updatePassword(userId, request);
+    }
+
 }

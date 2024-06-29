@@ -7,6 +7,7 @@ import com.example.webbanhang.enums.Role;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.UserMapper;
+import com.example.webbanhang.repository.RoleRepository;
 import com.example.webbanhang.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class UserService {
     UserRepository userRepository;
 
     UserMapper userMapper;
+
+    RoleRepository roleRepository;
 
     PasswordEncoder passwordEncoder;
 
@@ -98,6 +101,7 @@ public class UserService {
 
         return message.toString().trim();
     }
+
     private void validatePassword(String password) {
         String message = getPasswordValidationMessage(password);
         if (!message.isEmpty()) {
@@ -105,7 +109,9 @@ public class UserService {
         }
     }
     // Trả thông báo
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")  // này cho "roles" -> "name":
+
+    @PreAuthorize("hasAuthority('APPROVE_POST')") // này cho roles -> name -> permissions -> name
     public List<UserResponse> getUser(){
         log.info("In method get Users");
         return userRepository.findAll().stream()
@@ -122,13 +128,55 @@ public class UserService {
     public UserResponse updateUser(String userId, UserUpdateRequest request){
 
         // Kiểm tra mật khẩu
-        validatePassword(request.getPassword());
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-        userMapper.updateUser(user, request);
+//        userMapper.updateUser(user, request);
+//
+//        var roles = roleRepository.findAllById(request.getRoles());
+//
+//        user.setRoles(new HashSet<>(roles));
+        if (request.getPassword() != null) {
+            validatePassword(request.getPassword());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        // Cập nhật các trường khác nếu không null
+        if (request.getUsername() != null) {
+            user.setUsername(request.getUsername());
+        }
+
+        if (request.getFirsName() != null) {
+            user.setFirsName(request.getFirsName());
+        }
+
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName());
+        }
+
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+
+        // Nếu có roles mới, cập nhật roles
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            var roles = roleRepository.findAllById(request.getRoles());
+            user.setRoles(new HashSet<>(roles));
+        }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
+
+    public UserResponse updatePassword(String userId, UserUpdateRequest request) {
+        // Kiểm tra mật khẩu
+        validatePassword(request.getPassword());
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+
+        // Cập nhật mật khẩu
+        user.setPassword(request.getPassword());
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
 
     public void deleteUser(String userId){
         userRepository.deleteById(userId);
