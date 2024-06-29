@@ -1,6 +1,8 @@
 package com.example.webbanhang.exception;
 
 import com.example.webbanhang.dto.request.ApiResponse;
+import jakarta.validation.ConstraintViolation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity; // ResponseEntity: dùng để đại diện cho toàn bộ HTTP response bao gồm mã trạng thái (status code), header, và body.
 import org.springframework.security.access.AccessDeniedException;
@@ -9,14 +11,19 @@ import org.springframework.web.bind.annotation.ControllerAdvice; // ControllerAd
 import org.springframework.web.bind.annotation.ExceptionHandler; // ExceptionHandler: là một annotation dùng để xử lý các ngoại lệ cụ thể và gửi phản hồi tuỳ chỉnh về cho client.\
 import org.springframework.web.context.request.WebRequest;
 
+import java.util.Map;
 import java.util.Objects;
 
 // giúp trả về thông báo trên body của respon chứ không phải báo lỗi trên Terminal
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     // Annotation @ControllerAdvice được sử dụng để định nghĩa một class xử lý ngoại lệ toàn cục cho tất cả các controller.
     // Điều này có nghĩa là bất kỳ ngoại lệ nào được ném ra trong bất kỳ controller nào trong ứng dụng đều có thể được
     // xử lý bởi các phương thức trong class này.
+
+    private static final String MIN_ATTRIBUTE = "min";
+
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception){
 
@@ -47,8 +54,16 @@ public class GlobalExceptionHandler {
         String enumKey = exception.getFieldError().getDefaultMessage();
 
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
+        Map<String, Object> attributes = null;
         try {
             errorCode = ErrorCode.valueOf(enumKey);
+
+            var contrainViolation = exception.getBindingResult()
+                    .getAllErrors().getFirst().unwrap(ConstraintViolation.class);
+
+            attributes = contrainViolation.getConstraintDescriptor().getAttributes();
+
+            log.info(attributes.toString());
         } catch (IllegalArgumentException e){
 
         }
@@ -56,7 +71,7 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse();
 
         apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
+        apiResponse.setMessage(Objects.nonNull(attributes) ? mapAttribute(errorCode.getMessage(), attributes) : errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
@@ -88,6 +103,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    private String mapAttribute(String message, Map<String, Object> attributes) {
+        String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
+
+        return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
+    }
 }
 // ResponseEntity.badRequest() là một cách viết tắt để tạo một ResponseEntity với trạng thái 400.
 // .body(exception.getMessage()) thiết lập nội dung của phản hồi là thông báo của ngoại lệ.
