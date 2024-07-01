@@ -2,6 +2,7 @@ package com.example.webbanhang.service;
 import com.example.webbanhang.dto.request.AuthenticationRequest;
 import com.example.webbanhang.dto.request.IntrospectRequest;
 import com.example.webbanhang.dto.request.LogoutRequest;
+import com.example.webbanhang.dto.request.RefreshRequest;
 import com.example.webbanhang.dto.response.AuthenticationResponse;
 import com.example.webbanhang.dto.response.IntrospectResponse;
 import com.example.webbanhang.entity.InvalidatedToken;
@@ -174,4 +175,23 @@ public class AuthenticationService {
     }
 
 
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        var signedJWT = verifyToken(request.getToken());
+
+        var jit = signedJWT.getJWTClaimsSet().getJWTID();
+
+        var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        var username = signedJWT.getJWTClaimsSet().getSubject();
+
+        var user = userRepository.findByEmail(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+    }
 }

@@ -1,8 +1,5 @@
 package com.example.webbanhang.controller;
-import com.example.webbanhang.dto.request.ApiResponse;
-import com.example.webbanhang.dto.request.AuthenticationRequest;
-import com.example.webbanhang.dto.request.IntrospectRequest;
-import com.example.webbanhang.dto.request.LogoutRequest;
+import com.example.webbanhang.dto.request.*;
 import com.example.webbanhang.dto.response.AuthenticationResponse;
 import com.example.webbanhang.dto.response.IntrospectResponse;
 import com.example.webbanhang.service.AuthenticationService;
@@ -46,6 +43,15 @@ public class AuthenticationController {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder().build();
 
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> refresh(@RequestBody RefreshRequest request)
+            throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
     }
 
 }
