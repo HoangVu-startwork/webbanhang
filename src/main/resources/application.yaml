@@ -26,6 +26,8 @@ spring:
 
 jwt:
   signerKey: "Vabsn1UFPMGt9i0mKDaqRU2NdNwEw+VIZg8/Qa+37L521P1gqO4bRBEJyem2R7Zy"
+  valid-duration: 18000 # in second
+  refreshable-duration: 18000 # in seconds
 
 mail:
   host: smtp.gmail.com
