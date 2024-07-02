@@ -1,4 +1,5 @@
 package com.example.webbanhang;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -11,8 +12,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class WebbanhangApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(WebbanhangApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(WebbanhangApplication.class, args);
+    }
 }
