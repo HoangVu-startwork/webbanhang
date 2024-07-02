@@ -1,9 +1,9 @@
 package com.example.webbanhang.exception;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
+import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
@@ -22,7 +22,6 @@ public enum ErrorCode {
     INVALID_KEY(1999, "Lỗi Key không đúng", HttpStatus.BAD_GATEWAY),
     INVALID_DOB(2010, "Ngày sinh không hợp lệ {min}", HttpStatus.BAD_REQUEST);
 
-
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;
@@ -32,5 +31,4 @@ public enum ErrorCode {
     private int code;
     private String message;
     private HttpStatusCode statusCode;
-
 }

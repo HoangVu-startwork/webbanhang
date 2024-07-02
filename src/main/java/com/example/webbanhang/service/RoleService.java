@@ -1,19 +1,20 @@
 package com.example.webbanhang.service;
 
+import java.util.HashSet;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.RoleRequest;
 import com.example.webbanhang.dto.response.RoleResponse;
 import com.example.webbanhang.mapper.RoleMapper;
 import com.example.webbanhang.repository.PermissionRepository;
 import com.example.webbanhang.repository.RoleRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

@@ -1,8 +1,9 @@
 package com.example.webbanhang.dto.request;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -17,5 +18,4 @@ public class UserUpdateRequest {
     private String phone;
     private String ngaysinh;
     List<String> roles;
-
 }

@@ -1,6 +1,6 @@
 package com.example.webbanhang.exception;
 
-public class AppException extends RuntimeException{
+public class AppException extends RuntimeException {
 
     public AppException(ErrorCode errorcode) {
         super(errorcode.getMessage()); // kế thừa từ ErrorCode
@@ -16,7 +16,4 @@ public class AppException extends RuntimeException{
     public void setErrorcode(ErrorCode errorcode) {
         this.errorcode = errorcode;
     }
-
-
-
 }

@@ -1,4 +1,17 @@
 package com.example.webbanhang.service;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
@@ -9,22 +22,11 @@ import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.UserMapper;
 import com.example.webbanhang.repository.RoleRepository;
 import com.example.webbanhang.repository.UserRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import lombok.experimental.FieldDefaults;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +41,11 @@ public class UserService {
 
     PasswordEncoder passwordEncoder;
 
-    public User createUser(UserCreationRequest request){
+    public User createUser(UserCreationRequest request) {
         // Kiểm tra xem email đã tồn tại hay chưa
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            // trường hợp khác thì sử dụng RuntimeException("--") để bắt lỗi RuntimeException là truong hơp không bắt được
+            // trường hợp khác thì sử dụng RuntimeException("--") để bắt lỗi RuntimeException là truong hơp không bắt
+            // được
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
@@ -63,7 +66,7 @@ public class UserService {
         HashSet<String> roles = new HashSet<>();
         roles.add(Role.USER.name());
 
-        //user.setRoles(roles);
+        // user.setRoles(roles);
         return userRepository.save(user);
     }
 
@@ -77,16 +80,16 @@ public class UserService {
     }
 
     // kiểm tra điều kiện của password
-    private String getPasswordValidationMessage(String password){
+    private String getPasswordValidationMessage(String password) {
         StringBuilder message = new StringBuilder();
 
         if (password.length() < 8) {
             throw new AppException(ErrorCode.SIZE_PASSWORD);
         }
-        if (!password.matches(".*[0-9].*")){
+        if (!password.matches(".*[0-9].*")) {
             throw new AppException(ErrorCode.SO_PASSWORD);
         }
-        if (!password.matches(".*[a-z].*")){
+        if (!password.matches(".*[a-z].*")) {
             throw new AppException(ErrorCode.CHUTHUONG_PASSWORD);
         }
         if (!password.matches(".*[A-Z].*")) {
@@ -112,29 +115,29 @@ public class UserService {
     // @PreAuthorize("hasRole('ADMIN')")  // này cho "roles" -> "name":
 
     @PreAuthorize("hasAuthority('APPROVE_POST')") // này cho roles -> name -> permissions -> name
-    public List<UserResponse> getUser(){
+    public List<UserResponse> getUser() {
         log.info("In method get Users");
-        return userRepository.findAll().stream()
-                .map(userMapper::toUserResponse).toList();
+        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
     @PostAuthorize("returnObject.email == authentication.name")
-    public UserResponse getUserid(String id){ // lấy dữ liệu theo id
+    public UserResponse getUserid(String id) { // lấy dữ liệu theo id
         log.info("In method get user by Id");
-        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không có dữ liệu")));
+        return userMapper.toUserResponse(
+                userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không có dữ liệu")));
     }
 
     // cập nhật thông tin
-    public UserResponse updateUser(String userId, UserUpdateRequest request){
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
 
         // Kiểm tra mật khẩu
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-//        userMapper.updateUser(user, request);
-//
-//        var roles = roleRepository.findAllById(request.getRoles());
-//
-//        user.setRoles(new HashSet<>(roles));
+        //        userMapper.updateUser(user, request);
+        //
+        //        var roles = roleRepository.findAllById(request.getRoles());
+        //
+        //        user.setRoles(new HashSet<>(roles));
         if (request.getPassword() != null) {
             validatePassword(request.getPassword());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -177,22 +180,19 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-
-    public void deleteUser(String userId){
+    public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
 
-    public UserResponse getMyInfo(){
+    public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String email = context.getAuthentication().getName();
 
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return userMapper.toUserResponse(user);
     }
 }
-
 
 // Annotation @Autowired trong Spring đơn giản là để Spring tự động tiêm một dependency vào bean của bạn.
 // Trong trường hợp này, nó giúp bạn tự động tiêm một instance của UserRepository vào biến userRepository

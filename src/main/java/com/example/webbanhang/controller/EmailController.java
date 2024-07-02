@@ -1,19 +1,20 @@
 package com.example.webbanhang.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import jakarta.mail.MessagingException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.EmailRequest;
 import com.example.webbanhang.service.EmailService;
-import jakarta.mail.MessagingException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.annotation.PostMapping;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 @Controller
 @RestController
 @RequestMapping("/api/email")
@@ -41,7 +42,8 @@ public class EmailController {
     public ApiResponse<String> sendHtmlEmail(@RequestBody EmailRequest emailRequest) {
         ApiResponse<String> apiResponse = new ApiResponse<>();
         try {
-            String htmlTemplate = new String(Files.readAllBytes(Paths.get("src/main/resources/templates/emailTemplate.html")));
+            String htmlTemplate =
+                    new String(Files.readAllBytes(Paths.get("src/main/resources/templates/emailTemplate.html")));
             emailService.sendHtmlMessage(emailRequest.getTo(), emailRequest.getSubject(), htmlTemplate);
             apiResponse.setResult("Email sent successfully");
         } catch (IOException e) {

@@ -1,17 +1,18 @@
 package com.example.webbanhang.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.PermissionRequest;
 import com.example.webbanhang.dto.response.PermissionResponse;
 import com.example.webbanhang.service.PermissionService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController

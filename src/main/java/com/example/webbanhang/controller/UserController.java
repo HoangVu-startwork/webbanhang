@@ -1,25 +1,23 @@
 package com.example.webbanhang.controller;
 
+import java.util.List;
 
-import ch.qos.logback.classic.Logger;
+import jakarta.validation.Valid;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
 import com.example.webbanhang.entity.User;
 import com.example.webbanhang.service.UserService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jboss.logging.BasicLogger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 
 @Slf4j
 @RestController
@@ -29,9 +27,8 @@ import java.util.List;
 public class UserController {
     UserService userService;
 
-
     @PostMapping
-    ApiResponse<User> create(@RequestBody @Valid UserCreationRequest request){
+    ApiResponse<User> create(@RequestBody @Valid UserCreationRequest request) {
         ApiResponse<User> apiResponse = new ApiResponse<>();
 
         apiResponse.setResult(userService.createUser(request));
@@ -39,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping
-    ApiResponse<List<UserResponse>> getUsers(){
+    ApiResponse<List<UserResponse>> getUsers() {
 
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -51,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    UserResponse getUserid(@PathVariable("userId") String userId){
+    UserResponse getUserid(@PathVariable("userId") String userId) {
         return userService.getUserid(userId);
     }
 
@@ -62,24 +59,23 @@ public class UserController {
                 .build();
     }
 
-//    UserResponse getUserid(@PathVariable("userId") String userId){
-//        return userService.getUserid(userId);
-//    }
+    //    UserResponse getUserid(@PathVariable("userId") String userId){
+    //        return userService.getUserid(userId);
+    //    }
 
     @PutMapping("/{userId}")
-    UserResponse updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request){
+    UserResponse updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
         return userService.updateUser(userId, request);
     }
 
     @DeleteMapping("/{userId}")
-    String deleteUser(@PathVariable String userId){
+    String deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
         return "User has been deleted";
     }
 
     @PutMapping("password/{userId}")
-    UserResponse updatePasswrd(@PathVariable String userId, @RequestBody UserUpdateRequest request){
+    UserResponse updatePasswrd(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
         return userService.updatePassword(userId, request);
     }
-
 }
