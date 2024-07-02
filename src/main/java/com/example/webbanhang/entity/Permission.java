@@ -1,8 +1,8 @@
 package com.example.webbanhang.entity;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+
 import lombok.*;
 
 @Getter
@@ -14,5 +14,6 @@ import lombok.*;
 public class Permission {
     @Id
     private String name;
+
     private String description;
 }
