@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.webbanhang.entity.Role;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, String> {}
+public interface RoleRepository extends JpaRepository<Role, String> {
+    Role findByName(String user);
+}

@@ -29,6 +29,12 @@ jwt:
   valid-duration: 18000 # in second
   refreshable-duration: 18000 # in seconds
 
+administrator:
+  password: 0903075546Vu!
+
+email:
+  password: gmsc erhf egck ecq
+
 mail:
   host: smtp.gmail.com
   port: 587

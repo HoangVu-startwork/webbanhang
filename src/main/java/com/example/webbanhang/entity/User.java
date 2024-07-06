@@ -37,6 +37,8 @@ public class User {
     private String lastName;
     private String dob;
 
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
     @ManyToMany
     Set<Role> roles;
 

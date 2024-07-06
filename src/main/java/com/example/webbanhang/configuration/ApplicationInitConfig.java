@@ -2,6 +2,7 @@ package com.example.webbanhang.configuration;
 
 import java.util.HashSet;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import com.example.webbanhang.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
@@ -24,6 +26,10 @@ public class ApplicationInitConfig {
 
     PasswordEncoder passwordEncoder;
 
+    @NonFinal
+    @Value("${administrator.password}")
+    protected String new_password;
+
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
@@ -33,7 +39,7 @@ public class ApplicationInitConfig {
 
                 User user = User.builder()
                         .email("hoangvu.startwork@gmail.com")
-                        .password(passwordEncoder.encode("0903075546Vu!"))
+                        .password(passwordEncoder.encode(new_password))
                         // .roles(roles)
                         .build();
 
