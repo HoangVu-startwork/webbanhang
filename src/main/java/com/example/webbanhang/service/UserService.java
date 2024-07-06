@@ -1,13 +1,13 @@
 package com.example.webbanhang.service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,6 @@ import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
 import com.example.webbanhang.entity.User;
-import com.example.webbanhang.enums.Role;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.UserMapper;
@@ -63,8 +62,17 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setDob(currentDateTime);
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+        //        HashSet<String> roles = new HashSet<>();
+        //        roles.add(Role.USER.name());
+
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            var roles = roleRepository.findAllById(request.getRoles());
+            roles.add(roleRepository.findByName("USER")); // Thêm vai trò cố định USER
+            user.setRoles(new HashSet<>(roles));
+        } else {
+            var userRole = roleRepository.findByName("USER");
+            user.setRoles(Collections.singleton(userRole));
+        }
 
         // user.setRoles(roles);
         return userRepository.save(user);
@@ -83,26 +91,69 @@ public class UserService {
     private String getPasswordValidationMessage(String password) {
         StringBuilder message = new StringBuilder();
 
-        if (password.length() < 8) {
-            throw new AppException(ErrorCode.SIZE_PASSWORD);
-        }
-        if (!password.matches(".*[0-9].*")) {
+        if (!containsDigit(password)) {
             throw new AppException(ErrorCode.SO_PASSWORD);
         }
-        if (!password.matches(".*[a-z].*")) {
+        if (!containsLowercase(password)) {
             throw new AppException(ErrorCode.CHUTHUONG_PASSWORD);
         }
-        if (!password.matches(".*[A-Z].*")) {
+        if (!containsUppercase(password)) {
             throw new AppException(ErrorCode.CHUHOA_PASSWORD);
         }
-        if (!password.matches(".*[@#$%^!&+=|}{<>].*")) {
+        if (!containsSpecialCharacter(password)) {
             throw new AppException(ErrorCode.KYTUDATBIET_PASSWORD);
         }
-        if (!password.matches("\\S+")) {
+        if (containsWhitespace(password)) {
             throw new AppException(ErrorCode.KHOANGTRANG_PASSWORD);
         }
 
         return message.toString().trim();
+    }
+
+    private static boolean containsDigit(String str) {
+        for (char c : str.toCharArray()) {
+            if (Character.isDigit(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsLowercase(String str) {
+        for (char c : str.toCharArray()) {
+            if (Character.isLowerCase(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsUppercase(String str) {
+        for (char c : str.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsSpecialCharacter(String str) {
+        String specialCharacters = "@#$%^!&+=|}{<>";
+        for (char c : str.toCharArray()) {
+            if (specialCharacters.indexOf(c) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsWhitespace(String str) {
+        for (char c : str.toCharArray()) {
+            if (Character.isWhitespace(c)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void validatePassword(String password) {
@@ -114,7 +165,7 @@ public class UserService {
     // Trả thông báo
     // @PreAuthorize("hasRole('ADMIN')")  // này cho "roles" -> "name":
 
-    @PreAuthorize("hasAuthority('APPROVE_POST')") // này cho roles -> name -> permissions -> name
+    // @PreAuthorize("hasAuthority('APPROVE_POST')") // này cho roles -> name -> permissions -> name
     public List<UserResponse> getUser() {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();

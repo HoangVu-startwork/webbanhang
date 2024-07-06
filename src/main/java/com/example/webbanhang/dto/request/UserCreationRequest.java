@@ -1,6 +1,7 @@
 package com.example.webbanhang.dto.request;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.example.webbanhang.validator.DobConstraint;
 
@@ -24,4 +25,6 @@ public class UserCreationRequest {
     private LocalDate ngaysinh;
 
     private LocalDate dob;
+
+    List<String> roles;
 }

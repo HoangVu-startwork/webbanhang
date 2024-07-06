@@ -81,8 +81,8 @@ public class AuthenticationService {
         // Khởi tạo một đối tượng PasswordEncoder sử dụng thuật toán BCrypt với độ mạnh là 10. So sánh mật khẩu người
         // dùng nhập vào với mật khẩu đã mã hóa trong cơ sở dữ liệu.
 
-        if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
-        // Nếu mật khẩu không khớp, ném ra ngoại lệ AppException với mã lỗi UNAUTHENTICATED.
+        if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED_PASSWORD);
+        // Nếu mật khẩu không khớp, ném ra ngoại lệ AppException với mã lỗi UNAUTHENTICATED_PASSWORD.
 
         var token = generateToken(user);
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
