@@ -1,11 +1,12 @@
 package com.example.webbanhang.service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
+import com.example.webbanhang.entity.Role;
 import com.example.webbanhang.entity.User;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
@@ -61,18 +63,12 @@ public class UserService {
         // mã hóa password
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setDob(currentDateTime);
-
-        //        HashSet<String> roles = new HashSet<>();
-        //        roles.add(Role.USER.name());
-
+        Set<Role> roles = new HashSet<>();
         if (request.getRoles() != null && !request.getRoles().isEmpty()) {
-            var roles = roleRepository.findAllById(request.getRoles());
-            roles.add(roleRepository.findByName("USER")); // Thêm vai trò cố định USER
-            user.setRoles(new HashSet<>(roles));
-        } else {
-            var userRole = roleRepository.findByName("USER");
-            user.setRoles(Collections.singleton(userRole));
+            roles = request.getRoles().stream().map(roleRepository::findByName).collect(Collectors.toSet());
         }
+        roles.add(roleRepository.findByName("USER")); // Thêm vai trò cố định USER
+        user.setRoles(roles);
 
         // user.setRoles(roles);
         return userRepository.save(user);
