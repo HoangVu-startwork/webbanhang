@@ -1,22 +1,15 @@
-package com.example.webbanhang.entity;
+package com.example.webbanhang.dto.request;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class Thongsokythuat {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class ThongsokythuatRequest {
     private String kichthuocmanhinh;
     private String congnghemanghinh;
     private String tinhnangmanghinh;
@@ -52,16 +45,7 @@ public class Thongsokythuat {
     private String cambienvantai;
     private String cacloaicambien;
     private String tinhnangdacbiet;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
     private String dacdiennoibat;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
     private String chitiet;
-
-    @ManyToOne
-    @JoinColumn(name = "dienthoai_id")
-    private Dienthoai dienthoai;
+    private String tensanpham;
 }
