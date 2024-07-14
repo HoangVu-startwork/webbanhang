@@ -53,16 +53,19 @@ public class LoaisanphamService {
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("không tồn tại not found"));
 
-        Danhmuc danhmuc = danhmucRepository.findBytendanhmuc(request.getTendanhmuc());
-
-        if (danhmuc == null) {
-            throw new IllegalArgumentException("Danh muc not found");
+        if (request.getTendanhmuc() != null && !request.getTendanhmuc().isEmpty()) {
+            Danhmuc danhmuc = danhmucRepository.findBytendanhmuc(request.getTendanhmuc());
+            if (danhmuc == null) {
+                throw new IllegalArgumentException("Danh muc not found");
+            }
+            loaisanpham.setDanhmuc(danhmuc);
         }
 
-        loaisanpham.setTenloaisanpham(request.getTenloaisanpham());
-        loaisanpham.setDanhmuc(danhmuc);
+        if (request.getTenloaisanpham() != null && !request.getTenloaisanpham().isEmpty()) {
+            loaisanpham.setTenloaisanpham(request.getTenloaisanpham());
+        }
 
-        Loaisanpham updatedLoaidanhmuc = loaisanphamRepository.save(loaisanpham);
-        return loaisanphamMapper.toLoaisanphamResponse(updatedLoaidanhmuc);
+        Loaisanpham updatedLoaisanpham = loaisanphamRepository.save(loaisanpham);
+        return loaisanphamMapper.toLoaisanphamResponse(updatedLoaisanpham);
     }
 }

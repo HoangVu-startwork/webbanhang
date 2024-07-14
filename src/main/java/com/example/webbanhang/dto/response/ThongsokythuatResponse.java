@@ -1,22 +1,14 @@
-package com.example.webbanhang.entity;
-
-import jakarta.persistence.*;
+package com.example.webbanhang.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Thongsokythuat {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class ThongsokythuatResponse {
     private String kichthuocmanhinh;
     private String congnghemanghinh;
     private String tinhnangmanghinh;
@@ -52,16 +44,7 @@ public class Thongsokythuat {
     private String cambienvantai;
     private String cacloaicambien;
     private String tinhnangdacbiet;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
     private String dacdiennoibat;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
     private String chitiet;
-
-    @ManyToOne
-    @JoinColumn(name = "dienthoai_id")
-    private Dienthoai dienthoai;
+    private Long dienthoaiId;
 }

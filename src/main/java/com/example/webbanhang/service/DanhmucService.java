@@ -59,20 +59,29 @@ public class DanhmucService {
         Danhmuc danhmuc =
                 danhmucRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Danhmuc not found"));
 
-        Mucluc mucluc = muclucRepository.findByTenmucluc(request.getTenmucluc());
-        Hedieuhanh hedieuhanh = hedieuhanhRepository.findByTenhedieuhanh(request.getTenhedieuhanh());
-
-        if (mucluc == null) {
-            throw new IllegalArgumentException("Mucluc not found");
-        }
-        if (hedieuhanh == null) {
-            throw new IllegalArgumentException("Hedieuhanh not found");
+        if (request.getTenmucluc() != null && !request.getTenmucluc().isEmpty()) {
+            Mucluc mucluc = muclucRepository.findByTenmucluc(request.getTenmucluc());
+            if (mucluc == null) {
+                throw new IllegalArgumentException("Mucluc not found");
+            }
+            danhmuc.setMucluc(mucluc);
         }
 
-        danhmuc.setTendanhmuc(request.getTendanhmuc());
-        danhmuc.setHinhanh(request.getHinhanh());
-        danhmuc.setMucluc(mucluc);
-        danhmuc.setHedieuhanh(hedieuhanh);
+        if (request.getTenhedieuhanh() != null && !request.getTenhedieuhanh().isEmpty()) {
+            Hedieuhanh hedieuhanh = hedieuhanhRepository.findByTenhedieuhanh(request.getTenhedieuhanh());
+            if (hedieuhanh == null) {
+                throw new IllegalArgumentException("Hedieuhanh not found");
+            }
+            danhmuc.setHedieuhanh(hedieuhanh);
+        }
+
+        if (request.getTendanhmuc() != null && !request.getTendanhmuc().isEmpty()) {
+            danhmuc.setTendanhmuc(request.getTendanhmuc());
+        }
+
+        if (request.getHinhanh() != null && !request.getHinhanh().isEmpty()) {
+            danhmuc.setHinhanh(request.getHinhanh());
+        }
 
         Danhmuc updatedDanhmuc = danhmucRepository.save(danhmuc);
         return danhmucMapper.toDanhmucResponse(updatedDanhmuc);
