@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleResponse {
     private String name;
+
     private String description;
     Set<PermissionResponse> permissions;
 }

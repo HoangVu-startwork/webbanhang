@@ -30,16 +30,25 @@ public class User {
 
     private String username;
     private String password;
+
+    @Column(
+            name = "email",
+            unique = true,
+            columnDefinition =
+                    "VARCHAR(255) COLLATE utf8mb4_unicode_ci") // kiểm tra tồn tại của emali manh hơn xác định ở ngoài
     private String email;
+
     private String phone;
     private String ngaysinh;
     private String firsName;
     private String lastName;
     private String dob;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_name"))
     Set<Role> roles;
 
     public void setDob(LocalDateTime dob) {

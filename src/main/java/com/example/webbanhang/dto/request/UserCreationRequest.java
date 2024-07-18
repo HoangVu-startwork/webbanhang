@@ -1,16 +1,17 @@
 package com.example.webbanhang.dto.request;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import com.example.webbanhang.validator.DobConstraint;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreationRequest {
     private String username;
 
@@ -25,6 +26,4 @@ public class UserCreationRequest {
     private LocalDate ngaysinh;
 
     private LocalDate dob;
-
-    List<String> roles;
 }

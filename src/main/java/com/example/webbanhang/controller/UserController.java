@@ -11,7 +11,6 @@ import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
-import com.example.webbanhang.entity.User;
 import com.example.webbanhang.service.UserService;
 
 import lombok.AccessLevel;
@@ -28,11 +27,10 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    ApiResponse<User> create(@RequestBody @Valid UserCreationRequest request) {
-        ApiResponse<User> apiResponse = new ApiResponse<>();
-
-        apiResponse.setResult(userService.createUser(request));
-        return apiResponse;
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createUser(request))
+                .build();
     }
 
     @GetMapping

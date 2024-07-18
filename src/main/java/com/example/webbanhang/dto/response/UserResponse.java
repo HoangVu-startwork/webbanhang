@@ -2,15 +2,14 @@ package com.example.webbanhang.dto.response;
 
 import java.util.Set;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
     private String id;
     private String username;
@@ -20,5 +19,5 @@ public class UserResponse {
     private String phone;
     private String ngaysinh;
     private String dob;
-    private Set<RoleResponse> roles;
+    Set<RoleResponse> roles;
 }

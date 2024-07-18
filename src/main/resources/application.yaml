@@ -18,6 +18,9 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect #Chỉ định loại cơ sở dữ liệu mà Hibernate sử dụng
     generate-ddl: true # Xác định xem Hibernate có nên sinh ra các câu lệnh tạo bảng SQL không. Ở đây, nó được đặt là true.
     show-sql: true # Chỉ định xem Hibernate có nên hiển thị các câu lệnh SQL mà nó tạo ra hay không. Ở đây, nó được đặt là true
+    properties:
+      hibernate:
+        format_sql: true
   datasource: #  Cung cấp cấu hình cho nguồn dữ liệu (database) mà ứng dụng sử dụng
     driver-class-name: com.mysql.cj.jdbc.Driver # Chỉ định tên lớp driver JDBC được sử dụng để kết nối với cơ sở dữ liệu. Ở đây, nó là com.mysql.cj.jdbc.Driver.
     url: jdbc:mysql://localhost:3306/webbanhang?createDatabaseIfNotExist=true # Chứa URL kết nối đến cơ sở dữ liệu MySQL
