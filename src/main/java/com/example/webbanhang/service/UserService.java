@@ -3,16 +3,16 @@ package com.example.webbanhang.service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.webbanhang.constant.PredefinedRole;
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
@@ -42,13 +42,8 @@ public class UserService {
 
     PasswordEncoder passwordEncoder;
 
-    public User createUser(UserCreationRequest request) {
+    public UserResponse createUser(UserCreationRequest request) {
         // Kiểm tra xem email đã tồn tại hay chưa
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            // trường hợp khác thì sử dụng RuntimeException("--") để bắt lỗi RuntimeException là truong hơp không bắt
-            // được
-            throw new AppException(ErrorCode.USER_EXISTED);
-        }
 
         // Kiểm tra mật khẩu
         validatePassword(request.getPassword());
@@ -63,15 +58,17 @@ public class UserService {
         // mã hóa password
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setDob(currentDateTime);
-        Set<Role> roles = new HashSet<>();
-        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
-            roles = request.getRoles().stream().map(roleRepository::findByName).collect(Collectors.toSet());
+        HashSet<Role> roles = new HashSet<>();
+        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
-        roles.add(roleRepository.findByName("USER")); // Thêm vai trò cố định USER
         user.setRoles(roles);
 
         // user.setRoles(roles);
-        return userRepository.save(user);
+        return userMapper.toUserResponse(user);
     }
 
     // Phương thức kiểm tra định dạng email

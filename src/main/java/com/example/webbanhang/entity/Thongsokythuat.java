@@ -46,6 +46,7 @@ public class Thongsokythuat {
     private String kichthuoc;
     private String trongluong;
     private String chatlieumatlung;
+    private String tuongthich;
     private String chatlieukhungvien;
     private String chisokhangnuocbui;
     private String kieumanhinh;

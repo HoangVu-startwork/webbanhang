@@ -1,5 +1,9 @@
 package com.example.webbanhang.controller;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
@@ -33,5 +37,48 @@ public class DienthoaiController {
         return ApiResponse.<DienthoaiResponse>builder()
                 .result(dienthoaiService.updateDienthoai(id, request))
                 .build();
+    }
+
+    @GetMapping("/random-color")
+    public List<Map<String, Object>> getPhoneProductsWithRandomColor() {
+        return dienthoaiService.getPhoneProductsWithRandomColor();
+    }
+
+    //    @GetMapping("/filter")
+    //    public List<Map<String, Object>> getPhoneProducts(
+    //            @RequestParam(required = false) List<String> ram,
+    //            @RequestParam(required = false) String loaiSanPham,
+    //            @RequestParam(required = false) String boNho,
+    //            @RequestParam(required = false) Long giaTu,
+    //            @RequestParam(required = false) Long giaDen) {
+    //        if (ram == null && loaiSanPham == null && boNho == null && giaTu == null && giaDen == null) {
+    //            return dienthoaiService.getPhoneProductsWithRandomColor1();
+    //        } else {
+    //            return dienthoaiService.getPhoneProductsWithFilters(ram, loaiSanPham, boNho, giaTu, giaDen);
+    //        }
+    //    }
+
+    //    @GetMapping("/filter")
+    //    public List<Map<String, Object>> filterPhoneProducts(
+    //            @RequestParam(required = false) List<String> ram,
+    //            @RequestParam(required = false) String hedieuhanh,
+    //            @RequestParam(required = false) String boNho,
+    //            @RequestParam(required = false) Long giaTu,
+    //            @RequestParam(required = false) Long giaDen) {
+    //        return dienthoaiService.getPhoneProductsWithFilters(ram, hedieuhanh, boNho, giaTu, giaDen);
+    //    }
+    @GetMapping("/filter")
+    public List<Map<String, Object>> filterPhoneProducts(
+            @RequestParam(required = false) String ram,
+            @RequestParam(required = false) String hedieuhanh,
+            @RequestParam(required = false) String boNho,
+            @RequestParam(required = false) Long giaTu,
+            @RequestParam(required = false) Long giaDen) {
+
+        List<String> ramList = ram != null ? Arrays.asList(ram.split(",")) : null;
+        List<String> hedieuhanhList = hedieuhanh != null ? Arrays.asList(hedieuhanh.split(",")) : null;
+        List<String> boNhoList = boNho != null ? Arrays.asList(boNho.split(",")) : null;
+
+        return dienthoaiService.getPhoneProductsWithFilters(ramList, hedieuhanhList, boNhoList, giaTu, giaDen);
     }
 }
