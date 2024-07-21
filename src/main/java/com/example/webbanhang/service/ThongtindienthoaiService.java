@@ -55,6 +55,18 @@ public class ThongtindienthoaiService {
 
     @Transactional
     public ThongtindienthoaiResponse createThongtindienthoai(ThongtindienthoaiRequest request) {
+        if (request.getTensanpham() == null || request.getTensanpham().isEmpty()) {
+            throw new IllegalArgumentException("Tensanpham is required and cannot be empty");
+        }
+        if (request.getBaohanh() == null || request.getBaohanh().isEmpty()) {
+            throw new IllegalArgumentException("Baohanh is required and cannot be empty");
+        }
+        if (request.getThietbidikem() == null || request.getThietbidikem().isEmpty()) {
+            throw new IllegalArgumentException("Thietbidikem is required and cannot be empty");
+        }
+        if (request.getTinhtrangmay() == null || request.getTinhtrangmay().isEmpty()) {
+            throw new IllegalArgumentException("Tinhtrangmay is required and cannot be empty");
+        }
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
             throw new IllegalArgumentException("Dienthoai not found with tensanpham: " + request.getTensanpham());
