@@ -1,7 +1,5 @@
 package com.example.webbanhang.entity;
 
-import java.util.List;
-
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -14,27 +12,24 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Mausac {
+public class Nhapkho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String tenmausac;
-
-    private String giaban;
-
-    private String hinhanh;
 
     @ManyToOne
     @JoinColumn(name = "dienthoai_id")
     private Dienthoai dienthoai;
 
-    @OneToMany(mappedBy = "mausac")
-    private List<Giohang> giohangs;
+    @ManyToOne
+    @JoinColumn(name = "mausac_id")
+    private Mausac mausac;
 
-    @OneToMany(mappedBy = "mausac")
-    private List<Khodienthoai> khodienthoais;
+    private String soluong;
 
-    @OneToMany(mappedBy = "mausac")
-    private List<Nhapkho> nhapkhos;
+    private String dob;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
