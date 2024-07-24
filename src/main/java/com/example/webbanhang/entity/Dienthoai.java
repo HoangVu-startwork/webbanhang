@@ -61,4 +61,13 @@ public class Dienthoai {
 
     @OneToMany(mappedBy = "dienthoai")
     private List<Thongsokythuat> thongsokythuats;
+
+    @OneToMany(mappedBy = "dienthoai")
+    private List<Giohang> giohangs;
+
+    @OneToMany(mappedBy = "dienthoai")
+    private List<Khodienthoai> khodienthoais;
+
+    @OneToMany(mappedBy = "dienthoai")
+    private List<Nhapkho> nhapkhos;
 }

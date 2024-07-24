@@ -1,6 +1,7 @@
 package com.example.webbanhang.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -50,4 +51,10 @@ public class User {
     public void setDob(LocalDateTime dob) {
         this.dob = String.valueOf(dob);
     }
+
+    @OneToMany(mappedBy = "user")
+    private List<Giohang> giohangs;
+
+    @OneToMany(mappedBy = "user")
+    private List<Nhapkho> nhapkhos;
 }

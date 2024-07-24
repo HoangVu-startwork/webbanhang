@@ -17,6 +17,7 @@ import com.example.webbanhang.entity.Thongtinphanloai;
 import com.example.webbanhang.mapper.DienthoaiMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
 import com.example.webbanhang.repository.ThongtinphanloaiRepository;
+import com.example.webbanhang.repository.UserRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class DienthoaiService {
     private final DienthoaiRepository dienthoaiRepository;
     private final DienthoaiMapper dienthoaiMapper;
     private final ThongtinphanloaiRepository thongtinphanloaiRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public DienthoaiResponse createDienthoai(DienthoaiRequest request) {
@@ -134,7 +136,15 @@ public class DienthoaiService {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Map<String, Object>> getPhoneProductsWithFilters(
-            List<String> ram, List<String> hedieuhanh, List<String> boNho, Long giaTu, Long giaDen) {
+            List<String> ram,
+            List<String> hedieuhanh,
+            List<String> boNho,
+            Long giaTu,
+            Long giaDen,
+            List<String> tinhnangdacbiet,
+            List<String> tansoquet,
+            List<String> kieumanhinh,
+            List<String> chipset) {
 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT dt.id, dt.tensanpham, ms.tenmausac, ms.hinhanh, ms.giaban ");
@@ -153,6 +163,7 @@ public class DienthoaiService {
         sql.append("JOIN webbanhang.loaisanpham lsp ON ttpl.loaisanpham_id = lsp.id ");
         sql.append("JOIN webbanhang.danhmuc dm ON lsp.danhmuc_id = dm.id ");
         sql.append("JOIN webbanhang.hedieuhanh hd ON dm.hedieuhanh_id = hd.id ");
+        sql.append("JOIN webbanhang.thongsokythuat tsk ON dt.id = tsk.dienthoai_id ");
         sql.append("WHERE 1=1 ");
 
         List<Object> parameters = new ArrayList<>();
@@ -193,6 +204,46 @@ public class DienthoaiService {
             parameters.add(giaDen);
         }
 
+        if (tinhnangdacbiet != null && !tinhnangdacbiet.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tinhnangdacbiet.size(); i++) {
+                sql.append("tsk.tinhnangdacbiet LIKE ?");
+                if (i < tinhnangdacbiet.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tinhnangdacbiet.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (tansoquet != null && !tansoquet.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tansoquet.size(); i++) {
+                sql.append("tsk.tansoquet LIKE ?");
+                if (i < tansoquet.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tansoquet.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (kieumanhinh != null && !kieumanhinh.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < kieumanhinh.size(); i++) {
+                sql.append("tsk.kieumanhinh LIKE ?");
+                if (i < kieumanhinh.size() - 1) sql.append(" OR ");
+                parameters.add("%" + kieumanhinh.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (chipset != null && !chipset.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < chipset.size(); i++) {
+                sql.append("tsk.chipset LIKE ?");
+                if (i < chipset.size() - 1) sql.append(" OR ");
+                parameters.add("%" + chipset.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
         return jdbcTemplate.queryForList(sql.toString(), parameters.toArray());
     }
 
@@ -209,18 +260,4 @@ public class DienthoaiService {
         }
         return phones;
     }
-
-    //    private List<Map<String, Object>> convertToMap(List<Object[]> results) {
-    //        List<Map<String, Object>> phones = new ArrayList<>();
-    //        for (Object[] result : results) {
-    //            Map<String, Object> phone = new HashMap<>();
-    //            phone.put("id", result[0]);
-    //            phone.put("tensanpham", result[1]);
-    //            phone.put("tenmausac", result[2]);
-    //            phone.put("hinhanh", result[3]);
-    //            phone.put("giaban", result[4]);
-    //            phones.add(phone);
-    //        }
-    //        return phones;
-    //    }
 }

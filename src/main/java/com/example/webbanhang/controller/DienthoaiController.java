@@ -73,12 +73,29 @@ public class DienthoaiController {
             @RequestParam(required = false) String hedieuhanh,
             @RequestParam(required = false) String boNho,
             @RequestParam(required = false) Long giaTu,
-            @RequestParam(required = false) Long giaDen) {
+            @RequestParam(required = false) Long giaDen,
+            @RequestParam(required = false) String tinhnangdacbiet,
+            @RequestParam(required = false) String tansoquet,
+            @RequestParam(required = false) String kieumanhinh,
+            @RequestParam(required = false) String chipset) {
 
         List<String> ramList = ram != null ? Arrays.asList(ram.split(",")) : null;
         List<String> hedieuhanhList = hedieuhanh != null ? Arrays.asList(hedieuhanh.split(",")) : null;
         List<String> boNhoList = boNho != null ? Arrays.asList(boNho.split(",")) : null;
+        List<String> tinhnangdacbietList = tinhnangdacbiet != null ? Arrays.asList(tinhnangdacbiet.split(",")) : null;
+        List<String> tansoquetList = tansoquet != null ? Arrays.asList(tansoquet.split(",")) : null;
+        List<String> kieumanhinhList = kieumanhinh != null ? Arrays.asList(kieumanhinh.split(",")) : null;
+        List<String> chipsetList = chipset != null ? Arrays.asList(chipset.split(",")) : null;
 
-        return dienthoaiService.getPhoneProductsWithFilters(ramList, hedieuhanhList, boNhoList, giaTu, giaDen);
+        return dienthoaiService.getPhoneProductsWithFilters(
+                ramList,
+                hedieuhanhList,
+                boNhoList,
+                giaTu,
+                giaDen,
+                tinhnangdacbietList,
+                tansoquetList,
+                kieumanhinhList,
+                chipsetList);
     }
 }

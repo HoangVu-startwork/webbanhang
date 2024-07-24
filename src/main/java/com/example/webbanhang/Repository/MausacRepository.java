@@ -7,9 +7,7 @@ import com.example.webbanhang.entity.Mausac;
 
 @Repository
 public interface MausacRepository extends JpaRepository<Mausac, Long> {
-    Mausac findByDienthoaiId(Long dienthoaiId);
+    Mausac findByDienthoaiIdAndTenmausac(Long dienthoaiId, String tenmausac);
 
     Mausac findByTenmausac(String tenmausac);
-
-    Mausac findByDienthoaiIdAndTenmausac(Long dienthoaiId, String tenmausac);
 }
