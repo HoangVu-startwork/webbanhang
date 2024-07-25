@@ -1,5 +1,7 @@
 package com.example.webbanhang.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -27,4 +29,7 @@ public class Hoadon {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "hoadon")
+    private List<Chitiethoadon> chitiethoadons;
 }
