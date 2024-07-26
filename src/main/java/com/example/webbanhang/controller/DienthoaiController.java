@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.DienthoaiRequest;
+import com.example.webbanhang.dto.request.SoSanhDienThoaiResponse;
 import com.example.webbanhang.dto.response.DienthoaiResponse;
+import com.example.webbanhang.dto.response.ThongtinalldienthoaiResponse;
 import com.example.webbanhang.service.DienthoaiService;
 
 import lombok.AccessLevel;
@@ -44,29 +46,6 @@ public class DienthoaiController {
         return dienthoaiService.getPhoneProductsWithRandomColor();
     }
 
-    //    @GetMapping("/filter")
-    //    public List<Map<String, Object>> getPhoneProducts(
-    //            @RequestParam(required = false) List<String> ram,
-    //            @RequestParam(required = false) String loaiSanPham,
-    //            @RequestParam(required = false) String boNho,
-    //            @RequestParam(required = false) Long giaTu,
-    //            @RequestParam(required = false) Long giaDen) {
-    //        if (ram == null && loaiSanPham == null && boNho == null && giaTu == null && giaDen == null) {
-    //            return dienthoaiService.getPhoneProductsWithRandomColor1();
-    //        } else {
-    //            return dienthoaiService.getPhoneProductsWithFilters(ram, loaiSanPham, boNho, giaTu, giaDen);
-    //        }
-    //    }
-
-    //    @GetMapping("/filter")
-    //    public List<Map<String, Object>> filterPhoneProducts(
-    //            @RequestParam(required = false) List<String> ram,
-    //            @RequestParam(required = false) String hedieuhanh,
-    //            @RequestParam(required = false) String boNho,
-    //            @RequestParam(required = false) Long giaTu,
-    //            @RequestParam(required = false) Long giaDen) {
-    //        return dienthoaiService.getPhoneProductsWithFilters(ram, hedieuhanh, boNho, giaTu, giaDen);
-    //    }
     @GetMapping("/filter")
     public List<Map<String, Object>> filterPhoneProducts(
             @RequestParam(required = false) String ram,
@@ -97,5 +76,15 @@ public class DienthoaiController {
                 tansoquetList,
                 kieumanhinhList,
                 chipsetList);
+    }
+
+    @GetMapping("/{id}")
+    public ThongtinalldienthoaiResponse getDienthoaiDetails(@PathVariable Long id) {
+        return dienthoaiService.getDienthoaiDetails(id);
+    }
+
+    @GetMapping("/so-sanh/{id1},{id2}")
+    public SoSanhDienThoaiResponse soSanhDienThoai(@PathVariable Long id1, @PathVariable Long id2) {
+        return dienthoaiService.soSanhDienThoai(id1, id2);
     }
 }

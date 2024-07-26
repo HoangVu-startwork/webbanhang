@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.DienthoaiRequest;
-import com.example.webbanhang.dto.response.DienthoaiResponse;
+import com.example.webbanhang.dto.request.SoSanhDienThoaiResponse;
+import com.example.webbanhang.dto.response.*;
 import com.example.webbanhang.entity.Dienthoai;
+import com.example.webbanhang.entity.Thongsokythuat;
 import com.example.webbanhang.entity.Thongtinphanloai;
 import com.example.webbanhang.mapper.DienthoaiMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
@@ -33,6 +37,7 @@ public class DienthoaiService {
     private final DienthoaiMapper dienthoaiMapper;
     private final ThongtinphanloaiRepository thongtinphanloaiRepository;
     private final UserRepository userRepository;
+    ModelMapper modelMapper;
 
     @Transactional
     public DienthoaiResponse createDienthoai(DienthoaiRequest request) {
@@ -259,5 +264,133 @@ public class DienthoaiService {
             phones.add(phone);
         }
         return phones;
+    }
+
+    public ThongtinalldienthoaiResponse getDienthoaiDetails(Long id) {
+        Dienthoai dienthoai =
+                dienthoaiRepository.findById(id).orElseThrow(() -> new RuntimeException("Dienthoai not found"));
+
+        List<MausachienthoaiResponse> mausacResponse = dienthoai.getMausacs().stream()
+                .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))
+                .collect(Collectors.toList());
+
+        // Lấy đối tượng Thongsokythuat đầu tiên từ danh sách Thongsokythuat và chuyển đổi nó thành
+        // ThongsokythuatdienthoaiResponse
+        //  Nếu không có đối tượng nào trong danh sách Thongsokythuat, giá trị sẽ là null.
+        ThongsokythuatdienthoaiResponse thongsokythuatResponse = dienthoai.getThongsokythuats().stream()
+                .findFirst()
+                .map(thongsokythuat -> modelMapper.map(thongsokythuat, ThongsokythuatdienthoaiResponse.class))
+                .orElse(null);
+
+        ThongtindienthoaidienthoaiResponse thongtindienthoaiResponse = dienthoai.getThongtindienthoais().stream()
+                .findFirst()
+                .map(thongtindienthoai -> modelMapper.map(thongtindienthoai, ThongtindienthoaidienthoaiResponse.class))
+                .orElse(null);
+
+        return ThongtinalldienthoaiResponse.builder()
+                .id(dienthoai.getId())
+                .tensanpham(dienthoai.getTensanpham())
+                .hinhanh(dienthoai.getHinhanh())
+                .hinhanhduyet(dienthoai.getHinhanhduyetAsList())
+                .ram(dienthoai.getRam())
+                .bonho(dienthoai.getBonho())
+                .giaban(dienthoai.getGiaban())
+                .mausacs(mausacResponse)
+                .thongsokythuats(thongsokythuatResponse)
+                .thongtindienthoai(thongtindienthoaiResponse)
+                .build();
+    }
+
+    public SoSanhDienThoaiResponse soSanhDienThoai(Long id1, Long id2) {
+        Dienthoai dt1 = dienthoaiRepository
+                .findById(id1)
+                .orElseThrow(() -> new RuntimeException("Dienthoai with id " + id1 + " not found"));
+        Dienthoai dt2 = dienthoaiRepository
+                .findById(id2)
+                .orElseThrow(() -> new RuntimeException("Dienthoai with id " + id2 + " not found"));
+
+        String ramComparison = compareRam(dt1.getRam(), dt2.getRam());
+        String boNhoComparison = compareStorage(dt1.getBonho(), dt2.getBonho());
+        String kichThuocManHinhComparison = compareScreenSize(
+                dt1.getThongsokythuats().stream()
+                        .findFirst()
+                        .map(Thongsokythuat::getKichthuocmanhinh)
+                        .orElse(null),
+                dt2.getThongsokythuats().stream()
+                        .findFirst()
+                        .map(Thongsokythuat::getKichthuocmanhinh)
+                        .orElse(null));
+        String giaBanComparison = comparePrice(dt1.getGiaban(), dt2.getGiaban());
+
+        return SoSanhDienThoaiResponse.builder()
+                .id1(dt1.getId())
+                .id2(dt2.getId())
+                .tenSanPham1(dt1.getTensanpham())
+                .tenSanPham2(dt2.getTensanpham())
+                .ram1(dt1.getRam())
+                .ram2(dt2.getRam())
+                .boNho1(dt1.getBonho())
+                .boNho2(dt2.getBonho())
+                .kichThuocManHinh1(dt1.getThongsokythuats().stream()
+                        .findFirst()
+                        .map(Thongsokythuat::getKichthuocmanhinh)
+                        .orElse(null))
+                .kichThuocManHinh2(dt2.getThongsokythuats().stream()
+                        .findFirst()
+                        .map(Thongsokythuat::getKichthuocmanhinh)
+                        .orElse(null))
+                .giaBan1(dt1.getGiaban())
+                .giaBan2(dt2.getGiaban())
+                .ramComparison(ramComparison)
+                .boNhoComparison(boNhoComparison)
+                .kichThuocManHinhComparison(kichThuocManHinhComparison)
+                .giaBanComparison(giaBanComparison)
+                .build();
+    }
+
+    private String compareRam(String ram1, String ram2) {
+        int ram1Value = extractNumericValue(ram1);
+        int ram2Value = extractNumericValue(ram2);
+        if (ram1Value > ram2Value) return "Phone 1 has better RAM";
+        if (ram1Value < ram2Value) return "Phone 2 has better RAM";
+        return "Both phones have the same RAM";
+    }
+
+    private String compareStorage(String storage1, String storage2) {
+        int storage1Value = extractNumericValue(storage1);
+        int storage2Value = extractNumericValue(storage2);
+        if (storage1Value > storage2Value) return "Phone 1 has more storage";
+        if (storage1Value < storage2Value) return "Phone 2 has more storage";
+        return "Both phones have the same storage";
+    }
+
+    private String comparePin(String pin1, String pin2) {
+        int pin1Value = extractNumericValue(pin1);
+        int pin2Value = extractNumericValue(pin2);
+        if (pin1Value > pin2Value) return "Phone 1 has a larger battery";
+        if (pin1Value < pin2Value) return "Phone 2 has a larger battery";
+        return "Both phones have the same battery size";
+    }
+
+    private String compareScreenSize(String size1, String size2) {
+        if (size1 == null || size2 == null) return "N/A";
+        double size1Value = extractNumericValue(size1);
+        double size2Value = extractNumericValue(size2);
+        if (size1Value > size2Value) return "Phone 1 has a bigger screen";
+        if (size1Value < size2Value) return "Phone 2 has a bigger screen";
+        return "Both phones have the same screen size";
+    }
+
+    private String comparePrice(String price1, String price2) {
+        int price1Value = extractNumericValue(price1);
+        int price2Value = extractNumericValue(price2);
+        if (price1Value < price2Value) return "Phone 1 is cheaper";
+        if (price1Value > price2Value) return "Phone 2 is cheaper";
+        return "Both phones have the same price";
+    }
+
+    private int extractNumericValue(String value) {
+        if (value == null) return 0;
+        return Integer.parseInt(value.replaceAll("\\D+", ""));
     }
 }

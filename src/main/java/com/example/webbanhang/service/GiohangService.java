@@ -27,34 +27,6 @@ public class GiohangService {
     UserRepository userRepository;
     KhodienthoaiRepository khodienthoaiRepository;
 
-    //    public GiohangResponse addGiohang(GiohangRequest request) {
-    //        // Tìm thông tin điện thoại
-    //        Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
-    //        if (dienthoai == null) {
-    //            throw new RuntimeException("Product not found");
-    //        }
-    //
-    //        // Tìm thông tin màu sắc
-    //        Mausac mausac = mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), request.getTenmausac());
-    //        if (mausac == null) {
-    //            throw new RuntimeException("Color not found");
-    //        }
-    //
-    //        // Tìm thông tin user
-    //        User user = userRepository
-    //                .findByEmail(request.getEmail())
-    //                .orElseThrow(() -> new RuntimeException("User not found"));
-    //
-    //        // Tạo đối tượng giỏ hàng mới
-    //
-    //        Giohang giohang = giohangMapper.toGiohang(request);
-    //        giohang.setDienthoai(dienthoai);
-    //        giohang.setMausac(mausac);
-    //        giohang.setUser(user);
-    //        Giohang savedGiohang = giohangRepository.save(giohang);
-    //        return giohangMapper.toGiohangResponse(savedGiohang);
-    //    }
-
     public GiohangResponse addToCart(GiohangRequest giohangRequest) {
         // Find phone information
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(giohangRequest.getTensanpham());
