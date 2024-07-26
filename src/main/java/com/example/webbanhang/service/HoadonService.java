@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.example.webbanhang.dto.request.HoadonRequest;
 import com.example.webbanhang.dto.response.HoadonResponse;
 import com.example.webbanhang.entity.*;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.repository.*;
 
 import lombok.AccessLevel;
@@ -35,9 +37,10 @@ public class HoadonService {
         // Lấy thông tin người dùng
         User user = userRepository
                 .findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        // Tạo mã hóa đơn mới
+        // mã hóa đơn mới (mahd) được tạo ra bởi phương thức generateNewMahd. Mã này đảm bảo mỗi hóa đơn có một định
+        // danh duy nhất
         String newMahd = generateNewMahd();
 
         // Tạo hóa đơn mới
@@ -51,25 +54,23 @@ public class HoadonService {
 
         double tongtien = 0.0;
 
-        // Lấy các sản phẩm từ giỏ hàng
+        // lấy danh sách các sản phẩm trong giỏ hàng của người dùng
         List<Giohang> giohangList = giohangRepository.findByUser_Id(user.getId());
 
         for (Giohang giohang : giohangList) {
-            // Kiểm tra số lượng tồn kho
+            // kiểm tra xem có đủ tồn kho hay không. Nếu sản phẩm hoặc màu sắc không có sẵn, nó sẽ ném ra một ngoại lệ.
             Khodienthoai khodienthoai = khodienthoaiRepository.findByDienthoaiIdAndMausacId(
                     giohang.getDienthoai().getId(), giohang.getMausac().getId());
             if (khodienthoai == null) {
                 throw new RuntimeException("Product or color not available in inventory");
             }
 
+            // kiểm tra số lượng có sẵn và số lượng yêu cầu. Nếu số lượng có sẵn ít hơn số lượng yêu cầu, nó sẽ ném ra
+            // một ngoại lệ
             int availableQuantity = 0;
             try {
                 availableQuantity = Integer.parseInt(khodienthoai.getSoluong());
             } catch (NumberFormatException e) {
-                log.error(
-                        "Invalid stock quantity for product: "
-                                + giohang.getDienthoai().getTensanpham(),
-                        e);
                 throw new RuntimeException("Invalid stock quantity for product: "
                         + giohang.getDienthoai().getTensanpham());
             }
@@ -78,10 +79,6 @@ public class HoadonService {
             try {
                 requestedQuantity = Integer.parseInt(giohang.getSoluong());
             } catch (NumberFormatException e) {
-                log.error(
-                        "Invalid cart quantity for product: "
-                                + giohang.getDienthoai().getTensanpham(),
-                        e);
                 throw new RuntimeException("Invalid cart quantity for product: "
                         + giohang.getDienthoai().getTensanpham());
             }
@@ -105,10 +102,6 @@ public class HoadonService {
                     try {
                         giamgia = Double.parseDouble(khuyenmai.getPhantramkhuyenmai());
                     } catch (NumberFormatException e) {
-                        log.error(
-                                "Invalid discount percentage for product: "
-                                        + giohang.getDienthoai().getTensanpham(),
-                                e);
                         throw new RuntimeException("Invalid discount percentage for product: "
                                 + giohang.getDienthoai().getTensanpham());
                     }
@@ -120,7 +113,6 @@ public class HoadonService {
             try {
                 giadienthoai = Double.parseDouble(giohang.getDienthoai().getGiaban());
             } catch (NumberFormatException e) {
-                log.error("Invalid price for product: " + giohang.getDienthoai().getTensanpham(), e);
                 throw new RuntimeException(
                         "Invalid price for product: " + giohang.getDienthoai().getTensanpham());
             }
