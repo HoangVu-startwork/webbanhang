@@ -11,6 +11,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import com.example.webbanhang.dto.request.ApiResponse;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 // giúp trả về thông báo trên body của respon chứ không phải báo lỗi trên Terminal
 @ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
     // Annotation @ControllerAdvice được sử dụng để định nghĩa một class xử lý ngoại lệ toàn cục cho tất cả các
