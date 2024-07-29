@@ -26,7 +26,6 @@ public class MausacService {
     private final MausacRepository mausacRepository;
     private final MausacMapper mausacMapper;
 
-    @Transactional
     public MausacResponse createMausac(MausacRequest request) {
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {

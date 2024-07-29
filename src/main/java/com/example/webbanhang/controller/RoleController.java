@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RoleController {
     RoleService roleService;
 
-    @PostMapping
+    @PostMapping("/maudienthoai")
     ApiResponse<RoleResponse> create(@RequestBody RoleRequest request) {
         return ApiResponse.<RoleResponse>builder()
                 .result(roleService.create(request))

@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MausacController {
     MausacService mausacService;
 
-    @PostMapping
+    @PostMapping("/maudienthoai")
     public ApiResponse<MausacResponse> createMausac(@RequestBody MausacRequest request) {
         return ApiResponse.<MausacResponse>builder()
                 .result(mausacService.createMausac(request))

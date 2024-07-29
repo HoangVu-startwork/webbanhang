@@ -47,3 +47,16 @@ mail:
         auth: true
         starttls:
           enable: true
+
+payment:
+  vnPay:
+    url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    returnUrl: http://localhost:8090/identity/api/vn-pay-callback
+    tmnCode: QMF5P4I1
+    secretKey: TGMSSP5M8Y726W7YJOIVHS7CZYL9EYYN
+    version: 2.1.0
+    command: pay
+    orderType: other
+
+
+
