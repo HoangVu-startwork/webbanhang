@@ -62,7 +62,7 @@ public class HoadonService {
             Khodienthoai khodienthoai = khodienthoaiRepository.findByDienthoaiIdAndMausacId(
                     giohang.getDienthoai().getId(), giohang.getMausac().getId());
             if (khodienthoai == null) {
-                throw new RuntimeException("Product or color not available in inventory");
+                throw new AppException(ErrorCode.SANPHAMHOADON);
             }
 
             // kiểm tra số lượng có sẵn và số lượng yêu cầu. Nếu số lượng có sẵn ít hơn số lượng yêu cầu, nó sẽ ném ra
@@ -71,21 +71,18 @@ public class HoadonService {
             try {
                 availableQuantity = Integer.parseInt(khodienthoai.getSoluong());
             } catch (NumberFormatException e) {
-                throw new RuntimeException("Invalid stock quantity for product: "
-                        + giohang.getDienthoai().getTensanpham());
+                throw new AppException(ErrorCode.SANPHAMHOADON);
             }
 
             int requestedQuantity = 0;
             try {
                 requestedQuantity = Integer.parseInt(giohang.getSoluong());
             } catch (NumberFormatException e) {
-                throw new RuntimeException("Invalid cart quantity for product: "
-                        + giohang.getDienthoai().getTensanpham());
+                throw new AppException(ErrorCode.SANPHAMHOADON);
             }
 
             if (availableQuantity < requestedQuantity) {
-                throw new RuntimeException("Insufficient stock in inventory for product: "
-                        + giohang.getDienthoai().getTensanpham());
+                throw new AppException(ErrorCode.SANPHAMHOADON);
             }
 
             // Lấy thông tin khuyến mãi nếu có

@@ -7,6 +7,8 @@ import com.example.webbanhang.dto.response.KhodienthoaiResponse;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Khodienthoai;
 import com.example.webbanhang.entity.Mausac;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.KhodienthoaiMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
 import com.example.webbanhang.repository.KhodienthoaiRepository;
@@ -30,19 +32,19 @@ public class KhodienthoaiService {
     public KhodienthoaiResponse addToCart(KhodienthoaiRequest request) {
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
-            throw new RuntimeException("Product not found");
+            throw new AppException(ErrorCode.TENDIENTHOAI);
         }
 
         // Tìm thông tin màu sắc
         Mausac mausac = mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), request.getTenmausac());
         if (mausac == null) {
-            throw new RuntimeException("Color not found");
+            throw new AppException(ErrorCode.MAUSAC);
         }
 
         Khodienthoai existingKhodienthoai =
                 khodienthoaiRepository.findByDienthoaiIdAndMausacId(dienthoai.getId(), mausac.getId());
         if (existingKhodienthoai != null) {
-            throw new RuntimeException("This product with the selected color already exists in the inventory");
+            throw new AppException(ErrorCode.MAUSACVSDIENTHOAI);
         }
 
         Khodienthoai khodienthoai = khodienthoaiMapper.toKhodienthoai(request);

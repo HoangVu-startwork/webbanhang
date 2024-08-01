@@ -8,6 +8,8 @@ import com.example.webbanhang.dto.request.ThongtindienthoaiRequest;
 import com.example.webbanhang.dto.response.ThongtindienthoaiResponse;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Thongtindienthoai;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.ThongtindienthoaiMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
 import com.example.webbanhang.repository.ThongtindienthoaiRepository;
@@ -22,9 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ThongtindienthoaiService {
-    private final DienthoaiRepository dienthoaiRepository;
-    private final ThongtindienthoaiRepository thongtindienthoaiRepository;
-    private final ThongtindienthoaiMapper thongtindienthoaiMapper;
+    DienthoaiRepository dienthoaiRepository;
+    ThongtindienthoaiRepository thongtindienthoaiRepository;
+    ThongtindienthoaiMapper thongtindienthoaiMapper;
 
     //    @Transactional
     //    public ThongtindienthoaiResponse createOrUpdateThongtindienthoai(
@@ -56,25 +58,24 @@ public class ThongtindienthoaiService {
     @Transactional
     public ThongtindienthoaiResponse createThongtindienthoai(ThongtindienthoaiRequest request) {
         if (request.getTensanpham() == null || request.getTensanpham().isEmpty()) {
-            throw new IllegalArgumentException("Tensanpham is required and cannot be empty");
+            throw new AppException(ErrorCode.TENSANPHAM);
         }
         if (request.getBaohanh() == null || request.getBaohanh().isEmpty()) {
-            throw new IllegalArgumentException("Baohanh is required and cannot be empty");
+            throw new AppException(ErrorCode.BAOHANH);
         }
         if (request.getThietbidikem() == null || request.getThietbidikem().isEmpty()) {
-            throw new IllegalArgumentException("Thietbidikem is required and cannot be empty");
+            throw new AppException(ErrorCode.THIETBIDIKEM);
         }
         if (request.getTinhtrangmay() == null || request.getTinhtrangmay().isEmpty()) {
-            throw new IllegalArgumentException("Tinhtrangmay is required and cannot be empty");
+            throw new AppException(ErrorCode.TINHTRANGMAY);
         }
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
-            throw new IllegalArgumentException("Dienthoai not found with tensanpham: " + request.getTensanpham());
+            throw new AppException(ErrorCode.TENDIENTHOAI);
         }
 
         if (thongtindienthoaiRepository.findByDienthoaiId(dienthoai.getId()) != null) {
-            throw new IllegalArgumentException(
-                    "Thongtindienthoai already exists for dienthoaiId: " + dienthoai.getId());
+            throw new AppException(ErrorCode.THONGTINDIENTHOAI);
         }
 
         Thongtindienthoai thongtindienthoai = thongtindienthoaiMapper.toThongtindienthoai(request);
@@ -117,7 +118,7 @@ public class ThongtindienthoaiService {
     public ThongtindienthoaiResponse updateThongtindienthoai(Long id, ThongtindienthoaiRequest request) {
         Thongtindienthoai thongtindienthoai = thongtindienthoaiRepository
                 .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("không tồn tại not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.THONGTINDIENTHOAI));
 
         // Kiểm tra nếu tensanpham được cung cấp
         if (request.getTensanpham() != null && !request.getTensanpham().isEmpty()) {
@@ -125,7 +126,7 @@ public class ThongtindienthoaiService {
 
             // Nếu tensanpham mới không tồn tại trong bảng dienthoai
             if (dienthoai == null) {
-                throw new IllegalArgumentException("Dienthoai not found");
+                throw new AppException(ErrorCode.TENDIENTHOAI);
             }
 
             // Kiểm tra nếu tensanpham mới đã tồn tại trong bảng thongtindienthoai
@@ -133,7 +134,7 @@ public class ThongtindienthoaiService {
                     thongtindienthoaiRepository.findByDienthoaiId(dienthoai.getId());
             if (existingThongtindienthoai != null
                     && !existingThongtindienthoai.getId().equals(thongtindienthoai.getId())) {
-                throw new IllegalArgumentException("Thongtindienthoai with this tensanpham already exists");
+                throw new AppException(ErrorCode.UPDATETHONGTINDIENTHOAI);
             }
 
             thongtindienthoai.setDienthoai(dienthoai);

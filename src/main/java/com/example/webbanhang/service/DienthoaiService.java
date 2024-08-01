@@ -18,6 +18,8 @@ import com.example.webbanhang.dto.response.*;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Thongsokythuat;
 import com.example.webbanhang.entity.Thongtinphanloai;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.DienthoaiMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
 import com.example.webbanhang.repository.ThongtinphanloaiRepository;
@@ -33,10 +35,10 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class DienthoaiService {
-    private final DienthoaiRepository dienthoaiRepository;
-    private final DienthoaiMapper dienthoaiMapper;
-    private final ThongtinphanloaiRepository thongtinphanloaiRepository;
-    private final UserRepository userRepository;
+    DienthoaiRepository dienthoaiRepository;
+    DienthoaiMapper dienthoaiMapper;
+    ThongtinphanloaiRepository thongtinphanloaiRepository;
+    UserRepository userRepository;
     ModelMapper modelMapper;
 
     @Transactional
@@ -44,11 +46,11 @@ public class DienthoaiService {
         Thongtinphanloai thongtinphanloai = thongtinphanloaiRepository.findByTenphanloai(request.getTenphanloai());
 
         if (dienthoaiRepository.findByTensanpham(request.getTensanpham()) != null) {
-            throw new IllegalArgumentException("Dien thoai đã tồn tại");
+            throw new AppException(ErrorCode.DIENTHOAI);
         }
 
         if (thongtinphanloai == null) {
-            throw new IllegalArgumentException("Danh muc not found");
+            throw new AppException(ErrorCode.THONGTINPHANLOAIDIENTHOAI);
         }
 
         Dienthoai dienthoai = Dienthoai.builder()
@@ -67,14 +69,13 @@ public class DienthoaiService {
 
     @Transactional
     public DienthoaiResponse updateDienthoai(Long id, DienthoaiRequest request) {
-        Dienthoai dienthoai = dienthoaiRepository
-                .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("không tồn tại not found"));
+        Dienthoai dienthoai =
+                dienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TENDIENTHOAI));
 
         if (request.getTenphanloai() != null && !request.getTenphanloai().isEmpty()) {
             Thongtinphanloai thongtinphanloai = thongtinphanloaiRepository.findByTenphanloai(request.getTenphanloai());
             if (thongtinphanloai == null) {
-                throw new IllegalArgumentException("Danh muc not found");
+                throw new AppException(ErrorCode.DANHMUC);
             }
             dienthoai.setThongtinphanloai(thongtinphanloai);
         }
@@ -268,7 +269,7 @@ public class DienthoaiService {
 
     public ThongtinalldienthoaiResponse getDienthoaiDetails(Long id) {
         Dienthoai dienthoai =
-                dienthoaiRepository.findById(id).orElseThrow(() -> new RuntimeException("Dienthoai not found"));
+                dienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TENDIENTHOAI));
 
         List<MausachienthoaiResponse> mausacResponse = dienthoai.getMausacs().stream()
                 .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))

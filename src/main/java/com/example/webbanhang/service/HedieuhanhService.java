@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.example.webbanhang.dto.request.HedieuhanhRequest;
 import com.example.webbanhang.dto.response.HedieuhanhResponse;
 import com.example.webbanhang.entity.Hedieuhanh;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.HedieuhanhMapper;
 import com.example.webbanhang.repository.HedieuhanhRepository;
 
@@ -24,7 +26,7 @@ public class HedieuhanhService {
 
     public HedieuhanhResponse create(HedieuhanhRequest request) {
         if (hedieuhanhRepository.findByTenhedieuhanh(request.getTenhedieuhanh()) != null) {
-            throw new IllegalArgumentException("Hê diều hành đã tồn tại");
+            throw new AppException(ErrorCode.HEDIEUHANHTONTAI);
         }
         Hedieuhanh hedieuhanh = hedieuhanhMapper.toHedieuhanh(request);
         Hedieuhanh savedHedieuhanh = hedieuhanhRepository.save(hedieuhanh);

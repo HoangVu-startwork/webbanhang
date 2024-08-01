@@ -8,6 +8,8 @@ import com.example.webbanhang.dto.request.ThongsokythuatRequest;
 import com.example.webbanhang.dto.response.ThongsokythuatResponse;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Thongsokythuat;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.ThongsokythuatMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
 import com.example.webbanhang.repository.ThongsokythuatRepository;
@@ -30,12 +32,11 @@ public class ThongsokythuatService {
     public ThongsokythuatResponse createThongsokythuat(ThongsokythuatRequest request) {
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
-            throw new IllegalArgumentException("Dienthoai not found with tensanpham: " + request.getTensanpham());
+            throw new AppException(ErrorCode.TENDIENTHOAI);
         }
 
         if (thongsokythuatRepository.findByDienthoaiId(dienthoai.getId()) != null) {
-            throw new IllegalArgumentException(
-                    "Thông số kỹ thuật already exists for dienthoaiId: " + dienthoai.getId());
+            throw new AppException(ErrorCode.THONGSOKYTHUAT);
         }
 
         Thongsokythuat thongsokythuat = thongsokythuatMapper.toThongsokythuat(request);

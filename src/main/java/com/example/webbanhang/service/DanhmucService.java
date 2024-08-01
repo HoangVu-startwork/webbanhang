@@ -9,6 +9,8 @@ import com.example.webbanhang.dto.response.DanhmucResponse;
 import com.example.webbanhang.entity.Danhmuc;
 import com.example.webbanhang.entity.Hedieuhanh;
 import com.example.webbanhang.entity.Mucluc;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.DanhmucMapper;
 import com.example.webbanhang.repository.DanhmucRepository;
 import com.example.webbanhang.repository.HedieuhanhRepository;
@@ -34,13 +36,13 @@ public class DanhmucService {
         Mucluc mucluc = muclucRepository.findByTenmucluc(request.getTenmucluc());
         Hedieuhanh hedieuhanh = hedieuhanhRepository.findByTenhedieuhanh(request.getTenhedieuhanh());
         if (danhmucRepository.findBytendanhmuc(request.getTendanhmuc()) != null) {
-            throw new IllegalArgumentException("Tên ten danh muc đã tồn tại");
+            throw new AppException(ErrorCode.TENDANHMUC);
         }
         if (mucluc == null) {
-            throw new IllegalArgumentException("Mucluc not found");
+            throw new AppException(ErrorCode.MUCLUC);
         }
         if (hedieuhanh == null) {
-            throw new IllegalArgumentException("Hedieuhanh not found");
+            throw new AppException(ErrorCode.HEDIEUHANH);
         }
 
         Danhmuc danhmuc = Danhmuc.builder()
@@ -56,13 +58,12 @@ public class DanhmucService {
 
     @Transactional
     public DanhmucResponse updateDanhmuc(Long id, DanhmucRequest request) {
-        Danhmuc danhmuc =
-                danhmucRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Danhmuc not found"));
+        Danhmuc danhmuc = danhmucRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DANHMUC));
 
         if (request.getTenmucluc() != null && !request.getTenmucluc().isEmpty()) {
             Mucluc mucluc = muclucRepository.findByTenmucluc(request.getTenmucluc());
             if (mucluc == null) {
-                throw new IllegalArgumentException("Mucluc not found");
+                throw new AppException(ErrorCode.MUCLUC);
             }
             danhmuc.setMucluc(mucluc);
         }
@@ -70,7 +71,7 @@ public class DanhmucService {
         if (request.getTenhedieuhanh() != null && !request.getTenhedieuhanh().isEmpty()) {
             Hedieuhanh hedieuhanh = hedieuhanhRepository.findByTenhedieuhanh(request.getTenhedieuhanh());
             if (hedieuhanh == null) {
-                throw new IllegalArgumentException("Hedieuhanh not found");
+                throw new AppException(ErrorCode.HEDIEUHANH);
             }
             danhmuc.setHedieuhanh(hedieuhanh);
         }

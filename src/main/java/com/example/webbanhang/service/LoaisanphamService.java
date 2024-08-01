@@ -8,6 +8,8 @@ import com.example.webbanhang.dto.request.LoaisanphamRequest;
 import com.example.webbanhang.dto.response.LoaisanphamResponse;
 import com.example.webbanhang.entity.Danhmuc;
 import com.example.webbanhang.entity.Loaisanpham;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.LoaisanphamMapper;
 import com.example.webbanhang.repository.DanhmucRepository;
 import com.example.webbanhang.repository.LoaisanphamRepository;
@@ -31,11 +33,11 @@ public class LoaisanphamService {
         Danhmuc danhmuc = danhmucRepository.findBytendanhmuc(request.getTendanhmuc());
 
         if (loaisanphamRepository.findByTenloaisanpham(request.getTenloaisanpham()) != null) {
-            throw new IllegalArgumentException("Loai san pham đã tồn tại");
+            throw new AppException(ErrorCode.LOAISANPHAMTONTAI);
         }
 
         if (danhmuc == null) {
-            throw new IllegalArgumentException("Danh muc not found");
+            throw new AppException(ErrorCode.DANHMUC);
         }
 
         Loaisanpham loaisanpham = Loaisanpham.builder()
@@ -49,14 +51,13 @@ public class LoaisanphamService {
 
     @Transactional
     public LoaisanphamResponse updateDanhmuc(Long id, LoaisanphamRequest request) {
-        Loaisanpham loaisanpham = loaisanphamRepository
-                .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("không tồn tại not found"));
+        Loaisanpham loaisanpham =
+                loaisanphamRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LOAISANPHAM));
 
         if (request.getTendanhmuc() != null && !request.getTendanhmuc().isEmpty()) {
             Danhmuc danhmuc = danhmucRepository.findBytendanhmuc(request.getTendanhmuc());
             if (danhmuc == null) {
-                throw new IllegalArgumentException("Danh muc not found");
+                throw new AppException(ErrorCode.MUCLUC);
             }
             loaisanpham.setDanhmuc(danhmuc);
         }

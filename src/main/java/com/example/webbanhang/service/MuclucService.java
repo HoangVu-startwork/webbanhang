@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.example.webbanhang.dto.request.MuclucRequest;
 import com.example.webbanhang.dto.response.MuclucResponse;
 import com.example.webbanhang.entity.Mucluc;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.MuclucMapper;
 import com.example.webbanhang.repository.MuclucRepository;
 
@@ -24,7 +26,7 @@ public class MuclucService {
 
     public MuclucResponse create(MuclucRequest request) {
         if (muclucRepository.findByTenmucluc(request.getTenmucluc()) != null) {
-            throw new IllegalArgumentException("Tên mục lục đã tồn tại");
+            throw new AppException(ErrorCode.MUCLUCTONTAI);
         }
         Mucluc mucluc = muclucMapper.toMucluc(request);
         Mucluc savedMucluc = muclucRepository.save(mucluc);

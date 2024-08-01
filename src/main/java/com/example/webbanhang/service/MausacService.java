@@ -8,6 +8,8 @@ import com.example.webbanhang.dto.request.MausacRequest;
 import com.example.webbanhang.dto.response.MausacResponse;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Mausac;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.MausacMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
 import com.example.webbanhang.repository.MausacRepository;
@@ -29,13 +31,13 @@ public class MausacService {
     public MausacResponse createMausac(MausacRequest request) {
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
-            throw new IllegalArgumentException("Dienthoai not found with tensanpham: " + request.getTensanpham());
+            throw new AppException(ErrorCode.TENDIENTHOAI);
         }
         // Kiểm tra xem điện thoại đã có màu đó chưa
         Mausac existingMausac =
                 mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), request.getTenmausac());
         if (existingMausac != null) {
-            throw new IllegalArgumentException("Màu sắc đã tồn tại cho điện thoại");
+            throw new AppException(ErrorCode.MAUSACTONTAI);
         }
         Mausac mausac = mausacMapper.toMausac(request);
         mausac.setDienthoai(dienthoai);
@@ -45,16 +47,14 @@ public class MausacService {
 
     @Transactional
     public MausacResponse updateMausac(Long id, MausacRequest request) {
-        Mausac mausac =
-                mausacRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Mausac not found"));
+        Mausac mausac = mausacRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MAUSAC));
 
         if (request.getTenmausac() != null && !request.getTenmausac().isEmpty()) {
             // Kiểm tra nếu tenmausac đã tồn tại cho dienthoaiId hiện tại
             Mausac existingMausac = mausacRepository.findByDienthoaiIdAndTenmausac(
                     mausac.getDienthoai().getId(), request.getTenmausac());
             if (existingMausac != null && !existingMausac.getId().equals(mausac.getId())) {
-                throw new IllegalArgumentException("Màu sắc đã tồn tại cho điện thoại với id: "
-                        + mausac.getDienthoai().getId());
+                throw new AppException(ErrorCode.MAUSACTONTAITRONGDIENTHOAI);
             }
             mausac.setTenmausac(request.getTenmausac());
         }
@@ -62,14 +62,14 @@ public class MausacService {
         if (request.getTensanpham() != null && !request.getTensanpham().isEmpty()) {
             Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
             if (dienthoai == null) {
-                throw new IllegalArgumentException("Dienthoai not found with tensanpham: " + request.getTensanpham());
+                throw new AppException(ErrorCode.TENDIENTHOAI);
             }
 
             // Kiểm tra nếu màu sắc mới đã tồn tại cho điện thoại mới
             Mausac existingMausac =
                     mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), request.getTenmausac());
             if (existingMausac != null && !existingMausac.getId().equals(mausac.getId())) {
-                throw new IllegalArgumentException("Màu sắc đã tồn tại cho điện thoại với id: " + dienthoai.getId());
+                throw new AppException(ErrorCode.MAUSACTONTAITRONGDIENTHOAI);
             }
             mausac.setDienthoai(dienthoai);
         }
