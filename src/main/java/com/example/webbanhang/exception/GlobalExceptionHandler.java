@@ -30,7 +30,11 @@ public class GlobalExceptionHandler {
 
     private static final String MIN_ATTRIBUTE = "min";
 
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(
+            value =
+                    Exception
+                            .class) // phương thức này sẽ xử lý tất cả các ngoại lệ kiểu Exception và các lớp trường hợp
+    // của nó
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
 
         ApiResponse apiResponse = new ApiResponse();
@@ -93,6 +97,7 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    // gửi email
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<String>> handlingRuntimeException(RuntimeException ex, WebRequest request) {
         ApiResponse<String> response = new ApiResponse<>();
@@ -101,7 +106,7 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+    // gửi email
     public ResponseEntity<ApiResponse> t(RuntimeException ex) {
         ApiResponse response = new ApiResponse();
         response.setMessage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR));

@@ -1,12 +1,18 @@
 package com.example.webbanhang.service;
 
+import java.util.List;
 import java.util.Optional;
 
+import jakarta.annotation.PostConstruct;
+
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.GiohangRequest;
 import com.example.webbanhang.dto.response.GiohangResponse;
 import com.example.webbanhang.entity.*;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.GiohangMapper;
 import com.example.webbanhang.repository.*;
 
@@ -31,33 +37,37 @@ public class GiohangService {
         // Find phone information
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(giohangRequest.getTensanpham());
         if (dienthoai == null) {
-            throw new RuntimeException("Product not found");
+            throw new AppException(ErrorCode.TENDIENTHOAI);
         }
 
         // Find color information
         Mausac mausac =
                 mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), giohangRequest.getTenmausac());
         if (mausac == null) {
-            throw new RuntimeException("Color not found");
+            throw new AppException(ErrorCode.MAUSAC);
         }
 
         // Find user information
         User user = userRepository
                 .findByEmail(giohangRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         // Check stock quantity in Khodienthoai
         Khodienthoai khodienthoai =
                 khodienthoaiRepository.findByDienthoaiIdAndMausacId(dienthoai.getId(), mausac.getId());
         if (khodienthoai == null) {
-            throw new RuntimeException("Stock not found");
+            throw new AppException(ErrorCode.KHOHANG);
         }
 
         int availableQuantity = Integer.parseInt(khodienthoai.getSoluong());
         int requestedQuantity = Integer.parseInt(giohangRequest.getSoluong());
 
+        if (availableQuantity == 0) {
+            throw new AppException(ErrorCode.KHOHANG);
+        }
+
         if (availableQuantity < requestedQuantity) {
-            throw new RuntimeException("Not enough stock available");
+            throw new AppException(ErrorCode.KHOHANGGIOHANG);
         }
 
         // Check if phone and color are already in the cart
@@ -107,6 +117,33 @@ public class GiohangService {
             // khỏi cơ sở dữ liệu dựa trên ID.
         } else {
             throw new RuntimeException("Item not found in cart");
+        }
+    }
+
+    @PostConstruct
+    public void init() {
+        updateCartQuantityBasedOnStock();
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void updateCartQuantityBasedOnStock() {
+        List<Giohang> cartItems = giohangRepository.findAll();
+        for (Giohang cartItem : cartItems) {
+            Khodienthoai stock = khodienthoaiRepository.findByDienthoaiIdAndMausacId(
+                    cartItem.getDienthoai().getId(), cartItem.getMausac().getId());
+
+            if (stock != null) {
+                int availableQuantity = Integer.parseInt(stock.getSoluong());
+                int cartQuantity = Integer.parseInt(cartItem.getSoluong());
+
+                if (availableQuantity == 0) {
+                    cartItem.setSoluong("0");
+                } else if (availableQuantity < cartQuantity) {
+                    cartItem.setSoluong(String.valueOf(availableQuantity));
+                }
+
+                giohangRepository.save(cartItem);
+            }
         }
     }
 }

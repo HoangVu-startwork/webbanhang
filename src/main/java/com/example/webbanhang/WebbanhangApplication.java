@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 // @SpringBootApplication được sử dụng với một tham số exclude, với mục đích loại bỏ một số cấu hình tự động mặc định mà
 // Spring Boot cung cấp. Trong trường hợp này, SecurityAutoConfiguration.class được loại bỏ, điều này có nghĩa là cấu
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @EnableJpaRepositories(basePackages = "com.example.webbanhang.repository")
 @EntityScan(basePackages = "com.example.webbanhang.entity")
+@EnableScheduling
 public class WebbanhangApplication {
 
     public static void main(String[] args) {

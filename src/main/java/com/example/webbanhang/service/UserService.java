@@ -160,28 +160,19 @@ public class UserService {
 
     // @PreAuthorize("hasAuthority('APPROVE_POST')") // này cho roles -> name -> permissions -> name
     public List<UserResponse> getUser() {
-        log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
     @PostAuthorize("returnObject.email == authentication.name")
     public UserResponse getUserid(String id) { // lấy dữ liệu theo id
-        log.info("In method get user by Id");
         return userMapper.toUserResponse(
-                userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không có dữ liệu")));
+                userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
-
     // cập nhật thông tin
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
 
         // Kiểm tra mật khẩu
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
-
-        //        userMapper.updateUser(user, request);
-        //
-        //        var roles = roleRepository.findAllById(request.getRoles());
-        //
-        //        user.setRoles(new HashSet<>(roles));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         if (request.getPassword() != null) {
             validatePassword(request.getPassword());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -216,7 +207,7 @@ public class UserService {
     public UserResponse updatePassword(String userId, UserUpdateRequest request) {
         // Kiểm tra mật khẩu
         validatePassword(request.getPassword());
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         // Cập nhật mật khẩu
         user.setPassword(request.getPassword());

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.example.webbanhang.dto.request.NhapkhoRequest;
 import com.example.webbanhang.dto.response.NhapkhoResponse;
 import com.example.webbanhang.entity.*;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.NhapkhoMapper;
 import com.example.webbanhang.repository.*;
 
@@ -35,18 +37,18 @@ public class NhapkhoService {
         // Retrieve Dienthoai and Mausac objects using their IDs from the request
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
-            throw new RuntimeException("Product not found");
+            throw new AppException(ErrorCode.TENDIENTHOAI);
         }
 
         // Tìm thông tin màu sắc
         Mausac mausac = mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), request.getTenmausac());
         if (mausac == null) {
-            throw new RuntimeException("Color not found");
+            throw new AppException(ErrorCode.MAUSAC);
         }
 
         User user = userRepository
                 .findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         // Convert request to entity
         Nhapkho nhapkho = nhapkhoMapper.toGiohang(request);
@@ -94,8 +96,7 @@ public class NhapkhoService {
         // Lấy entity Nhapkho hiện có
         // lấy thông tin của Nhapkho dựa trên id được truyền vào.
         // Nếu không tìm thấy Nhapkho, nó sẽ ném ra một ngoại lệ (RuntimeException)
-        Nhapkho existingNhapkho =
-                nhapkhoRepository.findById(id).orElseThrow(() -> new RuntimeException("Nhapkho không tìm thấy"));
+        Nhapkho existingNhapkho = nhapkhoRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NHAPKHO));
 
         // Lấy đối tượng Dienthoai và Mausac cũ từ entity Nhapkho hiện có
         Dienthoai oldDienthoai = existingNhapkho.getDienthoai();
@@ -109,7 +110,7 @@ public class NhapkhoService {
             Dienthoai newDienthoai =
                     dienthoaiRepository.findByTensanpham(request.getTensanpham()); // tìm dienthoai dựa vào tensanpham
             if (newDienthoai == null) {
-                throw new RuntimeException("Dienthoai không tìm thấy");
+                throw new AppException(ErrorCode.TENDIENTHOAI);
             }
             existingNhapkho.setDienthoai(newDienthoai);
 
@@ -126,7 +127,7 @@ public class NhapkhoService {
             Mausac newMausac = mausacRepository.findByDienthoaiIdAndTenmausac(
                     existingNhapkho.getDienthoai().getId(), request.getTenmausac());
             if (newMausac == null) {
-                throw new RuntimeException("Mausac không tìm thấy");
+                throw new AppException(ErrorCode.MAUSAC);
             }
             existingNhapkho.setMausac(newMausac);
 

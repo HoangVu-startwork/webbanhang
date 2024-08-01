@@ -32,4 +32,9 @@ public class GiohangController {
         giohangService.removeFromCart(giohangId);
         return ApiResponse.<Void>builder().result(null).build();
     }
+
+    @PostMapping("/update-cart-quantity")
+    public void updateCartQuantityBasedOnStock() {
+        giohangService.updateCartQuantityBasedOnStock();
+    }
 }

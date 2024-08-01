@@ -9,6 +9,8 @@ import com.example.webbanhang.dto.request.KhuyenmaiRequest;
 import com.example.webbanhang.dto.response.KhuyenmaiResponse;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Khuyenmai;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.KhuyenmaiMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
 import com.example.webbanhang.repository.KhuyenmaiRepository;
@@ -32,7 +34,7 @@ public class KhuyenmaiService {
     public KhuyenmaiResponse saveKhuyenmai(KhuyenmaiRequest request) {
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
-            throw new IllegalArgumentException("Dienthoai not found with tensanpham: " + request.getTensanpham());
+            throw new AppException(ErrorCode.TENDIENTHOAI);
         }
 
         Khuyenmai khuyenmai = khuyenmaiMapper.toKhuyenmai(request);

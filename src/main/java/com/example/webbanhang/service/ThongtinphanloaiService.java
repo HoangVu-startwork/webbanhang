@@ -8,6 +8,8 @@ import com.example.webbanhang.dto.request.ThongtinphanloaiRequest;
 import com.example.webbanhang.dto.response.ThongtinphanloaiResponse;
 import com.example.webbanhang.entity.Loaisanpham;
 import com.example.webbanhang.entity.Thongtinphanloai;
+import com.example.webbanhang.exception.AppException;
+import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.ThongtinphanloaiMapper;
 import com.example.webbanhang.repository.LoaisanphamRepository;
 import com.example.webbanhang.repository.ThongtinphanloaiRepository;
@@ -30,10 +32,10 @@ public class ThongtinphanloaiService {
     public ThongtinphanloaiResponse createThongtinphanloai(ThongtinphanloaiRequest request) {
         Loaisanpham loaisanpham = loaisanphamRepository.findByTenloaisanpham(request.getTenloaisanpham());
         if (thongtinphanloaiRepository.findByTenphanloai(request.getTenphanloai()) != null) {
-            throw new IllegalArgumentException("Thông tin phan loai đã tồn tại");
+            throw new AppException(ErrorCode.THONGTINPHANLOAI);
         }
         if (loaisanpham == null) {
-            throw new IllegalArgumentException("Thongtin phan loai not found");
+            throw new AppException(ErrorCode.LOAISANPHAM);
         }
 
         Thongtinphanloai thongtinphanloai = Thongtinphanloai.builder()
