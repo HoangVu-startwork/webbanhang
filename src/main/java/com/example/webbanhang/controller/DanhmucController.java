@@ -1,5 +1,7 @@
 package com.example.webbanhang.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
@@ -32,5 +34,10 @@ public class DanhmucController {
         return ApiResponse.<DanhmucResponse>builder()
                 .result(danhmucService.updateDanhmuc(id, request))
                 .build();
+    }
+
+    @GetMapping("/all")
+    public List<DanhmucResponse> getDanhmuc() {
+        return danhmucService.getAllDanhmuc();
     }
 }

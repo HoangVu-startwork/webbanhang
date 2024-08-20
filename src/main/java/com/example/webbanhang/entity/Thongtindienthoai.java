@@ -3,7 +3,6 @@ package com.example.webbanhang.entity;
 import jakarta.persistence.*;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -11,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Thongtindienthoai {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

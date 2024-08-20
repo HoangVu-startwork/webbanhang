@@ -14,8 +14,10 @@ public interface GiohangMapper {
     Giohang toGiohang(GiohangRequest request);
 
     @Mapping(source = "dienthoai.id", target = "dienthoaiId")
+    @Mapping(source = "dienthoai.tensanpham", target = "tensanpham")
     @Mapping(source = "mausac.id", target = "mausacId")
-    @Mapping(source = "user.id", target = "userId", qualifiedByName = "longToString")
+    @Mapping(source = "mausac.tenmausac", target = "tenmausac")
+    @Mapping(target = "mausacGiaban", source = "mausac.giaban")
     GiohangResponse toGiohangResponse(Giohang savedGiohang);
 
     @Named("longToString")

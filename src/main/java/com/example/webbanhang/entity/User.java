@@ -60,4 +60,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Hoadon> Hoadons;
+
+    @OneToMany(mappedBy = "user")
+    private List<Binhluandienthoai> Binhluandienthoais;
 }

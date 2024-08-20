@@ -1,9 +1,8 @@
 package com.example.webbanhang.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.MuclucRequest;
@@ -27,6 +26,20 @@ public class MuclucController {
     ApiResponse<MuclucResponse> create(@RequestBody MuclucRequest request) {
         return ApiResponse.<MuclucResponse>builder()
                 .result(muclucService.create(request))
+                .build();
+    }
+
+    @GetMapping
+    ApiResponse<List<MuclucResponse>> getAllDanhmuc() {
+        return ApiResponse.<List<MuclucResponse>>builder()
+                .result(muclucService.getAllDanhmuc())
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<MuclucResponse> getByTenmucluc(@PathVariable Long id) {
+        return ApiResponse.<MuclucResponse>builder()
+                .result(muclucService.getByTenmucluc(id))
                 .build();
     }
 }

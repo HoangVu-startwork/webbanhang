@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import com.example.webbanhang.entity.Mucluc;
 
 @Repository
-public interface MuclucRepository extends JpaRepository<Mucluc, String> {
+public interface MuclucRepository extends JpaRepository<Mucluc, Long> {
     Mucluc findByTenmucluc(String tenmucluc);
+
+    Mucluc findByid(Long id);
 }

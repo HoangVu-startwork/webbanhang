@@ -9,7 +9,7 @@ import com.example.webbanhang.entity.Dienthoai;
 
 @Mapper(componentModel = "spring")
 public interface DienthoaiMapper {
-    Dienthoai toDienthoai(DienthoaiRequest request);
+    Dienthoai toDienthoaiMapper(DienthoaiRequest request);
 
     @Mapping(source = "thongtinphanloai.id", target = "thongtinphanloaiId")
     DienthoaiResponse toDienthoaiResponse(Dienthoai savedDienthoai);

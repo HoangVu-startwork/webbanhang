@@ -14,4 +14,5 @@ public class GiohangRequest {
     private String soluong;
     private String tenmausac;
     private String tensanpham;
+    private Long dienthoaiId;
 }

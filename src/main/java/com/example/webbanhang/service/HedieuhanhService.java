@@ -33,4 +33,11 @@ public class HedieuhanhService {
         return hedieuhanhMapper.toHedieuhanhResponse(
                 savedHedieuhanh); // Bạn cần phương thức để chuyển Mucluc thành MuclucResponse
     }
+
+    //    public List<HedieuhanhResponse> getAllHedieuhanh() {
+    //        return hedieuhanhRepository.findAll().stream()
+    //                .map(hedieuhanhMapper::toHedieuhanhResponse)
+    //                .toList();
+    //    }
+
 }

@@ -3,7 +3,6 @@ package com.example.webbanhang.dto.response;
 import jakarta.persistence.Entity;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -11,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class KhuyenmaiResponse {
     private String phantramkhuyenmai;
     private String noidungkhuyenmai;

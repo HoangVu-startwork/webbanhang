@@ -22,7 +22,14 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_GET_ENDPOINTS = {
-        "/api/vn-pay", "/users", "/api/vn-pay-callback", "/dienthoai/random-color"
+        "/api/vn-pay",
+        "/users",
+        "/api/vn-pay-callback",
+        "/dienthoai/random-color",
+        "/users/myInfo",
+        "/thuonghieu/all",
+        "/thuonghieumenu/all",
+        "/danhmuc/all"
     };
 
     private static final String[] PUBLIC_POST_ENDPOINTS = {

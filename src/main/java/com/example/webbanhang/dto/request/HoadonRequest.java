@@ -1,6 +1,9 @@
 package com.example.webbanhang.dto.request;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotEmpty;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,4 +18,7 @@ import lombok.experimental.FieldDefaults;
 public class HoadonRequest {
     private String email;
     private String diachi;
+
+    @NotEmpty
+    List<Long> productIds;
 }
