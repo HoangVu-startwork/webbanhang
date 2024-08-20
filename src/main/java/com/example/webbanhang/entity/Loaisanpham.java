@@ -5,7 +5,6 @@ import java.util.List;
 import jakarta.persistence.*;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -13,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Loaisanpham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

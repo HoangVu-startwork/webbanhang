@@ -3,13 +3,11 @@ package com.example.webbanhang.dto.response;
 import java.util.List;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ThongtinalldienthoaiResponse {
     private Long id;
     private String tensanpham;

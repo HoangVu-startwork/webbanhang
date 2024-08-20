@@ -1,5 +1,7 @@
 package com.example.webbanhang.service;
 
+import java.util.List;
+
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -86,5 +88,11 @@ public class DanhmucService {
 
         Danhmuc updatedDanhmuc = danhmucRepository.save(danhmuc);
         return danhmucMapper.toDanhmucResponse(updatedDanhmuc);
+    }
+
+    public List<DanhmucResponse> getAllDanhmuc() {
+        return danhmucRepository.findAll().stream()
+                .map(danhmucMapper::toDanhmucResponse)
+                .toList();
     }
 }

@@ -49,7 +49,8 @@ public enum ErrorCode {
     MUCLUCTONTAI(5015, "Mục lục đã tồn tại", HttpStatus.BAD_GATEWAY),
     SANPHAMHOADON(5015, "Sản phẩm đã hết", HttpStatus.BAD_GATEWAY),
     NHAPKHO(5015, "Dữ liệu không tồn tại", HttpStatus.BAD_GATEWAY),
-    INVALID_DOB(2010, "Ngày sinh không hợp lệ {min}", HttpStatus.BAD_REQUEST);
+    INVALID_DOB(2010, "Ngày sinh không hợp lệ {min}", HttpStatus.BAD_REQUEST),
+    HOADON(2022, "Hoá đon không tồn tại", HttpStatus.BAD_REQUEST);
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

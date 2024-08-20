@@ -6,7 +6,6 @@ import java.util.List;
 import jakarta.persistence.*;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -14,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Dienthoai {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,4 +68,13 @@ public class Dienthoai {
 
     @OneToMany(mappedBy = "dienthoai")
     private List<Nhapkho> nhapkhos;
+
+    @OneToMany(mappedBy = "dienthoai")
+    private List<Thuonghieumenu> thuonghieumenus;
+
+    @OneToMany(mappedBy = "dienthoai")
+    private List<Thuonghieudienthoai> thuonghieudienthoais;
+
+    @OneToMany(mappedBy = "dienthoai")
+    private List<Binhluandienthoai> binhluandienthoais;
 }

@@ -1,16 +1,18 @@
 package com.example.webbanhang.dto.response;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class GiohangResponse {
     private Long dienthoaiId;
-    private String soluong;
+    private String tensanpham;
     private Long mausacId;
+    private String tenmausac;
+    private String soluong;
     private String userId;
+    private String mausacGiaban;
+    private String phantramKhuyenmai;
 }

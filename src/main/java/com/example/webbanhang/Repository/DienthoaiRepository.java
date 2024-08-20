@@ -13,6 +13,8 @@ import com.example.webbanhang.entity.Dienthoai;
 public interface DienthoaiRepository extends JpaRepository<Dienthoai, Long> {
     Dienthoai findByTensanpham(String tensanpham);
 
+    Dienthoai findByid(Long dienthoaiId);
+
     @Query(
             value = "SELECT dt.id, dt.tensanpham, ms.tenmausac, ms.hinhanh, ms.giaban "
                     + "FROM webbanhang.dienthoai dt "

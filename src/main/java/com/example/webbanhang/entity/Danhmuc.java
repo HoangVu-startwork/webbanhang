@@ -3,7 +3,6 @@ package com.example.webbanhang.entity;
 import jakarta.persistence.*;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 @Builder
 @Entity
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Danhmuc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

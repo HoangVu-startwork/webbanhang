@@ -1,5 +1,7 @@
 package com.example.webbanhang.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
@@ -36,5 +38,12 @@ public class GiohangController {
     @PostMapping("/update-cart-quantity")
     public void updateCartQuantityBasedOnStock() {
         giohangService.updateCartQuantityBasedOnStock();
+    }
+
+    @GetMapping("user/{userId}")
+    ApiResponse<List<GiohangResponse>> getHoadonByUserId(@PathVariable String userId) {
+        return ApiResponse.<List<GiohangResponse>>builder()
+                .result(giohangService.getGioHangWithDiscount(userId))
+                .build();
     }
 }

@@ -104,7 +104,7 @@ public class DienthoaiService {
     }
 
     public List<Map<String, Object>> getPhoneProductsWithRandomColor() {
-        List<Object[]> results = dienthoaiRepository.findPhoneProductsWithRandomColor();
+        List<Object[]> results = dienthoaiRepository.findPhoneProductsWithRandomColor1();
         List<Map<String, Object>> phones = new ArrayList<>();
 
         for (Object[] result : results) {

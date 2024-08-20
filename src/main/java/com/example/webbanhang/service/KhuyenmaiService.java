@@ -2,6 +2,7 @@ package com.example.webbanhang.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -45,5 +46,32 @@ public class KhuyenmaiService {
         Khuyenmai saveKhuyenmai = khuyenmaiRepository.save(khuyenmai);
 
         return khuyenmaiMapper.toKhuyenmaiResponse(saveKhuyenmai);
+    }
+
+    private DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Định dạng ngày tháng bạn đang sử dụng
+
+    public String getPhanTramKhuyenMai(Dienthoai dienthoai) {
+        LocalDateTime today = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        List<Khuyenmai> khuyenmaiList = khuyenmaiRepository.findByDienthoai(dienthoai);
+
+        for (Khuyenmai km : khuyenmaiList) {
+            LocalDateTime startDateTime = LocalDateTime.parse(km.getNgaybatdau(), formatter);
+            LocalDateTime endDateTime = LocalDateTime.parse(km.getNgayketkhuc(), formatter);
+
+            // now.isEqual(startDateTime): So sánh toàn bộ giá trị ngày tháng năm và giờ phút giây của now với
+            // startDateTime. Nếu toàn bộ các thành phần này đều bằng nhau, thì kết quả sẽ là true.
+            //
+            // now.isAfter(startDateTime): So sánh toàn bộ giá trị của now với startDateTime. Nếu now có ngày tháng năm
+            // hoặc giờ phút giây lớn hơn startDateTime, thì kết quả sẽ là true.
+            //
+            // now.isBefore(endDateTime): Tương tự, so sánh toàn bộ giá trị của now với endDateTime. Nếu now có ngày
+            // tháng năm hoặc giờ phút giây nhỏ hơn endDateTime, thì kết quả sẽ là true.
+            if ((!today.isBefore(startDateTime) && !today.isAfter(endDateTime))) {
+                return km.getPhantramkhuyenmai();
+            }
+        }
+        return null; // Không có khuyến mãi cho điện thoại này
     }
 }

@@ -32,10 +32,11 @@ public class GiohangService {
     GiohangMapper giohangMapper;
     UserRepository userRepository;
     KhodienthoaiRepository khodienthoaiRepository;
+    KhuyenmaiService khuyenmaiService;
 
     public GiohangResponse addToCart(GiohangRequest giohangRequest) {
         // Find phone information
-        Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(giohangRequest.getTensanpham());
+        Dienthoai dienthoai = dienthoaiRepository.findByid(giohangRequest.getDienthoaiId());
         if (dienthoai == null) {
             throw new AppException(ErrorCode.TENDIENTHOAI);
         }
@@ -145,5 +146,37 @@ public class GiohangService {
                 giohangRepository.save(cartItem);
             }
         }
+    }
+
+    //    public List<GiohangResponse> getCartItems(String userId) {
+    //        List<Giohang> cartItems = giohangRepository.findByUserId(userId);
+    //        return cartItems.stream()
+    //                .map(giohang -> GiohangResponse.builder()
+    //                        .dienthoaiId(giohang.getDienthoai().getId())
+    //                        .mausacId(giohang.getMausac().getId())
+    //                        .soluong(giohang.getSoluong())
+    //                        .userId(giohang.getUser().getId())
+    //                        .build())
+    //                .collect(Collectors.toList());
+    //    }
+
+    public List<GiohangResponse> getHoadonByUserId(String userId) {
+        List<Giohang> giohangs = giohangRepository.findByUser_Id(userId);
+        return giohangs.stream().map(giohangMapper::toGiohangResponse).toList();
+    }
+
+    public List<GiohangResponse> getGioHangWithDiscount(String userId) {
+        List<Giohang> giohangs = giohangRepository.findByUser_Id(userId);
+        return giohangs.stream()
+                .map(giohang -> {
+                    Dienthoai dienthoai = giohang.getDienthoai();
+                    String phantramKhuyenmai = khuyenmaiService.getPhanTramKhuyenMai(dienthoai);
+
+                    GiohangResponse response = giohangMapper.toGiohangResponse(giohang);
+                    response.setPhantramKhuyenmai(phantramKhuyenmai);
+
+                    return response;
+                })
+                .toList();
     }
 }
