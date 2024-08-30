@@ -15,11 +15,33 @@ public interface DienthoaiRepository extends JpaRepository<Dienthoai, Long> {
 
     Dienthoai findByid(Long dienthoaiId);
 
+    boolean existsById(Long id);
+
     @Query(
-            value = "SELECT dt.id, dt.tensanpham, ms.tenmausac, ms.hinhanh, ms.giaban "
+            value = "SELECT dt.id, dt.tensanpham, ms.tenmausac, ms.hinhanh, ms.giaban, "
+                    + "CASE "
+                    + "    WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.phantramkhuyenmai "
+                    + "    ELSE NULL "
+                    + "END AS phantramkhuyenmai, "
+                    + "CASE "
+                    + "    WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.noidungkhuyenmai "
+                    + "    ELSE NULL "
+                    + "END AS noidungkhuyenmai, "
+                    + "CASE "
+                    + "    WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.ngaybatdau "
+                    + "    ELSE NULL "
+                    + "END AS ngaybatdau, "
+                    + "CASE "
+                    + "    WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.ngayketkhuc "
+                    + "    ELSE NULL "
+                    + "END AS ngayketkhuc, "
+                    + "tt.tinhtrangmay, tt.thietbidikem, tt.baohanh, "
+                    + "ms.id AS mausac_id, "
+                    + "tt.id AS thongtindienthoai_id, "
+                    + "km.id AS khuyenmai_id "
                     + "FROM webbanhang.dienthoai dt "
                     + "JOIN ( "
-                    + "    SELECT m.dienthoai_id, m.tenmausac, m.hinhanh, m.giaban "
+                    + "    SELECT m.dienthoai_id, m.tenmausac, m.hinhanh, m.giaban, m.id "
                     + "    FROM webbanhang.mausac m "
                     + "    JOIN ( "
                     + "        SELECT dienthoai_id, MIN(id) AS id "
@@ -28,6 +50,9 @@ public interface DienthoaiRepository extends JpaRepository<Dienthoai, Long> {
                     + "        ORDER BY RAND() "
                     + "    ) sub ON m.dienthoai_id = sub.dienthoai_id AND m.id = sub.id "
                     + ") ms ON dt.id = ms.dienthoai_id "
+                    + "LEFT JOIN webbanhang.khuyenmai km ON dt.id = km.dienthoai_id "
+                    + "AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc "
+                    + "LEFT JOIN webbanhang.thongtindienthoai tt ON dt.id = tt.dienthoai_id "
                     + "LIMIT 20",
             nativeQuery = true)
     List<Object[]> findPhoneProductsWithRandomColor1();

@@ -33,4 +33,11 @@ public class MausacController {
                 .result(mausacService.updateMausac(id, request))
                 .build();
     }
+
+    @GetMapping("/{id}")
+    ApiResponse<MausacResponse> getmausacId(@PathVariable Long id) {
+        return ApiResponse.<MausacResponse>builder()
+                .result(mausacService.getmausacId(id))
+                .build();
+    }
 }

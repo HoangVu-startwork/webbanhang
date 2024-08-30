@@ -95,4 +95,9 @@ public class DanhmucService {
                 .map(danhmucMapper::toDanhmucResponse)
                 .toList();
     }
+
+    public DanhmucResponse findById(Long id) {
+        Danhmuc danhmuc = danhmucRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DANHMUC));
+        return danhmucMapper.toDanhmucResponse(danhmuc);
+    }
 }

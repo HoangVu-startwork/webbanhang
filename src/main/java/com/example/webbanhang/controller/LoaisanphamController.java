@@ -1,5 +1,7 @@
 package com.example.webbanhang.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
@@ -32,6 +34,20 @@ public class LoaisanphamController {
             @PathVariable Long id, @RequestBody LoaisanphamRequest request) {
         return ApiResponse.<LoaisanphamResponse>builder()
                 .result(loaisanphamService.updateDanhmuc(id, request))
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<LoaisanphamResponse> getLoaisanphamId(@PathVariable Long id) {
+        return ApiResponse.<LoaisanphamResponse>builder()
+                .result(loaisanphamService.findById(id))
+                .build();
+    }
+
+    @GetMapping
+    public ApiResponse<List<LoaisanphamResponse>> getAllLoaisanpham() {
+        return ApiResponse.<List<LoaisanphamResponse>>builder()
+                .result(loaisanphamService.findAllLoaisanpham())
                 .build();
     }
 }

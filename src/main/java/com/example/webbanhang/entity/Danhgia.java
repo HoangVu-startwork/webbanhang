@@ -1,10 +1,9 @@
 package com.example.webbanhang.entity;
 
-import java.util.List;
-
 import jakarta.persistence.*;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
@@ -12,24 +11,26 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Hoadon {
-
+@Slf4j
+public class Danhgia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String mahd;
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String chitiet;
+
+    @Column(nullable = false)
+    private double diem;
 
     private String dob;
 
-    private String diachi;
-
-    private double tongtien;
+    @ManyToOne
+    @JoinColumn(name = "dienthoai_id")
+    private Dienthoai dienthoai;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @OneToMany(mappedBy = "hoadon")
-    private List<Chitiethoadon> chitiethoadons;
 }

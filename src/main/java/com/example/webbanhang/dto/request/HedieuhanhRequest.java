@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class HedieuhanhRequest {
+    private Long id;
     private String tenhedieuhanh;
 }

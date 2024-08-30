@@ -7,5 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class HedieuhanhResponse {
+    private Long id;
     private String tenhedieuhanh;
 }

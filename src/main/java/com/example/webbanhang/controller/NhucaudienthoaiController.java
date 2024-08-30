@@ -1,12 +1,11 @@
 package com.example.webbanhang.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
+import com.example.webbanhang.dto.request.KetnoinhucauRequest;
 import com.example.webbanhang.dto.request.NhucaudienthoaiRequest;
+import com.example.webbanhang.dto.response.KetnoinhucauResponse;
 import com.example.webbanhang.dto.response.NhucaudienthoaiResponse;
 import com.example.webbanhang.service.NhucaudienthoaiService;
 
@@ -28,6 +27,27 @@ public class NhucaudienthoaiController {
     public ApiResponse<NhucaudienthoaiResponse> addComment(@RequestBody NhucaudienthoaiRequest request) {
         return ApiResponse.<NhucaudienthoaiResponse>builder()
                 .result(nhucaudienthoaiService.createNhucaudienthoai(request))
+                .build();
+    }
+
+    @PostMapping("/add")
+    public ApiResponse<KetnoinhucauResponse> addComment(@RequestBody KetnoinhucauRequest request) {
+        return ApiResponse.<KetnoinhucauResponse>builder()
+                .result(nhucaudienthoaiService.addKetnoinhucau(request))
+                .build();
+    }
+
+    @GetMapping("ketnoinhucau/{id}")
+    ApiResponse<KetnoinhucauResponse> getketnoinhucauId(@PathVariable Long id) {
+        return ApiResponse.<KetnoinhucauResponse>builder()
+                .result(nhucaudienthoaiService.getKetnoinhucau(id))
+                .build();
+    }
+
+    @GetMapping("nhucaudienthoai/{id}")
+    ApiResponse<NhucaudienthoaiResponse> getnhucaudienthoaiId(@PathVariable Long id) {
+        return ApiResponse.<NhucaudienthoaiResponse>builder()
+                .result(nhucaudienthoaiService.getNhucaudienthoai(id))
                 .build();
     }
 }

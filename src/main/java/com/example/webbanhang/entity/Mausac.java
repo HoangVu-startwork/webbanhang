@@ -38,4 +38,7 @@ public class Mausac {
 
     @OneToMany(mappedBy = "mausac")
     private List<Chitiethoadon> chitiethoadons;
+
+    @OneToMany(mappedBy = "mausac")
+    private List<Yeuthich> yeuthichs;
 }

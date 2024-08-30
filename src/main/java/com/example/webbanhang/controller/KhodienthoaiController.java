@@ -26,7 +26,7 @@ public class KhodienthoaiController {
     @PostMapping
     public ApiResponse<KhodienthoaiResponse> createKhodienthoai(@RequestBody KhodienthoaiRequest request) {
         return ApiResponse.<KhodienthoaiResponse>builder()
-                .result(khodienthoaiService.addToCart(request))
+                .result(khodienthoaiService.addKhodienthoai(request))
                 .build();
     }
 }
