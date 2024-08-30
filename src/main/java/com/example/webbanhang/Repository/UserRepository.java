@@ -10,6 +10,8 @@ import com.example.webbanhang.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
+
+    boolean existsById(String id);
 }
 
 // JpaRepository là một interface có sẵn trong Spring Data JPA cung cấp các phương thức tiêu chuẩn để thao tác với cơ sở

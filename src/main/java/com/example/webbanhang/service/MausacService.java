@@ -1,5 +1,7 @@
 package com.example.webbanhang.service;
 
+import java.util.List;
+
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -84,5 +86,20 @@ public class MausacService {
 
         Mausac updatedMausac = mausacRepository.save(mausac);
         return mausacMapper.toMausacResponse(updatedMausac);
+    }
+
+    public void deleteMausac(Long id) {
+        mausacRepository.deleteById(id);
+    }
+
+    public List<MausacResponse> getAllDanhmuc() {
+        return mausacRepository.findAll().stream()
+                .map(mausacMapper::toMausacResponse)
+                .toList();
+    }
+
+    public MausacResponse getmausacId(Long id) {
+        Mausac mausacs = mausacRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MAUSAC));
+        return mausacMapper.toMausacResponse(mausacs);
     }
 }

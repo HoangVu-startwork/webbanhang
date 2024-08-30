@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MausacRequest {
+    private Long id;
     private String tenmausac;
     private String giaban;
     private String hinhanh;

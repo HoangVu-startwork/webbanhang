@@ -29,7 +29,8 @@ public class SecurityConfig {
         "/users/myInfo",
         "/thuonghieu/all",
         "/thuonghieumenu/all",
-        "/danhmuc/all"
+        "/danhmuc/all",
+        "/dienthoai/*/mausac/*"
     };
 
     private static final String[] PUBLIC_POST_ENDPOINTS = {

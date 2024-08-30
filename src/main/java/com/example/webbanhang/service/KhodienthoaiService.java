@@ -29,7 +29,7 @@ public class KhodienthoaiService {
     private final KhodienthoaiMapper khodienthoaiMapper;
     private final KhodienthoaiRepository khodienthoaiRepository;
 
-    public KhodienthoaiResponse addToCart(KhodienthoaiRequest request) {
+    public KhodienthoaiResponse addKhodienthoai(KhodienthoaiRequest request) {
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
             throw new AppException(ErrorCode.TENDIENTHOAI);

@@ -40,4 +40,11 @@ public class DanhmucController {
     public List<DanhmucResponse> getDanhmuc() {
         return danhmucService.getAllDanhmuc();
     }
+
+    @GetMapping("/{id}")
+    public ApiResponse<DanhmucResponse> getDanhmucId(@PathVariable Long id) {
+        return ApiResponse.<DanhmucResponse>builder()
+                .result(danhmucService.findById(id))
+                .build();
+    }
 }

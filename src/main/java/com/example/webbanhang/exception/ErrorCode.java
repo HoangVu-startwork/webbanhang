@@ -46,11 +46,15 @@ public enum ErrorCode {
     LOAISANPHAMTONTAI(5022, "Loại sản phẩm đã tồn tại", HttpStatus.BAD_GATEWAY),
     MAUSACTONTAI(5023, "Màu sắc đã tồn tại", HttpStatus.BAD_GATEWAY),
     MAUSACTONTAITRONGDIENTHOAI(5024, "Màu sắc đã tồn tại trong điện thoại này", HttpStatus.BAD_GATEWAY),
-    MUCLUCTONTAI(5015, "Mục lục đã tồn tại", HttpStatus.BAD_GATEWAY),
-    SANPHAMHOADON(5015, "Sản phẩm đã hết", HttpStatus.BAD_GATEWAY),
-    NHAPKHO(5015, "Dữ liệu không tồn tại", HttpStatus.BAD_GATEWAY),
-    INVALID_DOB(2010, "Ngày sinh không hợp lệ {min}", HttpStatus.BAD_REQUEST),
-    HOADON(2022, "Hoá đon không tồn tại", HttpStatus.BAD_REQUEST);
+    MUCLUCTONTAI(5025, "Mục lục đã tồn tại", HttpStatus.BAD_GATEWAY),
+    SANPHAMHOADON(5026, "Sản phẩm đã hết", HttpStatus.BAD_GATEWAY),
+    NHAPKHO(5027, "Dữ liệu không tồn tại", HttpStatus.BAD_GATEWAY),
+    INVALID_DOB(2028, "Ngày sinh không hợp lệ {min}", HttpStatus.BAD_REQUEST),
+    HOADON(5029, "Hoá đon không tồn tại", HttpStatus.BAD_REQUEST),
+    KETNOINHUCAU(5030, "Nhu cầu điện thoại đã tồn tại", HttpStatus.BAD_REQUEST),
+    NHUCAUDIENTHOAI(5031, "Nhu cầu điện thoại đã tồn đã tại.", HttpStatus.BAD_REQUEST),
+    YEUTHICH_EXISTED(5032, "Yeuthich đã tồn tại", HttpStatus.BAD_REQUEST),
+    ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

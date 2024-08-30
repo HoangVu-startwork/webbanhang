@@ -78,9 +78,9 @@ public class DienthoaiController {
                 chipsetList);
     }
 
-    @GetMapping("/{id}")
-    public ThongtinalldienthoaiResponse getDienthoaiDetails(@PathVariable Long id) {
-        return dienthoaiService.getDienthoaiDetails(id);
+    @GetMapping("/{id}/mausac/{mausacId}")
+    public ThongtinalldienthoaiResponse getDienthoaiDetails(@PathVariable Long id, @PathVariable Long mausacId) {
+        return dienthoaiService.getDienthoaiDetails(id, mausacId);
     }
 
     @GetMapping("/so-sanh/{id1},{id2}")

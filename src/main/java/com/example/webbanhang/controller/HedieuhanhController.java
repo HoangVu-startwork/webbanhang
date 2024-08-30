@@ -1,9 +1,8 @@
 package com.example.webbanhang.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.HedieuhanhRequest;
@@ -27,6 +26,20 @@ public class HedieuhanhController {
     ApiResponse<HedieuhanhResponse> create(@RequestBody HedieuhanhRequest request) {
         return ApiResponse.<HedieuhanhResponse>builder()
                 .result(hedieuhanhService.create(request))
+                .build();
+    }
+
+    @GetMapping
+    ApiResponse<List<HedieuhanhResponse>> getAllHedieuhanh() {
+        return ApiResponse.<List<HedieuhanhResponse>>builder()
+                .result(hedieuhanhService.findAllhedieuhanh())
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<HedieuhanhResponse> getHedieuhanhId(@PathVariable Long id) {
+        return ApiResponse.<HedieuhanhResponse>builder()
+                .result(hedieuhanhService.getHedieuhanhById(id))
                 .build();
     }
 }

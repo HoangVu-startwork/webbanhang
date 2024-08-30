@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MausacResponse {
+public class YeuthichResponse {
     private Long id;
-    private String tenmausac;
-    private String giaban;
-    private String hinhanh;
     private Long dienthoaiId;
+    private Long mausacId;
+    private String userId;
 }

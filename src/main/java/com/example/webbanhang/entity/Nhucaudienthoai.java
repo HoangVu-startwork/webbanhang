@@ -1,5 +1,7 @@
 package com.example.webbanhang.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -21,4 +23,7 @@ public class Nhucaudienthoai {
     private String hinhanh;
 
     private String mausac;
+
+    @OneToMany(mappedBy = "nhucaudienthoai")
+    private List<Ketnoinhucau> ketnoinhucaus;
 }

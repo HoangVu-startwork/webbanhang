@@ -1,4 +1,4 @@
-package com.example.webbanhang.dto.response;
+package com.example.webbanhang.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MausacResponse {
+public class DanhgiaRequest {
     private Long id;
-    private String tenmausac;
-    private String giaban;
-    private String hinhanh;
+    private String chitiet;
+    private double diem;
+    private String dob;
     private Long dienthoaiId;
+    private String userId;
 }

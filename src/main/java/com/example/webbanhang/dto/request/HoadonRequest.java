@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 public class HoadonRequest {
     private String email;
     private String diachi;
+    private String dob;
 
     @NotEmpty
     List<Long> productIds;

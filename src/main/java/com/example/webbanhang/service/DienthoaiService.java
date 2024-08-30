@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
@@ -16,12 +15,14 @@ import com.example.webbanhang.dto.request.DienthoaiRequest;
 import com.example.webbanhang.dto.request.SoSanhDienThoaiResponse;
 import com.example.webbanhang.dto.response.*;
 import com.example.webbanhang.entity.Dienthoai;
+import com.example.webbanhang.entity.Khodienthoai;
 import com.example.webbanhang.entity.Thongsokythuat;
 import com.example.webbanhang.entity.Thongtinphanloai;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.DienthoaiMapper;
 import com.example.webbanhang.repository.DienthoaiRepository;
+import com.example.webbanhang.repository.KhodienthoaiRepository;
 import com.example.webbanhang.repository.ThongtinphanloaiRepository;
 import com.example.webbanhang.repository.UserRepository;
 
@@ -40,6 +41,7 @@ public class DienthoaiService {
     ThongtinphanloaiRepository thongtinphanloaiRepository;
     UserRepository userRepository;
     ModelMapper modelMapper;
+    KhodienthoaiRepository khodienthoaiRepository;
 
     @Transactional
     public DienthoaiResponse createDienthoai(DienthoaiRequest request) {
@@ -114,6 +116,19 @@ public class DienthoaiService {
             phone.put("tenmausac", result[2]);
             phone.put("hinhanh", result[3]);
             phone.put("giaban", result[4]); // Bao gồm giá bán ở đây
+            phone.put("mausac_id", result[12]);
+
+            // Thêm các trường khuyến mãi
+            phone.put("phantramkhuyenmai", result[5]);
+            phone.put("noidungkhuyenmai", result[6]);
+            phone.put("ngaybatdau", result[7]);
+            phone.put("ngayketkhuc", result[8]);
+
+            // Thêm các trường thông tin điện thoại
+            phone.put("tinhtrangmay", result[9]);
+            phone.put("thietbidikem", result[10]);
+            phone.put("baohanh", result[11]);
+
             phones.add(phone);
         }
 
@@ -267,13 +282,18 @@ public class DienthoaiService {
         return phones;
     }
 
-    public ThongtinalldienthoaiResponse getDienthoaiDetails(Long id) {
+    public ThongtinalldienthoaiResponse getDienthoaiDetails(Long id, Long mausacId) {
         Dienthoai dienthoai =
                 dienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TENDIENTHOAI));
 
         List<MausachienthoaiResponse> mausacResponse = dienthoai.getMausacs().stream()
                 .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))
-                .collect(Collectors.toList());
+                .toList();
+
+        List<MausachienthoaiResponse> mausacResponset = dienthoai.getMausacs().stream()
+                .filter(mausac -> mausac.getId().equals(mausacId)) // Lọc theo mausacId
+                .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))
+                .toList();
 
         // Lấy đối tượng Thongsokythuat đầu tiên từ danh sách Thongsokythuat và chuyển đổi nó thành
         // ThongsokythuatdienthoaiResponse
@@ -288,6 +308,9 @@ public class DienthoaiService {
                 .map(thongtindienthoai -> modelMapper.map(thongtindienthoai, ThongtindienthoaidienthoaiResponse.class))
                 .orElse(null);
 
+        Khodienthoai khodienthoai = khodienthoaiRepository.findByDienthoaiIdAndMausacId(id, mausacId);
+        String soluongTonkho = (khodienthoai != null) ? khodienthoai.getSoluong() : "0";
+
         return ThongtinalldienthoaiResponse.builder()
                 .id(dienthoai.getId())
                 .tensanpham(dienthoai.getTensanpham())
@@ -297,8 +320,10 @@ public class DienthoaiService {
                 .bonho(dienthoai.getBonho())
                 .giaban(dienthoai.getGiaban())
                 .mausacs(mausacResponse)
+                .mausactong(mausacResponset)
                 .thongsokythuats(thongsokythuatResponse)
                 .thongtindienthoai(thongtindienthoaiResponse)
+                .soluongTonKho(soluongTonkho)
                 .build();
     }
 

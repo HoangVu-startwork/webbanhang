@@ -1,5 +1,7 @@
 package com.example.webbanhang.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.HedieuhanhRequest;
@@ -40,4 +42,18 @@ public class HedieuhanhService {
     //                .toList();
     //    }
 
+    public List<HedieuhanhResponse> findAllhedieuhanh() {
+        List<Hedieuhanh> hedieuhanhs = hedieuhanhRepository.findAll();
+        return hedieuhanhs.stream().map(hedieuhanhMapper::toHedieuhanhResponse).toList();
+    }
+
+    public void deleteHedieuhanh(Long id) {
+        hedieuhanhRepository.deleteById(id);
+    }
+
+    public HedieuhanhResponse getHedieuhanhById(Long id) {
+        Hedieuhanh hedieuhanh =
+                hedieuhanhRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.HEDIEUHANH));
+        return hedieuhanhMapper.toHedieuhanhResponse(hedieuhanh);
+    }
 }

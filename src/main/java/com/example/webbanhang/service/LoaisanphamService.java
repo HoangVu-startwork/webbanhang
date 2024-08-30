@@ -1,5 +1,7 @@
 package com.example.webbanhang.service;
 
+import java.util.List;
+
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -68,5 +70,23 @@ public class LoaisanphamService {
 
         Loaisanpham updatedLoaisanpham = loaisanphamRepository.save(loaisanpham);
         return loaisanphamMapper.toLoaisanphamResponse(updatedLoaisanpham);
+    }
+
+    public LoaisanphamResponse findById(Long id) {
+        Loaisanpham loaisanpham =
+                loaisanphamRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LOAISANPHAM));
+        return loaisanphamMapper.toLoaisanphamResponse(loaisanpham);
+    }
+
+    public LoaisanphamResponse findByTenloaisanpham(String tenloaisanpham) {
+        Loaisanpham loaisanpham = loaisanphamRepository.findByTenloaisanpham(tenloaisanpham);
+        return loaisanphamMapper.toLoaisanphamResponse(loaisanpham);
+    }
+
+    public List<LoaisanphamResponse> findAllLoaisanpham() {
+        List<Loaisanpham> loaisanphams = loaisanphamRepository.findAll();
+        return loaisanphams.stream()
+                .map(loaisanphamMapper::toLoaisanphamResponse)
+                .toList();
     }
 }

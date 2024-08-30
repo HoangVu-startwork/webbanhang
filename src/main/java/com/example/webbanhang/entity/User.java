@@ -62,5 +62,11 @@ public class User {
     private List<Hoadon> Hoadons;
 
     @OneToMany(mappedBy = "user")
-    private List<Binhluandienthoai> Binhluandienthoais;
+    private List<Binhluandienthoai> binhluandienthoais;
+
+    @OneToMany(mappedBy = "user")
+    private List<Yeuthich> yeuthichs;
+
+    @OneToMany(mappedBy = "user")
+    private List<Danhgia> danhgias;
 }

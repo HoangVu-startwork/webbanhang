@@ -17,6 +17,8 @@ public class ThongtinalldienthoaiResponse {
     private String bonho;
     private String giaban;
     private List<MausachienthoaiResponse> mausacs;
+    private List<MausachienthoaiResponse> mausactong;
     private ThongsokythuatdienthoaiResponse thongsokythuats;
     private ThongtindienthoaidienthoaiResponse thongtindienthoai;
+    private String soluongTonKho;
 }

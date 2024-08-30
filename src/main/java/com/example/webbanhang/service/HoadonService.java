@@ -194,12 +194,15 @@ public class HoadonService {
 
         // Mã hóa đơn mới (mahd) được tạo ra bởi phương thức generateNewMahd
         String newMahd = generateNewMahd();
-
-        // Tạo hóa đơn mới
+        DateTimeFormatter formattert = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime currentDateT = LocalDateTime.now();
+        String formattedDate = currentDateT.format(formattert);
+        // Tạo và lưu hóa đơn mới vào cơ sở dữ liệu
         Hoadon hoadon = Hoadon.builder()
                 .mahd(newMahd)
                 .diachi(request.getDiachi())
                 .tongtien(0.0) // Sẽ tính sau
+                .dob(formattedDate)
                 .user(user)
                 .build();
         hoadonRepository.save(hoadon);
@@ -299,6 +302,7 @@ public class HoadonService {
                 .id(hoadon.getId())
                 .mahd(hoadon.getMahd())
                 .diachi(hoadon.getDiachi())
+                .dob(hoadon.getDob())
                 .tongtien(hoadon.getTongtien())
                 .userId(user.getId())
                 .build();
