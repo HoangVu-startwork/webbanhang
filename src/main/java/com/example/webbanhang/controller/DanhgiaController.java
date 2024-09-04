@@ -1,11 +1,14 @@
 package com.example.webbanhang.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.DanhgiaRequest;
 import com.example.webbanhang.dto.response.DanhgiaResponse;
 import com.example.webbanhang.dto.response.DanhgiasaoResponse;
+import com.example.webbanhang.dto.response.DanhgiatongsaoResponse;
 import com.example.webbanhang.service.DanhgiaService;
 
 import lombok.AccessLevel;
@@ -30,8 +33,8 @@ public class DanhgiaController {
     }
 
     @GetMapping("/{dienthoaiId}")
-    public ApiResponse<DanhgiaResponse> getDanhmucId(@PathVariable Long dienthoaiId) {
-        return ApiResponse.<DanhgiaResponse>builder()
+    public ApiResponse<List<DanhgiaResponse>> getDanhmucId(@PathVariable Long dienthoaiId) {
+        return ApiResponse.<List<DanhgiaResponse>>builder()
                 .result(danhgiaService.getCommentsByDienthoaiId(dienthoaiId))
                 .build();
     }
@@ -40,6 +43,13 @@ public class DanhgiaController {
     public ApiResponse<DanhgiasaoResponse> getTongsao(@PathVariable Long dienthoaiId) {
         return ApiResponse.<DanhgiasaoResponse>builder()
                 .result(danhgiaService.getDanhgiasa(dienthoaiId))
+                .build();
+    }
+
+    @GetMapping("/all")
+    public ApiResponse<List<DanhgiatongsaoResponse>> getCommentsAll() {
+        return ApiResponse.<List<DanhgiatongsaoResponse>>builder()
+                .result(danhgiaService.getAllTongsaoForAllPhones())
                 .build();
     }
 }

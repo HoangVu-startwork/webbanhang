@@ -85,9 +85,24 @@ public class AuthenticationService {
         // Nếu mật khẩu không khớp, ném ra ngoại lệ AppException với mã lỗi UNAUTHENTICATED_PASSWORD.
 
         var token = generateToken(user);
-        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        long expirationTime;
+        try {
+            expirationTime = getExpirationTimeFromToken(token);
+        } catch (ParseException e) {
+            throw new RuntimeException("Unable to parse token", e);
+        }
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .exp(expirationTime)
+                .build();
         // Nếu mật khẩu khớp, tạo một JWT bằng phương thức generateToken và trả về đối tượng AuthenticationResponse chứa
         // token và trạng thái xác thực thành công.
+    }
+
+    private long getExpirationTimeFromToken(String token) throws ParseException {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        return signedJWT.getJWTClaimsSet().getExpirationTime().getTime() / 1000;
     }
 
     private String generateToke(String email) {

@@ -35,4 +35,18 @@ public class YeuthichController {
                 .result(yeuthichService.getYeuthichByUserId(userId))
                 .build();
     }
+
+    @DeleteMapping
+    public ApiResponse<YeuthichResponse> deleteYeuthich(@RequestBody YeuthichRequest request) {
+        return ApiResponse.<YeuthichResponse>builder()
+                .result(yeuthichService.deleteYeuthich(request))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<YeuthichResponse> deleteYeuthichById(@PathVariable Long id) {
+        return ApiResponse.<YeuthichResponse>builder()
+                .result(yeuthichService.deleteYeuthichById(id))
+                .build();
+    }
 }
