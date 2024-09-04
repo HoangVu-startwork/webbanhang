@@ -1,5 +1,7 @@
 package com.example.webbanhang.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +12,13 @@ import com.example.webbanhang.entity.Danhgia;
 @Repository
 public interface DanhgiaRepository extends JpaRepository<Danhgia, Long> {
     Danhgia findByDienthoaiId(Long dienthoaiId);
+
+    List<Danhgia> findAll();
+
+    List<Danhgia> findListByDienthoaiId(Long dienthoaiId);
+
+    @Query("SELECT d.dienthoai.id, AVG(d.diem) FROM Danhgia d GROUP BY d.dienthoai.id")
+    List<Object[]> findAllTongsaoForAllPhones();
 
     @Query("SELECT AVG(danhgia.diem) FROM Danhgia danhgia WHERE danhgia.dienthoai.id = :dienthoaiId")
     Double findTongsao(@Param("dienthoaiId") Long dienthoaiId);

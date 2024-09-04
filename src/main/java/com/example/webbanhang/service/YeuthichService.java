@@ -47,10 +47,27 @@ public class YeuthichService {
 
     public List<YeuthichResponse> getYeuthichByUserId(String userId) {
         Optional<User> userlist = userRepository.findById(userId);
-        if (userlist != null) {
+        if (userlist.isEmpty()) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
         List<Yeuthich> yeuthichlist = yeuthichRepository.findAllByUserId(userId);
         return yeuthichlist.stream().map(yeuthichMapper::toYeuthichResponse).toList();
+    }
+
+    public YeuthichResponse deleteYeuthich(YeuthichRequest request) {
+        Yeuthich yeuthichlist = yeuthichRepository.findByUserIdAndDienthoaiIdAndMausacId(
+                request.getUserId(), request.getDienthoaiId(), request.getMausacId());
+        if (yeuthichlist == null) {
+            throw new AppException(ErrorCode.YEUTHICH_NOT_EXISTED);
+        }
+        yeuthichRepository.delete(yeuthichlist);
+        return yeuthichMapper.toYeuthichResponse(yeuthichlist);
+    }
+
+    public YeuthichResponse deleteYeuthichById(Long id) {
+        Yeuthich yeuthich =
+                yeuthichRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.YEUTHICH_NOT_EXISTED));
+        yeuthichRepository.delete(yeuthich);
+        return null;
     }
 }

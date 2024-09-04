@@ -2,12 +2,14 @@ package com.example.webbanhang.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.DanhgiaRequest;
 import com.example.webbanhang.dto.response.DanhgiaResponse;
 import com.example.webbanhang.dto.response.DanhgiasaoResponse;
+import com.example.webbanhang.dto.response.DanhgiatongsaoResponse;
 import com.example.webbanhang.entity.Danhgia;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
@@ -57,12 +59,20 @@ public class DanhgiaService {
                 savedDanhgia); // Bạn cần phương thức để chuyển Mucluc thành MuclucResponse
     }
 
-    public DanhgiaResponse getCommentsByDienthoaiId(Long dienthoaiId) {
+    public List<DanhgiaResponse> getCommentsByDienthoaiId(Long dienthoaiId) {
         if (!dienthoaiRepository.existsById(dienthoaiId)) {
             throw new AppException(ErrorCode.TENDIENTHOAI);
         }
-        Danhgia danhmucs = danhgiaRepository.findByDienthoaiId(dienthoaiId);
-        return danhgiaMapper.toDanhgiaResponse(danhmucs);
+        return danhgiaRepository.findListByDienthoaiId(dienthoaiId).stream()
+                .map(danhgiaMapper::toDanhgiaResponse)
+                .toList();
+    }
+
+    public List<DanhgiatongsaoResponse> getAllTongsaoForAllPhones() {
+        List<Object[]> tongsao = danhgiaRepository.findAllTongsaoForAllPhones();
+        return tongsao.stream()
+                .map(tongsaos -> new DanhgiatongsaoResponse((Long) tongsaos[0], (Double) tongsaos[1]))
+                .toList();
     }
 
     public DanhgiasaoResponse getDanhgiasa(Long dienthoaiId) {
