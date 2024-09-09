@@ -1,5 +1,7 @@
 package com.example.webbanhang.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.KetnoinhucauRequest;
@@ -46,6 +48,12 @@ public class NhucaudienthoaiService {
         Nhucaudienthoai nhucaudienthoai =
                 nhucaudienthoaiRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
         return nhucaudienthoaiMapper.toNhucaudienthoaiResponse(nhucaudienthoai);
+    }
+
+    public List<NhucaudienthoaiResponse> getAllNhucaudienthoai() {
+        return nhucaudienthoaiRepository.findAll().stream()
+                .map(nhucaudienthoaiMapper::toNhucaudienthoaiResponse)
+                .toList();
     }
 
     public KetnoinhucauResponse addKetnoinhucau(KetnoinhucauRequest request) {

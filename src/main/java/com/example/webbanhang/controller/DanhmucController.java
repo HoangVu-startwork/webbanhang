@@ -37,8 +37,10 @@ public class DanhmucController {
     }
 
     @GetMapping("/all")
-    public List<DanhmucResponse> getDanhmuc() {
-        return danhmucService.getAllDanhmuc();
+    public ApiResponse<List<DanhmucResponse>> getDanhmuc() {
+        return ApiResponse.<List<DanhmucResponse>>builder()
+                .result(danhmucService.getAllDanhmuc())
+                .build();
     }
 
     @GetMapping("/{id}")

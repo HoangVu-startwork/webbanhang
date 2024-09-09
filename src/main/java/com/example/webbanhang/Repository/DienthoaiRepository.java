@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.webbanhang.entity.Dienthoai;
+import com.example.webbanhang.entity.Thongtinphanloai;
 
 @Repository
 public interface DienthoaiRepository extends JpaRepository<Dienthoai, Long> {
@@ -15,7 +16,25 @@ public interface DienthoaiRepository extends JpaRepository<Dienthoai, Long> {
 
     Dienthoai findByid(Long dienthoaiId);
 
+    @Query("SELECT d.thongtinphanloai FROM Dienthoai d WHERE d.id = :dienthoaiId")
+    Thongtinphanloai findThongtinphanloaiByDienthoaiId(@Param("dienthoaiId") Long dienthoaiId);
+
     boolean existsById(Long id);
+
+    @Query(
+            "SELECT dt FROM Dienthoai dt JOIN dt.thongtinphanloai tp JOIN tp.loaisanpham ls JOIN ls.danhmuc dm JOIN dm.hedieuhanh hd WHERE hd.id = :hedieuhanhId")
+    List<Dienthoai> findByHedieuhanhId(@Param("hedieuhanhId") Long hedieuhanhId);
+
+    @Query(
+            "SELECT dt FROM Dienthoai dt JOIN dt.thongtinphanloai tp JOIN tp.loaisanpham ls WHERE ls.id = :loaisanphamId")
+    List<Dienthoai> findByLoaisanphamId(@Param("loaisanphamId") Long loaisanphamId);
+
+    @Query(
+            "SELECT dt FROM Dienthoai dt JOIN dt.thongtinphanloai tp JOIN tp.loaisanpham ls JOIN ls.danhmuc dm WHERE dm.id = :danhmucId")
+    List<Dienthoai> findByDanhmucId(@Param("danhmucId") Long danhmucId);
+
+    @Query("SELECT dt FROM Dienthoai dt JOIN dt.thongtinphanloai tp WHERE tp.id = :thongtinphanloaiId")
+    List<Dienthoai> findByThongtinphanloaiId(@Param("thongtinphanloaiId") Long thongtinphanloaiId);
 
     @Query(
             value = "SELECT dt.id, dt.tensanpham, ms.tenmausac, ms.hinhanh, ms.giaban, "

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
@@ -12,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.DienthoaiRequest;
+import com.example.webbanhang.dto.request.DienthoaihethongRequest;
 import com.example.webbanhang.dto.request.SoSanhDienThoaiResponse;
 import com.example.webbanhang.dto.response.*;
 import com.example.webbanhang.entity.Dienthoai;
@@ -163,21 +165,36 @@ public class DienthoaiService {
             Long giaTu,
             Long giaDen,
             List<String> tinhnangdacbiet,
+            List<String> kichthuocmanhinh,
+            List<String> tinhnagcamera,
             List<String> tansoquet,
             List<String> kieumanhinh,
+            List<String> tinhtrangmay,
+            List<String> thietbidikem,
             List<String> chipset) {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT dt.id, dt.tensanpham, ms.tenmausac, ms.hinhanh, ms.giaban ");
+        sql.append("SELECT dt.id, dt.tensanpham, ms.tenmausac, ms.hinhanh, ms.giaban, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.phantramkhuyenmai ELSE NULL END AS phantramkhuyenmai, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.noidungkhuyenmai ELSE NULL END AS noidungkhuyenmai, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.ngaybatdau ELSE NULL END AS ngaybatdau, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.ngayketkhuc ELSE NULL END AS ngayketkhuc, ");
+        sql.append("tt.tinhtrangmay, tt.thietbidikem, tt.baohanh, ");
+        sql.append("ms.id AS mausac_id, ");
+        sql.append("tt.id AS thongtindienthoai_id, ");
+        sql.append("km.id AS khuyenmai_id ");
         sql.append("FROM webbanhang.dienthoai dt ");
         sql.append("JOIN ( ");
-        sql.append("    SELECT m.dienthoai_id, m.tenmausac, m.hinhanh, m.giaban ");
+        sql.append("    SELECT m.dienthoai_id, m.tenmausac, m.hinhanh, m.giaban, m.id ");
         sql.append("    FROM webbanhang.mausac m ");
         sql.append("    JOIN ( ");
         sql.append("        SELECT dienthoai_id, MIN(id) AS id ");
         sql.append("        FROM webbanhang.mausac ");
         sql.append("        GROUP BY dienthoai_id ");
-        sql.append("        ORDER BY RAND() ");
         sql.append("    ) sub ON m.dienthoai_id = sub.dienthoai_id AND m.id = sub.id ");
         sql.append(") ms ON dt.id = ms.dienthoai_id ");
         sql.append("JOIN webbanhang.thongtinphanloai ttpl ON dt.thongtinphanloai_id = ttpl.id ");
@@ -185,6 +202,9 @@ public class DienthoaiService {
         sql.append("JOIN webbanhang.danhmuc dm ON lsp.danhmuc_id = dm.id ");
         sql.append("JOIN webbanhang.hedieuhanh hd ON dm.hedieuhanh_id = hd.id ");
         sql.append("JOIN webbanhang.thongsokythuat tsk ON dt.id = tsk.dienthoai_id ");
+        sql.append("JOIN webbanhang.thongtindienthoai tt ON dt.id = tt.dienthoai_id ");
+        sql.append("LEFT JOIN webbanhang.khuyenmai km ON dt.id = km.dienthoai_id ");
+        sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
         sql.append("WHERE 1=1 ");
 
         List<Object> parameters = new ArrayList<>();
@@ -235,6 +255,36 @@ public class DienthoaiService {
             sql.append(") ");
         }
 
+        if (kichthuocmanhinh != null && !kichthuocmanhinh.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < kichthuocmanhinh.size(); i++) {
+                String size = kichthuocmanhinh.get(i);
+                try {
+                    double sizeValue = Double.parseDouble(size);
+                    if (sizeValue < 6) {
+                        sql.append("tsk.kichthuocmanhinh < 6");
+                    } else {
+                        sql.append("tsk.kichthuocmanhinh >= 6");
+                    }
+                } catch (NumberFormatException e) {
+                    sql.append("tsk.kichthuocmanhinh LIKE ?");
+                    parameters.add("%" + size + "%");
+                }
+                if (i < kichthuocmanhinh.size() - 1) sql.append(" OR ");
+            }
+            sql.append(") ");
+        }
+
+        if (tinhnagcamera != null && !tinhnagcamera.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tinhnagcamera.size(); i++) {
+                sql.append("tsk.tinhnagcamera LIKE ?");
+                if (i < tinhnagcamera.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tinhnagcamera.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
         if (tansoquet != null && !tansoquet.isEmpty()) {
             sql.append("AND (");
             for (int i = 0; i < tansoquet.size(); i++) {
@@ -255,6 +305,26 @@ public class DienthoaiService {
             sql.append(") ");
         }
 
+        if (tinhtrangmay != null && !tinhtrangmay.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tinhtrangmay.size(); i++) {
+                sql.append("tt.tinhtrangmay LIKE ?");
+                if (i < tinhtrangmay.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tinhtrangmay.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (thietbidikem != null && !thietbidikem.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < thietbidikem.size(); i++) {
+                sql.append("tt.thietbidikem LIKE ?");
+                if (i < thietbidikem.size() - 1) sql.append(" OR ");
+                parameters.add("%" + thietbidikem.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
         if (chipset != null && !chipset.isEmpty()) {
             sql.append("AND (");
             for (int i = 0; i < chipset.size(); i++) {
@@ -264,6 +334,8 @@ public class DienthoaiService {
             }
             sql.append(") ");
         }
+
+        // Note: Ensure that parameters are added in the correct order and match the placeholders in the SQL query.
 
         return jdbcTemplate.queryForList(sql.toString(), parameters.toArray());
     }
@@ -418,5 +490,48 @@ public class DienthoaiService {
     private int extractNumericValue(String value) {
         if (value == null) return 0;
         return Integer.parseInt(value.replaceAll("\\D+", ""));
+    }
+
+    public List<DienthoaihethongRequest> getDienthoaiByHedieuhanhId(Long hedieuhanhId) {
+        List<Dienthoai> dienthoais = dienthoaiRepository.findByHedieuhanhId(hedieuhanhId);
+        return dienthoais.stream().map(this::toDienthoai).collect(Collectors.toList());
+    }
+
+    public List<DienthoaihethongRequest> getLoaisanphamId(Long loaisanphamId) {
+        List<Dienthoai> dienthoais = dienthoaiRepository.findByLoaisanphamId(loaisanphamId);
+        return dienthoais.stream().map(this::toDienthoai).collect(Collectors.toList());
+    }
+
+    public List<DienthoaihethongRequest> getDanhmuc(Long danhmucId) {
+        List<Dienthoai> dienthoais = dienthoaiRepository.findByDanhmucId(danhmucId);
+        return dienthoais.stream().map(this::toDienthoai).collect(Collectors.toList());
+    }
+
+    public List<DienthoaihethongRequest> getThongtinphanloai(Long thongtinphanloaiId) {
+        List<Dienthoai> dienthoais = dienthoaiRepository.findByThongtinphanloaiId(thongtinphanloaiId);
+        return dienthoais.stream().map(this::toDienthoai).collect(Collectors.toList());
+    }
+
+    private DienthoaihethongRequest toDienthoai(Dienthoai dienthoai) {
+        return DienthoaihethongRequest.builder()
+                .tensanpham(dienthoai.getTensanpham())
+                .hinhanh(dienthoai.getHinhanh())
+                .hinhanhduyet(dienthoai.getHinhanhduyet())
+                .ram(dienthoai.getRam())
+                .bonho(dienthoai.getBonho())
+                .giaban(dienthoai.getGiaban())
+                .tenphanloai(dienthoai.getThongtinphanloai().getTenphanloai())
+                .build();
+    }
+
+    public ThongtinphanloaidienthoaiResponse getThongtinphanloaiByDienthoaiId(Long dienthoaiId) {
+        Thongtinphanloai thongtinphanloai = dienthoaiRepository.findThongtinphanloaiByDienthoaiId(dienthoaiId);
+        if (thongtinphanloai != null) {
+            return ThongtinphanloaidienthoaiResponse.builder()
+                    .id(thongtinphanloai.getId())
+                    .tenphanloai(thongtinphanloai.getTenphanloai())
+                    .build();
+        }
+        return null;
     }
 }

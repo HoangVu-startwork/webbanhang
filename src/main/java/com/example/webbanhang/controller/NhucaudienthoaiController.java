@@ -1,5 +1,7 @@
 package com.example.webbanhang.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
@@ -48,6 +50,13 @@ public class NhucaudienthoaiController {
     ApiResponse<NhucaudienthoaiResponse> getnhucaudienthoaiId(@PathVariable Long id) {
         return ApiResponse.<NhucaudienthoaiResponse>builder()
                 .result(nhucaudienthoaiService.getNhucaudienthoai(id))
+                .build();
+    }
+
+    @GetMapping
+    public ApiResponse<List<NhucaudienthoaiResponse>> getAllNhucaudienthoai() {
+        return ApiResponse.<List<NhucaudienthoaiResponse>>builder()
+                .result(nhucaudienthoaiService.getAllNhucaudienthoai())
                 .build();
     }
 }

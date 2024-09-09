@@ -1,9 +1,8 @@
 package com.example.webbanhang.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.ThongtinphanloaiRequest;
@@ -27,6 +26,13 @@ public class ThongtinphanloaiController {
     public ApiResponse<ThongtinphanloaiResponse> createThongtinphanloai(@RequestBody ThongtinphanloaiRequest request) {
         return ApiResponse.<ThongtinphanloaiResponse>builder()
                 .result(thongtinphanloaiService.createThongtinphanloai(request))
+                .build();
+    }
+
+    @GetMapping("/loaisanpham/{loaisanphamId}")
+    public ApiResponse<List<ThongtinphanloaiResponse>> getByThongtinphanloai(@PathVariable Long loaisanphamId) {
+        return ApiResponse.<List<ThongtinphanloaiResponse>>builder()
+                .result(thongtinphanloaiService.getByThongtinphanloai(loaisanphamId))
                 .build();
     }
 }

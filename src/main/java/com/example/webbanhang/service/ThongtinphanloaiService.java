@@ -1,5 +1,7 @@
 package com.example.webbanhang.service;
 
+import java.util.List;
+
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class ThongtinphanloaiService {
     ThongtinphanloaiRepository thongtinphanloaiRepository;
     ThongtinphanloaiMapper thongtinphanloaiMapper;
     LoaisanphamRepository loaisanphamRepository;
+    DienthoaiService dienThoaiService;
 
     @Transactional
     public ThongtinphanloaiResponse createThongtinphanloai(ThongtinphanloaiRequest request) {
@@ -45,5 +48,16 @@ public class ThongtinphanloaiService {
 
         Thongtinphanloai savedThongtinphanloai = thongtinphanloaiRepository.save(thongtinphanloai);
         return thongtinphanloaiMapper.toThongtinphanloaiResponse(savedThongtinphanloai);
+    }
+
+    public List<ThongtinphanloaiResponse> getByThongtinphanloai(Long loaisanphamId) {
+        List<Thongtinphanloai> thongtinphanloais = thongtinphanloaiRepository.findByLoaisanphamId(loaisanphamId);
+        return thongtinphanloais.stream()
+                .map(thongtinphanloai -> ThongtinphanloaiResponse.builder()
+                        .id(thongtinphanloai.getId())
+                        .tenphanloai(thongtinphanloai.getTenphanloai())
+                        .loaisanphamId(thongtinphanloai.getLoaisanpham().getId())
+                        .build())
+                .toList();
     }
 }
