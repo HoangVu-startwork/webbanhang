@@ -50,4 +50,11 @@ public class LoaisanphamController {
                 .result(loaisanphamService.findAllLoaisanpham())
                 .build();
     }
+
+    @GetMapping("/danhmuc/{danhmucid}")
+    public ApiResponse<List<LoaisanphamResponse>> getAllLoaisanphamByDanhmucId(@PathVariable Long danhmucid) {
+        return ApiResponse.<List<LoaisanphamResponse>>builder()
+                .result(loaisanphamService.getLoaisanphamByDanhmucId(danhmucid))
+                .build();
+    }
 }

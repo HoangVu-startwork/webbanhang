@@ -89,4 +89,15 @@ public class LoaisanphamService {
                 .map(loaisanphamMapper::toLoaisanphamResponse)
                 .toList();
     }
+
+    public List<LoaisanphamResponse> getLoaisanphamByDanhmucId(Long danhmucId) {
+        List<Loaisanpham> loaisanphams = loaisanphamRepository.findByDanhmucId(danhmucId);
+        return loaisanphams.stream()
+                .map(loaisanpham -> LoaisanphamResponse.builder()
+                        .id(loaisanpham.getId())
+                        .tenloaisanpham(loaisanpham.getTenloaisanpham())
+                        .danhmucId(loaisanpham.getDanhmuc().getId())
+                        .build())
+                .toList();
+    }
 }
