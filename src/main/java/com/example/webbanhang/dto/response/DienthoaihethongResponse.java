@@ -1,8 +1,6 @@
-package com.example.webbanhang.dto.request;
+package com.example.webbanhang.dto.response;
 
 import java.util.List;
-
-import com.example.webbanhang.entity.Mausac;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DienthoaihethongRequest {
+public class DienthoaihethongResponse {
     private Long id;
     private String tensanpham;
     private String hinhanh;
@@ -22,5 +20,5 @@ public class DienthoaihethongRequest {
     private String bonho;
     private String giaban;
     private String tenphanloai;
-    private List<Mausac> mausacs;
+    private List<MausachienthoaiResponse> mausacs;
 }
