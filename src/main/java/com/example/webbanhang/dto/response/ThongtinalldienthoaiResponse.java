@@ -16,9 +16,11 @@ public class ThongtinalldienthoaiResponse {
     private String ram;
     private String bonho;
     private String giaban;
+    private ThongtinphanloaidienthoaiResponse thongtinphanloai;
     private List<MausachienthoaiResponse> mausacs;
     private List<MausachienthoaiResponse> mausactong;
     private ThongsokythuatdienthoaiResponse thongsokythuats;
     private ThongtindienthoaidienthoaiResponse thongtindienthoai;
     private String soluongTonKho;
+    private KhuyenmaiResponse khuyenmais;
 }

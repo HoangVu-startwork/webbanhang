@@ -6,11 +6,9 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.webbanhang.dto.request.ApiResponse;
-import com.example.webbanhang.dto.request.DienthoaiRequest;
-import com.example.webbanhang.dto.request.DienthoaihethongRequest;
-import com.example.webbanhang.dto.request.SoSanhDienThoaiResponse;
+import com.example.webbanhang.dto.request.*;
 import com.example.webbanhang.dto.response.DienthoaiResponse;
+import com.example.webbanhang.dto.response.DienthoaihethongResponse;
 import com.example.webbanhang.dto.response.ThongtinalldienthoaiResponse;
 import com.example.webbanhang.dto.response.ThongtinphanloaidienthoaiResponse;
 import com.example.webbanhang.repository.DienthoaiRepository;
@@ -62,22 +60,42 @@ public class DienthoaiController {
             @RequestParam(required = false) String tinhnagcamera,
             @RequestParam(required = false) String tansoquet,
             @RequestParam(required = false) String kieumanhinh,
-            @RequestParam(required = false) String tinhtrangmay,
             @RequestParam(required = false) String thietbidikem,
             @RequestParam(required = false) String chipset) {
 
-        List<String> ramList = ram != null ? Arrays.asList(ram.split(",")) : null;
-        List<String> hedieuhanhList = hedieuhanh != null ? Arrays.asList(hedieuhanh.split(",")) : null;
-        List<String> boNhoList = boNho != null ? Arrays.asList(boNho.split(",")) : null;
-        List<String> tinhnangdacbietList = tinhnangdacbiet != null ? Arrays.asList(tinhnangdacbiet.split(",")) : null;
-        List<String> kichthuocmanhinhList =
-                kichthuocmanhinh != null ? Arrays.asList(kichthuocmanhinh.split(",")) : null;
-        List<String> tinhnagcameraList = tinhnagcamera != null ? Arrays.asList(tinhnagcamera.split(",")) : null;
-        List<String> tansoquetList = tansoquet != null ? Arrays.asList(tansoquet.split(",")) : null;
-        List<String> kieumanhinhList = kieumanhinh != null ? Arrays.asList(kieumanhinh.split(",")) : null;
-        List<String> tinhtrangmayList = tinhtrangmay != null ? Arrays.asList(tinhtrangmay.split(",")) : null;
-        List<String> thietbidikemList = thietbidikem != null ? Arrays.asList(thietbidikem.split(",")) : null;
-        List<String> chipsetList = chipset != null ? Arrays.asList(chipset.split(",")) : null;
+        //        List<String> ramList = ram != null ? Arrays.asList(ram.split(",")) : null;
+        //        List<String> hedieuhanhList = hedieuhanh != null ? Arrays.asList(hedieuhanh.split(",")) : null;
+        //        List<String> boNhoList = boNho != null ? Arrays.asList(boNho.split(",")) : null;
+        //        List<String> tinhnangdacbietList = tinhnangdacbiet != null ? Arrays.asList(tinhnangdacbiet.split(","))
+        // : null;
+        //        List<String> kichthuocmanhinhList =
+        //                kichthuocmanhinh != null ? Arrays.asList(kichthuocmanhinh.split(",")) : null;
+        //        List<String> tinhnagcameraList = tinhnagcamera != null ? Arrays.asList(tinhnagcamera.split(",")) :
+        // null;
+        //        List<String> tansoquetList = tansoquet != null ? Arrays.asList(tansoquet.split(",")) : null;
+        //        List<String> kieumanhinhList = kieumanhinh != null ? Arrays.asList(kieumanhinh.split(",")) : null;
+        //        List<String> tinhtrangmayList = tinhtrangmay != null ? Arrays.asList(tinhtrangmay.split(",")) : null;
+        //        List<String> thietbidikemList = thietbidikem != null ? Arrays.asList(thietbidikem.split(",")) : null;
+        //        List<String> chipsetList = chipset != null ? Arrays.asList(chipset.split(",")) : null;
+        List<String> ramList = ram != null && !ram.isEmpty() ? Arrays.asList(ram.split(",")) : null;
+        List<String> hedieuhanhList =
+                hedieuhanh != null && !hedieuhanh.isEmpty() ? Arrays.asList(hedieuhanh.split(",")) : null;
+        List<String> boNhoList = boNho != null && !boNho.isEmpty() ? Arrays.asList(boNho.split(",")) : null;
+        List<String> tinhnangdacbietList = tinhnangdacbiet != null && !tinhnangdacbiet.isEmpty()
+                ? Arrays.asList(tinhnangdacbiet.split(","))
+                : null;
+        List<String> kichthuocmanhinhList = kichthuocmanhinh != null && !kichthuocmanhinh.isEmpty()
+                ? Arrays.asList(kichthuocmanhinh.split(","))
+                : null;
+        List<String> tinhnagcameraList =
+                tinhnagcamera != null && !tinhnagcamera.isEmpty() ? Arrays.asList(tinhnagcamera.split(",")) : null;
+        List<String> tansoquetList =
+                tansoquet != null && !tansoquet.isEmpty() ? Arrays.asList(tansoquet.split(",")) : null;
+        List<String> kieumanhinhList =
+                kieumanhinh != null && !kieumanhinh.isEmpty() ? Arrays.asList(kieumanhinh.split(",")) : null;
+        List<String> thietbidikemList =
+                thietbidikem != null && !thietbidikem.isEmpty() ? Arrays.asList(thietbidikem.split(",")) : null;
+        List<String> chipsetList = chipset != null && !chipset.isEmpty() ? Arrays.asList(chipset.split(",")) : null;
 
         return dienthoaiService.getPhoneProductsWithFilters(
                 ramList,
@@ -90,7 +108,6 @@ public class DienthoaiController {
                 tinhnagcameraList,
                 tansoquetList,
                 kieumanhinhList,
-                tinhtrangmayList,
                 thietbidikemList,
                 chipsetList);
     }
@@ -135,10 +152,10 @@ public class DienthoaiController {
     }
 
     @GetMapping("/thongtinphanloai/{thongtinphanloaiId}")
-    public ApiResponse<List<DienthoaihethongRequest>> getDienthoaiByThongtinphanloai(
+    public ApiResponse<List<DienthoaihethongResponse>> getDienthoaiByThongtinphanloai(
             @PathVariable Long thongtinphanloaiId) {
-        List<DienthoaihethongRequest> dienthoais = dienthoaiService.getThongtinphanloai(thongtinphanloaiId);
-        return ApiResponse.<List<DienthoaihethongRequest>>builder()
+        List<DienthoaihethongResponse> dienthoais = dienthoaiService.getThongtinphanloai(thongtinphanloaiId);
+        return ApiResponse.<List<DienthoaihethongResponse>>builder()
                 .result(dienthoais)
                 .build();
     }

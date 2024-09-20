@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DienthoaihethongRequest {
+public class DienthoaiphanloaiRequest {
     private Long id;
     private String tensanpham;
     private String hinhanh;

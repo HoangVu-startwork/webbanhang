@@ -1,5 +1,6 @@
 package com.example.webbanhang.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,10 +17,7 @@ import com.example.webbanhang.dto.request.DienthoaiRequest;
 import com.example.webbanhang.dto.request.DienthoaihethongRequest;
 import com.example.webbanhang.dto.request.SoSanhDienThoaiResponse;
 import com.example.webbanhang.dto.response.*;
-import com.example.webbanhang.entity.Dienthoai;
-import com.example.webbanhang.entity.Khodienthoai;
-import com.example.webbanhang.entity.Thongsokythuat;
-import com.example.webbanhang.entity.Thongtinphanloai;
+import com.example.webbanhang.entity.*;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.DienthoaiMapper;
@@ -169,7 +167,6 @@ public class DienthoaiService {
             List<String> tinhnagcamera,
             List<String> tansoquet,
             List<String> kieumanhinh,
-            List<String> tinhtrangmay,
             List<String> thietbidikem,
             List<String> chipset) {
 
@@ -186,7 +183,8 @@ public class DienthoaiService {
         sql.append("tt.tinhtrangmay, tt.thietbidikem, tt.baohanh, ");
         sql.append("ms.id AS mausac_id, ");
         sql.append("tt.id AS thongtindienthoai_id, ");
-        sql.append("km.id AS khuyenmai_id ");
+        sql.append("km.id AS khuyenmai_id, ");
+        sql.append("COALESCE(kd.soluong, 0) AS soluong "); // Thêm trường số lượng vào đây
         sql.append("FROM webbanhang.dienthoai dt ");
         sql.append("JOIN ( ");
         sql.append("    SELECT m.dienthoai_id, m.tenmausac, m.hinhanh, m.giaban, m.id ");
@@ -205,8 +203,8 @@ public class DienthoaiService {
         sql.append("JOIN webbanhang.thongtindienthoai tt ON dt.id = tt.dienthoai_id ");
         sql.append("LEFT JOIN webbanhang.khuyenmai km ON dt.id = km.dienthoai_id ");
         sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
+        sql.append("LEFT JOIN webbanhang.khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
         sql.append("WHERE 1=1 ");
-
         List<Object> parameters = new ArrayList<>();
 
         if (ram != null && !ram.isEmpty()) {
@@ -305,16 +303,6 @@ public class DienthoaiService {
             sql.append(") ");
         }
 
-        if (tinhtrangmay != null && !tinhtrangmay.isEmpty()) {
-            sql.append("AND (");
-            for (int i = 0; i < tinhtrangmay.size(); i++) {
-                sql.append("tt.tinhtrangmay LIKE ?");
-                if (i < tinhtrangmay.size() - 1) sql.append(" OR ");
-                parameters.add("%" + tinhtrangmay.get(i) + "%");
-            }
-            sql.append(") ");
-        }
-
         if (thietbidikem != null && !thietbidikem.isEmpty()) {
             sql.append("AND (");
             for (int i = 0; i < thietbidikem.size(); i++) {
@@ -354,9 +342,62 @@ public class DienthoaiService {
         return phones;
     }
 
+    //    public ThongtinalldienthoaiResponse getDienthoaiDetails(Long id, Long mausacId) {
+    //        Dienthoai dienthoai =
+    //                dienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TENDIENTHOAI));
+    //
+    //        List<MausachienthoaiResponse> mausacResponse = dienthoai.getMausacs().stream()
+    //                .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))
+    //                .toList();
+    //
+    //        List<MausachienthoaiResponse> mausacResponset = dienthoai.getMausacs().stream()
+    //                .filter(mausac -> mausac.getId().equals(mausacId)) // Lọc theo mausacId
+    //                .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))
+    //                .toList();
+    //
+    //        // Lấy đối tượng Thongsokythuat đầu tiên từ danh sách Thongsokythuat và chuyển đổi nó thành
+    //        // ThongsokythuatdienthoaiResponse
+    //        //  Nếu không có đối tượng nào trong danh sách Thongsokythuat, giá trị sẽ là null.
+    //        ThongsokythuatdienthoaiResponse thongsokythuatResponse = dienthoai.getThongsokythuats().stream()
+    //                .findFirst()
+    //                .map(thongsokythuat -> modelMapper.map(thongsokythuat, ThongsokythuatdienthoaiResponse.class))
+    //                .orElse(null);
+    //
+    //        ThongtindienthoaidienthoaiResponse thongtindienthoaiResponse = dienthoai.getThongtindienthoais().stream()
+    //                .findFirst()
+    //                .map(thongtindienthoai -> modelMapper.map(thongtindienthoai,
+    // ThongtindienthoaidienthoaiResponse.class))
+    //                .orElse(null);
+    //
+    //        Khodienthoai khodienthoai = khodienthoaiRepository.findByDienthoaiIdAndMausacId(id, mausacId);
+    //        String soluongTonkho = (khodienthoai != null) ? khodienthoai.getSoluong() : "0";
+    //
+    //        Thongtinphanloai thongtinphanloai = dienthoaiRepository.findThongtinphanloaiByDienthoaiId(id);
+    //        ThongtinphanloaidienthoaiResponse thongtinphanloaiResponse =
+    //                modelMapper.map(thongtinphanloai, ThongtinphanloaidienthoaiResponse.class);
+    //
+    //        return ThongtinalldienthoaiResponse.builder()
+    //                .id(dienthoai.getId())
+    //                .tensanpham(dienthoai.getTensanpham())
+    //                .hinhanh(dienthoai.getHinhanh())
+    //                .hinhanhduyet(dienthoai.getHinhanhduyetAsList())
+    //                .ram(dienthoai.getRam())
+    //                .bonho(dienthoai.getBonho())
+    //                .giaban(dienthoai.getGiaban())
+    //                .mausacs(mausacResponse)
+    //                .mausactong(mausacResponset)
+    //                .thongsokythuats(thongsokythuatResponse)
+    //                .thongtindienthoai(thongtindienthoaiResponse)
+    //                .soluongTonKho(soluongTonkho)
+    //                .thongtinphanloai(thongtinphanloaiResponse)
+    //                .build();
+    //    }
     public ThongtinalldienthoaiResponse getDienthoaiDetails(Long id, Long mausacId) {
         Dienthoai dienthoai =
                 dienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TENDIENTHOAI));
+
+        // Get the current date and time
+        LocalDateTime currentDateTime = LocalDateTime.now();
 
         List<MausachienthoaiResponse> mausacResponse = dienthoai.getMausacs().stream()
                 .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))
@@ -367,9 +408,6 @@ public class DienthoaiService {
                 .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))
                 .toList();
 
-        // Lấy đối tượng Thongsokythuat đầu tiên từ danh sách Thongsokythuat và chuyển đổi nó thành
-        // ThongsokythuatdienthoaiResponse
-        //  Nếu không có đối tượng nào trong danh sách Thongsokythuat, giá trị sẽ là null.
         ThongsokythuatdienthoaiResponse thongsokythuatResponse = dienthoai.getThongsokythuats().stream()
                 .findFirst()
                 .map(thongsokythuat -> modelMapper.map(thongsokythuat, ThongsokythuatdienthoaiResponse.class))
@@ -382,6 +420,22 @@ public class DienthoaiService {
 
         Khodienthoai khodienthoai = khodienthoaiRepository.findByDienthoaiIdAndMausacId(id, mausacId);
         String soluongTonkho = (khodienthoai != null) ? khodienthoai.getSoluong() : "0";
+
+        Thongtinphanloai thongtinphanloai = dienthoaiRepository.findThongtinphanloaiByDienthoaiId(id);
+        ThongtinphanloaidienthoaiResponse thongtinphanloaiResponse =
+                modelMapper.map(thongtinphanloai, ThongtinphanloaidienthoaiResponse.class);
+
+        // Find the first valid promotion
+        KhuyenmaiResponse khuyenmaiResponse = dienthoai.getKhuyenmais().stream()
+                .filter(khuyenmai -> {
+                    LocalDateTime ngayBatDau = LocalDateTime.parse(khuyenmai.getNgaybatdau());
+                    LocalDateTime ngayKetThuc = LocalDateTime.parse(khuyenmai.getNgayketkhuc());
+                    return (ngayBatDau.isBefore(currentDateTime) || ngayBatDau.isEqual(currentDateTime))
+                            && (ngayKetThuc.isAfter(currentDateTime) || ngayKetThuc.isEqual(currentDateTime));
+                })
+                .findFirst() // Return the first matching promotion
+                .map(khuyenmai -> modelMapper.map(khuyenmai, KhuyenmaiResponse.class))
+                .orElse(null);
 
         return ThongtinalldienthoaiResponse.builder()
                 .id(dienthoai.getId())
@@ -396,6 +450,8 @@ public class DienthoaiService {
                 .thongsokythuats(thongsokythuatResponse)
                 .thongtindienthoai(thongtindienthoaiResponse)
                 .soluongTonKho(soluongTonkho)
+                .thongtinphanloai(thongtinphanloaiResponse)
+                .khuyenmais(khuyenmaiResponse) // Add the single promotion to the response
                 .build();
     }
 
@@ -507,13 +563,32 @@ public class DienthoaiService {
         return dienthoais.stream().map(this::toDienthoai).collect(Collectors.toList());
     }
 
-    public List<DienthoaihethongRequest> getThongtinphanloai(Long thongtinphanloaiId) {
+    public List<DienthoaihethongResponse> getThongtinphanloai(Long thongtinphanloaiId) {
         List<Dienthoai> dienthoais = dienthoaiRepository.findByThongtinphanloaiId(thongtinphanloaiId);
-        return dienthoais.stream().map(this::toDienthoai).collect(Collectors.toList());
+        return dienthoais.stream().map(this::tothongtinphanloaiDienthoai).collect(Collectors.toList());
+    }
+
+    private DienthoaihethongResponse tothongtinphanloaiDienthoai(Dienthoai dienthoai) {
+        List<MausachienthoaiResponse> mausacResponse = dienthoai.getMausacs().stream()
+                .map(mausac -> modelMapper.map(mausac, MausachienthoaiResponse.class))
+                .collect(Collectors.toList());
+
+        return DienthoaihethongResponse.builder()
+                .id(dienthoai.getId())
+                .tensanpham(dienthoai.getTensanpham())
+                .hinhanh(dienthoai.getHinhanh())
+                .hinhanhduyet(dienthoai.getHinhanhduyet())
+                .ram(dienthoai.getRam())
+                .bonho(dienthoai.getBonho())
+                .giaban(dienthoai.getGiaban())
+                .tenphanloai(dienthoai.getThongtinphanloai().getTenphanloai())
+                .mausacs(mausacResponse)
+                .build();
     }
 
     private DienthoaihethongRequest toDienthoai(Dienthoai dienthoai) {
         return DienthoaihethongRequest.builder()
+                .id(dienthoai.getId())
                 .tensanpham(dienthoai.getTensanpham())
                 .hinhanh(dienthoai.getHinhanh())
                 .hinhanhduyet(dienthoai.getHinhanhduyet())
