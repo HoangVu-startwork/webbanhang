@@ -1,17 +1,20 @@
-FROM maven:3-openjdk-17 AS build
+FROM maven:3.9.8-amazoncorretto-21 AS build
+
+# Copy source code and pom.xml file to /app folder
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
+# Build source code with maven
 RUN mvn package -DskipTests
 
+#Stage 2: create image
+# Start with Amazon Correto JDK 21
+FROM amazoncorretto:21.0.4
 
-# Run stage
-
-FROM openjdk:17-jdk-slim
+# Set working folder to App and copy complied file from above step
 WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-COPY --from=build /app/target/DrComputer-0.0.1-SNAPSHOT.war drcomputer.war
-EXPOSE 8090 
-
-ENTRYPOINT ["java","-jar","drcomputer.war"]
+# Command to run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
