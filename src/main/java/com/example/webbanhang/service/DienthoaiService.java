@@ -185,25 +185,25 @@ public class DienthoaiService {
         sql.append("tt.id AS thongtindienthoai_id, ");
         sql.append("km.id AS khuyenmai_id, ");
         sql.append("COALESCE(kd.soluong, 0) AS soluong "); // Thêm trường số lượng vào đây
-        sql.append("FROM webbanhang.dienthoai dt ");
+        sql.append("FROM dienthoai dt ");
         sql.append("JOIN ( ");
         sql.append("    SELECT m.dienthoai_id, m.tenmausac, m.hinhanh, m.giaban, m.id ");
-        sql.append("    FROM webbanhang.mausac m ");
+        sql.append("    FROM mausac m ");
         sql.append("    JOIN ( ");
         sql.append("        SELECT dienthoai_id, MIN(id) AS id ");
-        sql.append("        FROM webbanhang.mausac ");
+        sql.append("        FROM mausac ");
         sql.append("        GROUP BY dienthoai_id ");
         sql.append("    ) sub ON m.dienthoai_id = sub.dienthoai_id AND m.id = sub.id ");
         sql.append(") ms ON dt.id = ms.dienthoai_id ");
-        sql.append("JOIN webbanhang.thongtinphanloai ttpl ON dt.thongtinphanloai_id = ttpl.id ");
-        sql.append("JOIN webbanhang.loaisanpham lsp ON ttpl.loaisanpham_id = lsp.id ");
-        sql.append("JOIN webbanhang.danhmuc dm ON lsp.danhmuc_id = dm.id ");
-        sql.append("JOIN webbanhang.hedieuhanh hd ON dm.hedieuhanh_id = hd.id ");
-        sql.append("JOIN webbanhang.thongsokythuat tsk ON dt.id = tsk.dienthoai_id ");
-        sql.append("JOIN webbanhang.thongtindienthoai tt ON dt.id = tt.dienthoai_id ");
-        sql.append("LEFT JOIN webbanhang.khuyenmai km ON dt.id = km.dienthoai_id ");
+        sql.append("JOIN thongtinphanloai ttpl ON dt.thongtinphanloai_id = ttpl.id ");
+        sql.append("JOIN loaisanpham lsp ON ttpl.loaisanpham_id = lsp.id ");
+        sql.append("JOIN danhmuc dm ON lsp.danhmuc_id = dm.id ");
+        sql.append("JOIN hedieuhanh hd ON dm.hedieuhanh_id = hd.id ");
+        sql.append("JOIN thongsokythuat tsk ON dt.id = tsk.dienthoai_id ");
+        sql.append("JOIN thongtindienthoai tt ON dt.id = tt.dienthoai_id ");
+        sql.append("LEFT JOIN khuyenmai km ON dt.id = km.dienthoai_id ");
         sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
-        sql.append("LEFT JOIN webbanhang.khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
+        sql.append("LEFT JOIN khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
         sql.append("WHERE 1=1 ");
         List<Object> parameters = new ArrayList<>();
 
