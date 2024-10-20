@@ -72,6 +72,7 @@ public interface DienthoaiRepository extends JpaRepository<Dienthoai, Long> {
                     + "LEFT JOIN khuyenmai km ON dt.id = km.dienthoai_id "
                     + "AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc "
                     + "LEFT JOIN thongtindienthoai tt ON dt.id = tt.dienthoai_id "
+                    + "WHERE dt.tinhtrang = 'Mở' "
                     + "LIMIT 20",
             nativeQuery = true)
     List<Object[]> findPhoneProductsWithRandomColor1();
@@ -120,4 +121,22 @@ public interface DienthoaiRepository extends JpaRepository<Dienthoai, Long> {
             @Param("boNho") String boNho,
             @Param("giaTu") Long giaTu,
             @Param("giaDen") Long giaDen);
+
+    @Query(
+            value =
+                    "SELECT dt.id, dt.tensanpham, dt.hinhanh, dt.hinhanhduyet, dt.ram, dt.bonho, dt.giaban, dt.tinhtrang,"
+                            + "GROUP_CONCAT(ms.tenmausac) AS tenmausacs, GROUP_CONCAT(ms.id) AS idmausacs, GROUP_CONCAT(ms.hinhanh) AS hinhanhs, GROUP_CONCAT(ms.giaban) AS giabans "
+                            + "FROM dienthoai dt "
+                            + "LEFT JOIN mausac ms ON dt.id = ms.dienthoai_id "
+                            + "GROUP BY dt.id, dt.tensanpham, dt.hinhanh, dt.hinhanhduyet, dt.ram, dt.bonho, dt.giaban, dt.tinhtrang",
+            nativeQuery = true)
+    List<Object[]> findPhoneProductsWithAllColors();
+
+    // JOIN mặc định là INNER JOIN. Điều này có nghĩa là nếu điện thoại không có màu sắc (không có bản ghi tương ứng
+    // trong bảng mausac), thì kết quả sẽ không trả về thông tin của điện thoại đó.
+    // LEFT JOIN: Giúp lấy tất cả các bản ghi từ bảng dienthoai, dù có dữ liệu tương ứng trong bảng mausac hay không.
+    // Nếu không có dữ liệu tương ứng, các cột từ bảng mausac sẽ trả về NULL.
+    // GROUP_CONCAT: Kết hợp các giá trị màu sắc, id màu sắc, hình ảnh, và giá bán từ bảng mausac nếu tồn tại. Nếu không
+    // có màu sắc nào, các trường này sẽ là NULL hoặc chuỗi rỗng.
+
 }

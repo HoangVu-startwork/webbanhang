@@ -57,4 +57,10 @@ public class LoaisanphamController {
                 .result(loaisanphamService.getLoaisanphamByDanhmucId(danhmucid))
                 .build();
     }
+
+    @DeleteMapping("/{id}")
+    String deleteLoaisanpham(@PathVariable Long id) {
+        loaisanphamService.deleteLoaisanpham(id);
+        return "User has been deleted";
+    }
 }

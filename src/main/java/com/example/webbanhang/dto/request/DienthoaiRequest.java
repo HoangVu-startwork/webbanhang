@@ -16,4 +16,5 @@ public class DienthoaiRequest {
     private String bonho;
     private String giaban;
     private String tenphanloai;
+    private String tinhtrang;
 }

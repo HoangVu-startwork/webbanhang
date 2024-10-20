@@ -35,4 +35,32 @@ public class ThongtinphanloaiController {
                 .result(thongtinphanloaiService.getByThongtinphanloai(loaisanphamId))
                 .build();
     }
+
+    @GetMapping
+    ApiResponse<List<ThongtinphanloaiResponse>> getAllDanhmuc() {
+        return ApiResponse.<List<ThongtinphanloaiResponse>>builder()
+                .result(thongtinphanloaiService.findAllThongtinphanloai())
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<ThongtinphanloaiResponse> getThongtinphanloaiId(@PathVariable Long id) {
+        return ApiResponse.<ThongtinphanloaiResponse>builder()
+                .result(thongtinphanloaiService.getByThongtinphanloaiId(id))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteThongtinphanloais(@PathVariable Long id) {
+        thongtinphanloaiService.deleteThongtinphanloai(id);
+        return "User has been deleted";
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<ThongtinphanloaiResponse> updateLoaisanpham(
+            @PathVariable Long id, @RequestBody ThongtinphanloaiRequest request) {
+        return ApiResponse.<ThongtinphanloaiResponse>builder()
+                .result(thongtinphanloaiService.updateThongtinphanloai(id, request))
+                .build();
+    }
 }

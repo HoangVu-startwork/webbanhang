@@ -10,4 +10,6 @@ public interface MuclucRepository extends JpaRepository<Mucluc, Long> {
     Mucluc findByTenmucluc(String tenmucluc);
 
     Mucluc findByid(Long id);
+
+    void deleteById(Long id);
 }

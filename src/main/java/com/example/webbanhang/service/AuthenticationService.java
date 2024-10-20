@@ -86,15 +86,19 @@ public class AuthenticationService {
 
         var token = generateToken(user);
         long expirationTime;
+        String scope;
         try {
             expirationTime = getExpirationTimeFromToken(token);
+            scope = getScopeFromToken(token);
         } catch (ParseException e) {
             throw new RuntimeException("Unable to parse token", e);
         }
+
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
                 .exp(expirationTime)
+                .scope(scope)
                 .build();
         // Nếu mật khẩu khớp, tạo một JWT bằng phương thức generateToken và trả về đối tượng AuthenticationResponse chứa
         // token và trạng thái xác thực thành công.
@@ -132,6 +136,29 @@ public class AuthenticationService {
         }
         // Tạo đối tượng JWSObject từ header và payload. Sử dụng khóa bí mật (SIGNER_KEY) để ký token.
         // Trả về chuỗi JWT đã ký nếu ký thành công, nếu không, ném ra ngoại lệ RuntimeException.
+    }
+
+    //    private String getScopeFromToken(String token) throws ParseException, JOSEException {
+    //        SignedJWT signedJWT = SignedJWT.parse(token);
+    //
+    //        if (signedJWT.verify(new MACVerifier(SIGNER_KEY.getBytes()))) {
+    //            JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+    //            return claimsSet.getStringClaim("scope");
+    //        } else {
+    //            throw new JOSEException("Invalid scope token");
+    //        }
+    //    }
+    public String getScopeFromToken(String token) {
+        try {
+            // Giải mã token
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            // Lấy claims
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            // Trả về scope
+            return claims.getStringClaim("scope");
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid token", e);
+        }
     }
 
     private String generateToken(User user) {

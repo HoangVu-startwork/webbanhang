@@ -48,4 +48,8 @@ public class MuclucService {
         }
         return muclucMapper.toMuclucResponse(mucluc);
     }
+
+    public void deleteMucluc(Long id) {
+        muclucRepository.deleteById(id);
+    }
 }

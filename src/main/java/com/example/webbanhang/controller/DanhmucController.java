@@ -49,4 +49,17 @@ public class DanhmucController {
                 .result(danhmucService.findById(id))
                 .build();
     }
+
+    @GetMapping("/mucluc/{muclucId}")
+    public ApiResponse<List<DanhmucResponse>> getDanhmucByMuclucId(@PathVariable Long muclucId) {
+        return ApiResponse.<List<DanhmucResponse>>builder()
+                .result(danhmucService.getDanhmucMuclucId(muclucId))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteDanhmuc(@PathVariable Long id) {
+        danhmucService.deleteDanhmuc(id);
+        return "Xoá thành công";
+    }
 }

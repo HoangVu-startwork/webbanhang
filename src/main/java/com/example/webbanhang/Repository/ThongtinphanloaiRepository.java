@@ -12,4 +12,8 @@ public interface ThongtinphanloaiRepository extends JpaRepository<Thongtinphanlo
     Thongtinphanloai findByTenphanloai(String tenphanloai);
 
     List<Thongtinphanloai> findByLoaisanphamId(Long loaisanphamId);
+
+    void deleteById(Long id);
+
+    Thongtinphanloai findByid(Long id);
 }

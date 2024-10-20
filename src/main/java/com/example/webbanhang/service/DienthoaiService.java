@@ -1,10 +1,7 @@
 package com.example.webbanhang.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
@@ -42,6 +39,7 @@ public class DienthoaiService {
     UserRepository userRepository;
     ModelMapper modelMapper;
     KhodienthoaiRepository khodienthoaiRepository;
+    JdbcTemplate jdbcTemplate;
 
     @Transactional
     public DienthoaiResponse createDienthoai(DienthoaiRequest request) {
@@ -63,6 +61,7 @@ public class DienthoaiService {
                 .ram(request.getRam())
                 .giaban(request.getGiaban())
                 .thongtinphanloai(thongtinphanloai)
+                .tinhtrang(request.getTinhtrang())
                 .build();
 
         Dienthoai savedDienthoai = dienthoaiRepository.save(dienthoai);
@@ -100,6 +99,9 @@ public class DienthoaiService {
         if (request.getHinhanhduyet() != null && !request.getHinhanhduyet().isEmpty()) {
             dienthoai.setHinhanhduyet(request.getHinhanhduyet());
         }
+        if (request.getTinhtrang() != null && !request.getTinhtrang().isEmpty()) {
+            dienthoai.setTinhtrang(request.getTinhtrang());
+        }
 
         Dienthoai updatedDienthoai = dienthoaiRepository.save(dienthoai);
         return dienthoaiMapper.toDienthoaiResponse(updatedDienthoai);
@@ -135,26 +137,65 @@ public class DienthoaiService {
         return phones;
     }
 
-    @Transactional
-    public List<Map<String, Object>> getPhoneProductsWithRandomColor1() {
-        List<Object[]> results = dienthoaiRepository.findPhoneProductsWithRandomColor1();
-        return convertToMap(results);
+    public List<DienthoaihethongResponse> getAllPhoneWithColors() {
+        List<Object[]> results = dienthoaiRepository.findPhoneProductsWithAllColors();
+        List<DienthoaihethongResponse> responses = new ArrayList<>();
+
+        for (Object[] row : results) {
+            Long id = ((Number) row[0]).longValue();
+            String tensanpham = (String) row[1];
+            String hinhanh = (String) row[2];
+            String hinhanhduyet = (String) row[3];
+            String ram = (String) row[4];
+            String bonho = (String) row[5];
+            String giaban = (String) row[6];
+            String tinhtrang = (String) row[7];
+
+            // Split concatenated fields into lists
+            String tenMauSacStr = row[8] != null ? (String) row[8] : "";
+            String idMauSacStr = row[9] != null ? (String) row[9] : "";
+            String hinhAnhStr = row[10] != null ? (String) row[10] : "";
+            String giaBanStr = row[11] != null ? (String) row[11] : "";
+
+            // Nếu row[7] (hoặc row[8], row[9], row[10]) không phải null, nó sẽ gán giá trị của row[7] vào biến
+            // tenMauSacStr. Nếu row[7] là null, nó sẽ gán chuỗi rỗng ("").
+            List<String> tenmausacs =
+                    tenMauSacStr.isEmpty() ? new ArrayList<>() : Arrays.asList(tenMauSacStr.split(","));
+            List<String> idmausacs = idMauSacStr.isEmpty() ? new ArrayList<>() : Arrays.asList(idMauSacStr.split(","));
+            List<String> hinhanhs = hinhAnhStr.isEmpty() ? new ArrayList<>() : Arrays.asList(hinhAnhStr.split(","));
+            List<String> giabans = giaBanStr.isEmpty() ? new ArrayList<>() : Arrays.asList(giaBanStr.split(","));
+            // isEmpty kiểm tra xem chuỗi có rỗng hay không
+            // Arrays.asList() chuyển mảng thành danh sách (List)
+            // split(",") tách chuỗi thành các phần tử riêng biệt
+
+            List<MausachienthoaiResponse> mausacResponses = new ArrayList<>();
+            for (int i = 0; i < tenmausacs.size(); i++) {
+                MausachienthoaiResponse mausacResponse = MausachienthoaiResponse.builder()
+                        .id(Long.parseLong(idmausacs.get(i)))
+                        .tenmausac(tenmausacs.get(i))
+                        .giaban(giabans.get(i))
+                        .hinhanh(hinhanhs.get(i))
+                        .build();
+                mausacResponses.add(mausacResponse);
+            }
+
+            DienthoaihethongResponse dienthoaiResponse = DienthoaihethongResponse.builder()
+                    .id(id)
+                    .tensanpham(tensanpham)
+                    .hinhanh(hinhanh)
+                    .hinhanhduyet(hinhanhduyet)
+                    .ram(ram)
+                    .bonho(bonho)
+                    .giaban(giaban)
+                    .mausacs(mausacResponses)
+                    .tinhtrang(tinhtrang)
+                    .build();
+
+            responses.add(dienthoaiResponse);
+        }
+
+        return responses;
     }
-
-    //    @Transactional
-    //    public List<Map<String, Object>> getPhoneProductsWithFilters(
-    //            List<String> ram, String hedieuhanh, String boNho, Long giaTu, Long giaDen) {
-    //        List<Object[]> results;
-    //        if ((ram == null || ram.isEmpty()) && hedieuhanh == null && boNho == null && giaTu == null && giaDen ==
-    // null) {
-    //            results = dienthoaiRepository.findPhoneProductsWithRandomColor();
-    //        } else {
-    //            results = dienthoaiRepository.findPhoneProductsWithFilters(ram, hedieuhanh, boNho, giaTu, giaDen);
-    //        }
-    //        return convertToMap(results);
-    //    }
-
-    private final JdbcTemplate jdbcTemplate;
 
     public List<Map<String, Object>> getPhoneProductsWithFilters(
             List<String> ram,
@@ -204,7 +245,7 @@ public class DienthoaiService {
         sql.append("LEFT JOIN khuyenmai km ON dt.id = km.dienthoai_id ");
         sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
         sql.append("LEFT JOIN khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
-        sql.append("WHERE 1=1 ");
+        sql.append("WHERE dt.tinhtrang = 'Mở' ");
         List<Object> parameters = new ArrayList<>();
 
         if (ram != null && !ram.isEmpty()) {

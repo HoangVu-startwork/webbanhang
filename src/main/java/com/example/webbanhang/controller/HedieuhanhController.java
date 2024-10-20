@@ -42,4 +42,10 @@ public class HedieuhanhController {
                 .result(hedieuhanhService.getHedieuhanhById(id))
                 .build();
     }
+
+    @DeleteMapping("/{id}")
+    String deleteHedieuhanh(@PathVariable Long id) {
+        hedieuhanhService.deleteHedieuhanh(id);
+        return "User has been deleted";
+    }
 }
