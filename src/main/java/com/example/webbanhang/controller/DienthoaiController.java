@@ -48,6 +48,14 @@ public class DienthoaiController {
         return dienthoaiService.getPhoneProductsWithRandomColor();
     }
 
+    @GetMapping("/all")
+    public ApiResponse<List<DienthoaihethongResponse>> getDanhmuc() {
+        List<DienthoaihethongResponse> phoneProducts = dienthoaiService.getAllPhoneWithColors();
+        return ApiResponse.<List<DienthoaihethongResponse>>builder()
+                .result(phoneProducts) // Set kết quả từ service
+                .build();
+    }
+
     @GetMapping("/filter")
     public List<Map<String, Object>> filterPhoneProducts(
             @RequestParam(required = false) String ram,

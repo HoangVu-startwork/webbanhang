@@ -100,4 +100,8 @@ public class LoaisanphamService {
                         .build())
                 .toList();
     }
+
+    public void deleteLoaisanpham(Long id) {
+        loaisanphamRepository.deleteById(id);
+    }
 }

@@ -100,4 +100,13 @@ public class DanhmucService {
         Danhmuc danhmuc = danhmucRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DANHMUC));
         return danhmucMapper.toDanhmucResponse(danhmuc);
     }
+
+    public List<DanhmucResponse> getDanhmucMuclucId(Long muclucid) {
+        List<Danhmuc> danhmucList = danhmucRepository.findByMuclucId(muclucid);
+        return danhmucList.stream().map(danhmucMapper::toDanhmucResponse).toList();
+    }
+
+    public void deleteDanhmuc(Long id) {
+        danhmucRepository.deleteById(id);
+    }
 }

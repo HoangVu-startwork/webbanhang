@@ -22,5 +22,6 @@ public class DienthoaiphanloaiRequest {
     private String bonho;
     private String giaban;
     private String tenphanloai;
+    private String tinhtrang;
     private List<Mausac> mausacs;
 }

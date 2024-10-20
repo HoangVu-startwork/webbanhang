@@ -41,6 +41,8 @@ public class Dienthoai {
 
     private String giaban;
 
+    private String tinhtrang;
+
     @ManyToOne
     @JoinColumn(name = "thongtinphanloai_id")
     private Thongtinphanloai thongtinphanloai;

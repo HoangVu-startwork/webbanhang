@@ -17,6 +17,7 @@ public class Mucluc {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "tenmucluc", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     private String tenmucluc;
 
     @OneToMany(mappedBy = "mucluc")

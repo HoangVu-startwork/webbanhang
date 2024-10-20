@@ -1,5 +1,5 @@
 server: #Cấu hình cho máy chủ web nhúng được sử dụng bởi Spring Boot
-  port: 8090
+  port: 8050
   servlet: #Cấu hình cho Servlet, một phần quan trọng của máy chủ web Java
     context-path: /identity # Định nghĩa đường dẫn context mà ứng dụng sẽ được triển khai trên máy chủ. Ở đây, nó là /identity
 
@@ -24,6 +24,11 @@ spring:
     url: jdbc:mysql://root:epDvvpzTNaYpVynvKLDAtZJBKOoSHxOA@junction.proxy.rlwy.net:41705/railway?createDatabaseIfNotExist=true # Chứa URL kết nối đến cơ sở dữ liệu MySQL
     username: root
     password: epDvvpzTNaYpVynvKLDAtZJBKOoSHxOA
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 jwt:
   signerKey: "Vabsn1UFPMGt9i0mKDaqRU2NdNwEw+VIZg8/Qa+37L521P1gqO4bRBEJyem2R7Zy"
@@ -59,4 +64,7 @@ payment:
     orderType: other
 
 
-
+cloudinary:
+  cloud-name: du6ybb3by
+  api-key: 684341482256711
+  api-secret: Kke94i9pRqvfTM4daFhH8dDsmFg

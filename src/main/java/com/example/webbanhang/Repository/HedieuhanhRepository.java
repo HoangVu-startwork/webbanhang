@@ -8,4 +8,6 @@ import com.example.webbanhang.entity.Hedieuhanh;
 @Repository
 public interface HedieuhanhRepository extends JpaRepository<Hedieuhanh, Long> {
     Hedieuhanh findByTenhedieuhanh(String tenhedieuhanh);
+
+    void deleteById(Long id);
 }

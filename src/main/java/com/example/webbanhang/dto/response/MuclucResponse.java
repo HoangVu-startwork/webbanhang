@@ -8,4 +8,5 @@ import lombok.*;
 @Builder
 public class MuclucResponse {
     private String tenmucluc;
+    private Long id;
 }

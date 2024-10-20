@@ -12,4 +12,6 @@ public interface LoaisanphamRepository extends JpaRepository<Loaisanpham, Long> 
     Loaisanpham findByTenloaisanpham(String tenloaisanpham);
 
     List<Loaisanpham> findByDanhmucId(Long danhmucId);
+
+    void deleteById(Long id);
 }

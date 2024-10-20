@@ -14,5 +14,6 @@ public class DienthoaiResponse {
     private String ram;
     private String bonho;
     private String giaban;
+    private String tinhtrang;
     private Long thongtinphanloaiId;
 }

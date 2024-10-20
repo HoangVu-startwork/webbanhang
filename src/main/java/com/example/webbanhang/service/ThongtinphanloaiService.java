@@ -60,4 +60,45 @@ public class ThongtinphanloaiService {
                         .build())
                 .toList();
     }
+
+    public ThongtinphanloaiResponse getByThongtinphanloaiId(Long id) {
+        Thongtinphanloai thongtinphanloais = thongtinphanloaiRepository.findByid(id);
+        if (thongtinphanloais == null) {
+            throw new AppException(ErrorCode.MUCLUCTONTAI);
+        }
+        return thongtinphanloaiMapper.toThongtinphanloaiResponse(thongtinphanloais);
+    }
+
+    public List<ThongtinphanloaiResponse> findAllThongtinphanloai() {
+        List<Thongtinphanloai> thongtinphanloais = thongtinphanloaiRepository.findAll();
+        return thongtinphanloais.stream()
+                .map(thongtinphanloaiMapper::toThongtinphanloaiResponse)
+                .toList();
+    }
+
+    public void deleteThongtinphanloai(Long id) {
+        thongtinphanloaiRepository.deleteById(id);
+    }
+
+    @Transactional
+    public ThongtinphanloaiResponse updateThongtinphanloai(Long id, ThongtinphanloaiRequest request) {
+        Thongtinphanloai thongtinphanloai = thongtinphanloaiRepository
+                .findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.THONGTINPHANLOAIDIENTHOAI));
+
+        if (request.getTenloaisanpham() != null && !request.getTenloaisanpham().isEmpty()) {
+            Loaisanpham loaisanpham = loaisanphamRepository.findByTenloaisanpham(request.getTenloaisanpham());
+            if (loaisanpham == null) {
+                throw new AppException(ErrorCode.MUCLUC);
+            }
+            thongtinphanloai.setLoaisanpham(loaisanpham);
+        }
+
+        if (request.getTenphanloai() != null && !request.getTenphanloai().isEmpty()) {
+            thongtinphanloai.setTenphanloai(request.getTenphanloai());
+        }
+
+        Thongtinphanloai updatedThongtinphanloai = thongtinphanloaiRepository.save(thongtinphanloai);
+        return thongtinphanloaiMapper.toThongtinphanloaiResponse(updatedThongtinphanloai);
+    }
 }

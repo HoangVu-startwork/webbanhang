@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EntityScan(basePackages = "com.example.webbanhang.entity")
 @EnableScheduling
 public class WebbanhangApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(WebbanhangApplication.class, args);
     }

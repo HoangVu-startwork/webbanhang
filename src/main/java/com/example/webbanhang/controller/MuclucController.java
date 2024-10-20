@@ -42,4 +42,10 @@ public class MuclucController {
                 .result(muclucService.getByTenmucluc(id))
                 .build();
     }
+
+    @DeleteMapping("/{id}")
+    String deleteMucluc(@PathVariable Long id) {
+        muclucService.deleteMucluc(id);
+        return "User has been deleted";
+    }
 }
