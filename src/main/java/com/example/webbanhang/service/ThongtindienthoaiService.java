@@ -155,4 +155,10 @@ public class ThongtindienthoaiService {
         Thongtindienthoai updatedThongtindienthoai = thongtindienthoaiRepository.save(thongtindienthoai);
         return thongtindienthoaiMapper.toThongtindienthoaiResponse(updatedThongtindienthoai);
     }
+
+    public ThongtindienthoaiResponse findThongtindienthoai(Long id) {
+        Thongtindienthoai thongtindienthoai =
+                thongtindienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DANHMUC));
+        return thongtindienthoaiMapper.toThongtindienthoaiResponse(thongtindienthoai);
+    }
 }

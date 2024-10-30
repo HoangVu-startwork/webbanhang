@@ -236,12 +236,12 @@ public class DienthoaiService {
         sql.append("        GROUP BY dienthoai_id ");
         sql.append("    ) sub ON m.dienthoai_id = sub.dienthoai_id AND m.id = sub.id ");
         sql.append(") ms ON dt.id = ms.dienthoai_id ");
-        sql.append("JOIN thongtinphanloai ttpl ON dt.thongtinphanloai_id = ttpl.id ");
-        sql.append("JOIN loaisanpham lsp ON ttpl.loaisanpham_id = lsp.id ");
-        sql.append("JOIN danhmuc dm ON lsp.danhmuc_id = dm.id ");
-        sql.append("JOIN hedieuhanh hd ON dm.hedieuhanh_id = hd.id ");
-        sql.append("JOIN thongsokythuat tsk ON dt.id = tsk.dienthoai_id ");
-        sql.append("JOIN thongtindienthoai tt ON dt.id = tt.dienthoai_id ");
+        sql.append("LEFT JOIN thongtinphanloai ttpl ON dt.thongtinphanloai_id = ttpl.id ");
+        sql.append("LEFT JOIN loaisanpham lsp ON ttpl.loaisanpham_id = lsp.id ");
+        sql.append("LEFT JOIN danhmuc dm ON lsp.danhmuc_id = dm.id ");
+        sql.append("LEFT JOIN hedieuhanh hd ON dm.hedieuhanh_id = hd.id ");
+        sql.append("LEFT JOIN thongsokythuat tsk ON dt.id = tsk.dienthoai_id ");
+        sql.append("LEFT JOIN thongtindienthoai tt ON dt.id = tt.dienthoai_id ");
         sql.append("LEFT JOIN khuyenmai km ON dt.id = km.dienthoai_id ");
         sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
         sql.append("LEFT JOIN khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
@@ -649,5 +649,254 @@ public class DienthoaiService {
                     .build();
         }
         return null;
+    }
+
+    //    get dữ liệu điện thoại admin
+    public List<Map<String, Object>> getPhoneProductsWithFilters1(
+            // List<Map<String, Object>> là cấu trúc dữ liệu được sử dụng để lưu trữ một danh sách các bản ghi, trong đó
+            // mỗi bản ghi được đại diện bởi một Map. Cụ thể, đây là một danh sách (List) mà mỗi phần tử của nó là một
+            // Map với các khóa là kiểu String và giá trị là kiểu Object
+            List<String> ram,
+            List<String> hedieuhanh,
+            List<String> boNho,
+            Long giaTu,
+            Long giaDen,
+            List<String> tinhnangdacbiet,
+            List<String> kichthuocmanhinh,
+            List<String> tinhnagcamera,
+            List<String> tansoquet,
+            List<String> kieumanhinh,
+            List<String> thietbidikem,
+            List<String> tinhtrang,
+            String tensanpham,
+            List<String> chipset) {
+
+        StringBuilder sql = new StringBuilder();
+        sql.append(
+                "SELECT dt.id, dt.tensanpham, dt.tinhtrang, dt.hinhanh, dt.hinhanhduyet, dt.giaban, dt.ram, dt.bonho, ");
+        sql.append(
+                "GROUP_CONCAT(ms.id, ',', ms.tenmausac, ',', ms.hinhanh, ',', ms.giaban, ',', COALESCE(kd.soluong, 0) ORDER BY ms.id SEPARATOR ';') AS mausac_list, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.phantramkhuyenmai ELSE NULL END AS phantramkhuyenmai, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.noidungkhuyenmai ELSE NULL END AS noidungkhuyenmai, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.ngaybatdau ELSE NULL END AS ngaybatdau, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.ngayketkhuc ELSE NULL END AS ngayketkhuc, ");
+        sql.append("tt.id AS thongtindienthoai_id, ");
+        sql.append("tsk.id AS thongsokythuat_id, ");
+        sql.append("km.id AS khuyenmai_id ");
+        sql.append("FROM dienthoai dt ");
+        sql.append("LEFT JOIN mausac ms ON dt.id = ms.dienthoai_id ");
+        sql.append("LEFT JOIN thongtinphanloai ttpl ON dt.thongtinphanloai_id = ttpl.id ");
+        sql.append("LEFT JOIN loaisanpham lsp ON ttpl.loaisanpham_id = lsp.id ");
+        sql.append("LEFT JOIN danhmuc dm ON lsp.danhmuc_id = dm.id ");
+        sql.append("LEFT JOIN hedieuhanh hd ON dm.hedieuhanh_id = hd.id ");
+        sql.append("LEFT JOIN thongsokythuat tsk ON dt.id = tsk.dienthoai_id ");
+        sql.append("LEFT JOIN thongtindienthoai tt ON dt.id = tt.dienthoai_id ");
+        sql.append("LEFT JOIN khuyenmai km ON dt.id = km.dienthoai_id ");
+        sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
+        sql.append("LEFT JOIN khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
+        sql.append("WHERE 1=1 ");
+        List<Object> parameters = new ArrayList<>();
+        // Thêm các điều kiện lọc cho RAM
+        if (ram != null && !ram.isEmpty()) {
+            sql.append("AND dt.ram IN (");
+            for (int i = 0; i < ram.size(); i++) {
+                sql.append("?");
+                if (i < ram.size() - 1) sql.append(", ");
+                parameters.add(ram.get(i));
+            }
+            sql.append(") ");
+        }
+
+        // Thêm điều kiện cho hệ điều hành
+        if (hedieuhanh != null && !hedieuhanh.isEmpty()) {
+            sql.append("AND hd.tenhedieuhanh IN (");
+            for (int i = 0; i < hedieuhanh.size(); i++) {
+                sql.append("?");
+                if (i < hedieuhanh.size() - 1) sql.append(", ");
+                parameters.add(hedieuhanh.get(i));
+            }
+            sql.append(") ");
+        }
+
+        // Thêm điều kiện cho bộ nhớ
+        if (boNho != null && !boNho.isEmpty()) {
+            sql.append("AND dt.bonho IN (");
+            for (int i = 0; i < boNho.size(); i++) {
+                sql.append("?");
+                if (i < boNho.size() - 1) sql.append(", ");
+                parameters.add(boNho.get(i));
+            }
+            sql.append(") ");
+        }
+
+        // Thêm điều kiện cho giá
+        if (giaTu != null && giaDen != null) {
+            sql.append("AND ms.giaban BETWEEN ? AND ? ");
+            parameters.add(giaTu);
+            parameters.add(giaDen);
+        }
+
+        if (tinhnangdacbiet != null && !tinhnangdacbiet.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tinhnangdacbiet.size(); i++) {
+                sql.append("tsk.tinhnangdacbiet LIKE ?");
+                if (i < tinhnangdacbiet.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tinhnangdacbiet.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (kichthuocmanhinh != null && !kichthuocmanhinh.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < kichthuocmanhinh.size(); i++) {
+                String size = kichthuocmanhinh.get(i);
+                try {
+                    double sizeValue = Double.parseDouble(size);
+                    if (sizeValue < 6) {
+                        sql.append("tsk.kichthuocmanhinh < 6");
+                    } else {
+                        sql.append("tsk.kichthuocmanhinh >= 6");
+                    }
+                } catch (NumberFormatException e) {
+                    sql.append("tsk.kichthuocmanhinh LIKE ?");
+                    parameters.add("%" + size + "%");
+                }
+                if (i < kichthuocmanhinh.size() - 1) sql.append(" OR ");
+            }
+            sql.append(") ");
+        }
+
+        if (tinhnagcamera != null && !tinhnagcamera.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tinhnagcamera.size(); i++) {
+                sql.append("tsk.tinhnagcamera LIKE ?");
+                if (i < tinhnagcamera.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tinhnagcamera.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (tansoquet != null && !tansoquet.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tansoquet.size(); i++) {
+                sql.append("tsk.tansoquet LIKE ?");
+                if (i < tansoquet.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tansoquet.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (kieumanhinh != null && !kieumanhinh.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < kieumanhinh.size(); i++) {
+                sql.append("tsk.kieumanhinh LIKE ?");
+                if (i < kieumanhinh.size() - 1) sql.append(" OR ");
+                parameters.add("%" + kieumanhinh.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (thietbidikem != null && !thietbidikem.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < thietbidikem.size(); i++) {
+                sql.append("tt.thietbidikem LIKE ?");
+                if (i < thietbidikem.size() - 1) sql.append(" OR ");
+                parameters.add("%" + thietbidikem.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (tinhtrang != null && !tinhtrang.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tinhtrang.size(); i++) {
+                sql.append("dt.tinhtrang LIKE ?");
+                if (i < tinhtrang.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tinhtrang.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        if (tensanpham != null && !tensanpham.isEmpty()) {
+            sql.append("AND dt.tensanpham COLLATE utf8mb4_general_ci LIKE ? ");
+            parameters.add("%" + tensanpham + "%");
+        }
+
+        // COLLATE utf8mb4_general_ci: Loại bỏ sự phân biệt dấu và chữ hoa/chữ thường khi so sánh chuỗi trong MySQL. Đây
+        // là bộ sắp xếp ký tự phổ biến dùng cho tiếng Việt.
+
+        if (chipset != null && !chipset.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < chipset.size(); i++) {
+                sql.append("tsk.chipset LIKE ?");
+                if (i < chipset.size() - 1) sql.append(" OR ");
+                parameters.add("%" + chipset.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        sql.append("GROUP BY dt.id, tt.id, tsk.id, km.id ");
+
+        // Thực hiện truy vấn
+        List<Map<String, Object>> results = jdbcTemplate.query(sql.toString(), parameters.toArray(), (rs, rowNum) -> {
+            // sql.toString là phương thức của StringBuilder dùng để chuyển nội dung của đối tượng sql (câu truy vấn đã
+            // được xây dựng) thành một chuỗi hoàn chỉnh (kiểu String). Khi đó, chuỗi này sẽ là truy vấn SQL cuối cùng
+            // được thực thi bởi jdbcTemplate.
+
+            // parameters.toArray()
+            // parameters là một List<Object> (danh sách các đối tượng) chứa các giá trị cần truyền vào câu truy vấn
+            // SQL. Các giá trị này được sử dụng để thay thế các dấu ? trong câu truy vấn SQL.
+            // parameters.toArray() là phương thức chuyển đổi danh sách parameters thành một mảng Object[] (mảng các đối
+            // tượng), vì phương thức query() của jdbcTemplate yêu cầu một mảng để sử dụng các tham số.
+
+            // (rs, rowNum)
+            // Đây là tham số của lambda expression, được sử dụng như một phần của RowMapper trong jdbcTemplate. Cụ thể:
+            // rs: Là viết tắt của ResultSet, đại diện cho kết quả của truy vấn SQL. ResultSet chứa dữ liệu từ các cột
+            // và hàng của bảng trong cơ sở dữ liệu.
+            // Bạn có thể truy xuất dữ liệu từ ResultSet bằng các phương thức như rs.getString(), rs.getLong(), v.v. để
+            // lấy dữ liệu từ các cột trong kết quả.
+            // rowNum: Là số thứ tự của dòng hiện tại trong ResultSet. Mỗi lần phương thức ánh xạ (mapping) xử lý một
+            // hàng của ResultSet, rowNum sẽ tăng lên một giá trị.
+            Map<String, Object> row = new LinkedHashMap<>(); // Dùng LinkedHashMap để duy trì thứ tự
+            row.put("id", rs.getLong("id"));
+            row.put("tensanpham", rs.getString("tensanpham"));
+            row.put("tinhtrang", rs.getString("tinhtrang"));
+            row.put("hinhanh", rs.getString("hinhanh"));
+            row.put("hinhanhduyet", rs.getString("hinhanhduyet"));
+            row.put("giaban", rs.getString("giaban"));
+            row.put("ram", rs.getString("ram"));
+            row.put("bonho", rs.getString("bonho"));
+            row.put("phantramkhuyenmai", rs.getObject("phantramkhuyenmai"));
+            row.put("noidungkhuyenmai", rs.getObject("noidungkhuyenmai"));
+            row.put("ngaybatdau", rs.getObject("ngaybatdau"));
+            row.put("ngayketkhuc", rs.getObject("ngayketkhuc"));
+            row.put("thongtindienthoai_id", rs.getLong("thongtindienthoai_id"));
+            row.put("thongsokythuat_id", rs.getLong("thongsokythuat_id"));
+            row.put("khuyenmai_id", rs.getLong("khuyenmai_id"));
+            // Xử lý danh sách màu sắc
+            String mausacList = rs.getString("mausac_list");
+            if (mausacList != null && !mausacList.isEmpty()) {
+                List<Map<String, Object>> mausacs = new ArrayList<>();
+                String[] mausacItems = mausacList.split(";");
+                for (String mausacItem : mausacItems) {
+                    String[] mausacDetails = mausacItem.split(",");
+                    Map<String, Object> mausac = new HashMap<>();
+                    mausac.put("id", Long.parseLong(mausacDetails[0]));
+                    mausac.put("tenmausac", mausacDetails[1]);
+                    mausac.put("hinhanh", mausacDetails[2]);
+                    mausac.put("giaban", Double.parseDouble(mausacDetails[3]));
+                    mausac.put("soluong", Integer.parseInt(mausacDetails[4])); // Số lượng theo màu sắc
+                    mausacs.add(mausac);
+                }
+                row.put("mausacs", mausacs);
+            }
+
+            return row;
+        });
+
+        return results;
     }
 }

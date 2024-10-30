@@ -35,4 +35,11 @@ public class ThongtindienthoaiController {
                 .result(thongtindienthoaiService.updateThongtindienthoai(id, request))
                 .build();
     }
+
+    @GetMapping("/{id}")
+    public ApiResponse<ThongtindienthoaiResponse> getThongtindienthoaiId(@PathVariable Long id) {
+        return ApiResponse.<ThongtindienthoaiResponse>builder()
+                .result(thongtindienthoaiService.findThongtindienthoai(id))
+                .build();
+    }
 }

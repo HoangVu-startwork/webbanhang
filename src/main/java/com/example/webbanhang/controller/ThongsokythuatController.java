@@ -1,12 +1,10 @@
 package com.example.webbanhang.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.ThongsokythuatRequest;
+import com.example.webbanhang.dto.request.ThongsokythuatsRequest;
 import com.example.webbanhang.dto.response.ThongsokythuatResponse;
 import com.example.webbanhang.service.ThongsokythuatService;
 
@@ -27,6 +25,21 @@ public class ThongsokythuatController {
     public ApiResponse<ThongsokythuatResponse> createThongsokythuat(@RequestBody ThongsokythuatRequest request) {
         return ApiResponse.<ThongsokythuatResponse>builder()
                 .result(thongsokythuatService.createThongsokythuat(request))
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<ThongsokythuatResponse> getDanhmucId(@PathVariable Long id) {
+        return ApiResponse.<ThongsokythuatResponse>builder()
+                .result(thongsokythuatService.findById(id))
+                .build();
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<ThongsokythuatResponse> updateThongtindienthoai(
+            @PathVariable Long id, @RequestBody ThongsokythuatsRequest request) {
+        return ApiResponse.<ThongsokythuatResponse>builder()
+                .result(thongsokythuatService.updateThongsokythuat(id, request))
                 .build();
     }
 }

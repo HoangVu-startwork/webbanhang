@@ -34,6 +34,8 @@ public class SecurityConfig {
         "/dienthoai/*/mausac/*",
         "/dienthoai/filter",
         "/dienthoai/filter/*",
+        "/dienthoai/dienthoai-filter",
+        "/dienthoai/dienthoai-filter/*",
         "/dienthoai/hedieuhanh/*",
         "/dienthoai/loaisanpham/*",
         "/dienthoai/danhmuc/*",
