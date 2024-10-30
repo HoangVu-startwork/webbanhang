@@ -15,5 +15,7 @@ public interface KhuyenmaiRepository extends JpaRepository<Khuyenmai, Long> {
 
     Khuyenmai findByDienthoai_Id(Long dienthoaiId);
 
+    List<Khuyenmai> findByDienthoaiId(Long dienthoaiId);
+
     List<Khuyenmai> findByDienthoai(Dienthoai dienthoai);
 }

@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.MausacRequest;
+import com.example.webbanhang.dto.request.MausacsRequest;
 import com.example.webbanhang.dto.response.MausacResponse;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Mausac;
@@ -30,8 +31,8 @@ public class MausacService {
     private final MausacRepository mausacRepository;
     private final MausacMapper mausacMapper;
 
-    public MausacResponse createMausac(MausacRequest request) {
-        Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
+    public MausacResponse createMausac(MausacsRequest request) {
+        Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
         if (dienthoai == null) {
             throw new AppException(ErrorCode.TENDIENTHOAI);
         }
@@ -41,7 +42,7 @@ public class MausacService {
         if (existingMausac != null) {
             throw new AppException(ErrorCode.MAUSACTONTAI);
         }
-        Mausac mausac = mausacMapper.toMausac(request);
+        Mausac mausac = mausacMapper.tosMausac(request);
         mausac.setDienthoai(dienthoai);
         Mausac savedMausac = mausacRepository.save(mausac);
         return mausacMapper.toMausacResponse(savedMausac);
@@ -74,15 +75,25 @@ public class MausacService {
                 throw new AppException(ErrorCode.MAUSACTONTAITRONGDIENTHOAI);
             }
             mausac.setDienthoai(dienthoai);
+
+            // Nếu tensanpham trong request không null và không rỗng, tìm kiếm đối tượng Dienthoai tương ứng bằng
+            // tensanpham.
+            // Nếu không tìm thấy Dienthoai, ném ra ngoại lệ AppException với mã lỗi ErrorCode.TENDIENTHOAI.
+            // Tìm kiếm xem tenmausac đó có tồn tại cho dienthoaiId của điện thoại mới không.
+            // Nếu tồn tại một Mausac khác có cùng tenmausac cho điện thoại này, ném ra ngoại lệ AppException với mã lỗi
+            // ErrorCode.MAUSACTONTAITRONGDIENTHOAI.
+
         }
 
         if (request.getGiaban() != null && !request.getGiaban().isEmpty()) {
             mausac.setGiaban(request.getGiaban());
         }
+        // Nếu giaban trong request không null và không rỗng, cập nhật giaban cho đối tượng Mausac.
 
         if (request.getHinhanh() != null && !request.getHinhanh().isEmpty()) {
             mausac.setHinhanh(request.getHinhanh());
         }
+        // Nếu hinhanh trong request không null và không rỗng, cập nhật hinhanh cho đối tượng Mausac.
 
         Mausac updatedMausac = mausacRepository.save(mausac);
         return mausacMapper.toMausacResponse(updatedMausac);
@@ -92,7 +103,7 @@ public class MausacService {
         mausacRepository.deleteById(id);
     }
 
-    public List<MausacResponse> getAllDanhmuc() {
+    public List<MausacResponse> getAllMausac() {
         return mausacRepository.findAll().stream()
                 .map(mausacMapper::toMausacResponse)
                 .toList();

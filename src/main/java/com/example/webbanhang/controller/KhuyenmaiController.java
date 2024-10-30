@@ -1,9 +1,8 @@
 package com.example.webbanhang.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.KhuyenmaiRequest;
@@ -27,5 +26,19 @@ public class KhuyenmaiController {
     public ApiResponse<KhuyenmaiResponse> createHoadon(@RequestBody KhuyenmaiRequest request) {
         KhuyenmaiResponse response = khuyenmaiService.saveKhuyenmai(request);
         return ApiResponse.<KhuyenmaiResponse>builder().result(response).build();
+    }
+
+    @GetMapping("/dienthoai/{idDienthoai}")
+    public ApiResponse<List<KhuyenmaiResponse>> getMausacs(@PathVariable Long idDienthoai) {
+        return ApiResponse.<List<KhuyenmaiResponse>>builder()
+                .result(khuyenmaiService.getKhuyenmaiByDienthoaiId(idDienthoai))
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<KhuyenmaiResponse> getKhuyenmaiId(@PathVariable Long id) {
+        return ApiResponse.<KhuyenmaiResponse>builder()
+                .result(khuyenmaiService.getKhuyenmaiById(id))
+                .build();
     }
 }

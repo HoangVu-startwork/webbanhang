@@ -53,7 +53,9 @@ public enum ErrorCode {
     KETNOINHUCAU(5030, "Nhu cầu điện thoại đã tồn tại", HttpStatus.BAD_REQUEST),
     NHUCAUDIENTHOAI(5031, "Nhu cầu điện thoại đã tồn tại", HttpStatus.BAD_REQUEST),
     YEUTHICH_EXISTED(5032, "Yêu thích đã tồn tại", HttpStatus.BAD_REQUEST),
-    YEUTHICH_NOT_EXISTED(5033, "Yêu thích chưa tồn tại", HttpStatus.NOT_FOUND);
+    YEUTHICH_NOT_EXISTED(5033, "Yêu thích chưa tồn tại", HttpStatus.NOT_FOUND),
+    DIENTHOAI_KHUYENTHICH(5034, "Điện thoại hiện chưa có khuyến mãi", HttpStatus.NOT_FOUND),
+    NOTKHUYENMAI_DIENTHOAI(5035, "Khuyến mãi đã tồn tại", HttpStatus.NOT_FOUND);
 
     private final int code;
     private final String message;

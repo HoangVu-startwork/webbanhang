@@ -48,6 +48,21 @@ public class KhuyenmaiService {
         return khuyenmaiMapper.toKhuyenmaiResponse(saveKhuyenmai);
     }
 
+    public List<KhuyenmaiResponse> getKhuyenmaiByDienthoaiId(Long dienthoaiId) {
+        List<Khuyenmai> khuyenmaiList = khuyenmaiRepository.findByDienthoaiId(dienthoaiId);
+        if (khuyenmaiList.isEmpty()) {
+            throw new AppException(ErrorCode.DIENTHOAI_KHUYENTHICH);
+        }
+        // Assuming only one promotion is active per phone
+        return khuyenmaiList.stream().map(khuyenmaiMapper::toKhuyenmaiResponse).toList();
+    }
+
+    public KhuyenmaiResponse getKhuyenmaiById(Long id) {
+        Khuyenmai khuyenmai =
+                khuyenmaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NOTKHUYENMAI_DIENTHOAI));
+        return khuyenmaiMapper.toKhuyenmaiResponse(khuyenmai);
+    }
+
     private DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Định dạng ngày tháng bạn đang sử dụng
 
