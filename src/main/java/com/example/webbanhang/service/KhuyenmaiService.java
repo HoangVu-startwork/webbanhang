@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.KhuyenmaiRequest;
+import com.example.webbanhang.dto.request.KhuyenmaisRequest;
 import com.example.webbanhang.dto.response.KhuyenmaiResponse;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Khuyenmai;
@@ -88,5 +89,62 @@ public class KhuyenmaiService {
             }
         }
         return null; // Không có khuyến mãi cho điện thoại này
+    }
+
+    public KhuyenmaiResponse uploaiKhuyenmai(Long id, KhuyenmaisRequest request) {
+        Khuyenmai khuyenmai =
+                khuyenmaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NOTKHUYENMAI_DIENTHOAI));
+
+        Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
+
+        if (dienthoai == null) {
+            throw new AppException(ErrorCode.TENDIENTHOAI);
+        }
+
+        if (request.getDienthoaiId() != null && request.getDienthoaiId() != 0) {
+            khuyenmai.setDienthoai(dienthoai);
+        }
+
+        if (request.getPhantramkhuyenmai() != null
+                && request.getPhantramkhuyenmai().isEmpty()) {
+            khuyenmai.setPhantramkhuyenmai(request.getPhantramkhuyenmai());
+        }
+
+        if (request.getNoidungkhuyenmai() != null
+                && request.getNoidungkhuyenmai().isEmpty()) {
+            khuyenmai.setNoidungkhuyenmai(request.getNoidungkhuyenmai());
+        }
+
+        if (request.getNgaybatdau() != null && request.getNgaybatdau().isEmpty()) {
+            khuyenmai.setNgaybatdau(String.valueOf(LocalDateTime.parse(request.getNgaybatdau(), DATE_TIME_FORMATTER)));
+        }
+
+        if (request.getNgayketkhuc() != null && request.getNgayketkhuc().isEmpty()) {
+            khuyenmai.setNgayketkhuc(
+                    String.valueOf(LocalDateTime.parse(request.getNgayketkhuc(), DATE_TIME_FORMATTER)));
+        }
+
+        Khuyenmai savedKhuyenmai = khuyenmaiRepository.save(khuyenmai);
+        return khuyenmaiMapper.toKhuyenmaiResponse(savedKhuyenmai);
+    }
+
+    public KhuyenmaiResponse saveKhuyenmaiId(KhuyenmaisRequest request) {
+        Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
+        if (dienthoai == null) {
+            throw new AppException(ErrorCode.TENDIENTHOAI);
+        }
+
+        Khuyenmai khuyenmai = khuyenmaiMapper.toKhuyenmaiId(request);
+        khuyenmai.setDienthoai(dienthoai);
+        khuyenmai.setNgaybatdau(String.valueOf(LocalDateTime.parse(request.getNgaybatdau(), DATE_TIME_FORMATTER)));
+        khuyenmai.setNgayketkhuc(String.valueOf(LocalDateTime.parse(request.getNgayketkhuc(), DATE_TIME_FORMATTER)));
+
+        Khuyenmai saveKhuyenmai = khuyenmaiRepository.save(khuyenmai);
+
+        return khuyenmaiMapper.toKhuyenmaiResponse(saveKhuyenmai);
+    }
+
+    public void deleteKhuyenmai(Long id) {
+        khuyenmaiRepository.deleteById(id);
     }
 }

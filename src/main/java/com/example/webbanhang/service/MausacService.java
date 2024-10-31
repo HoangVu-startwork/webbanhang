@@ -6,7 +6,6 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.webbanhang.dto.request.MausacRequest;
 import com.example.webbanhang.dto.request.MausacsRequest;
 import com.example.webbanhang.dto.response.MausacResponse;
 import com.example.webbanhang.entity.Dienthoai;
@@ -49,7 +48,7 @@ public class MausacService {
     }
 
     @Transactional
-    public MausacResponse updateMausac(Long id, MausacRequest request) {
+    public MausacResponse updateMausac(Long id, MausacsRequest request) {
         Mausac mausac = mausacRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MAUSAC));
 
         if (request.getTenmausac() != null && !request.getTenmausac().isEmpty()) {
@@ -62,8 +61,8 @@ public class MausacService {
             mausac.setTenmausac(request.getTenmausac());
         }
 
-        if (request.getTensanpham() != null && !request.getTensanpham().isEmpty()) {
-            Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
+        if (request.getDienthoaiId() != null && request.getDienthoaiId() != 0) {
+            Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
             if (dienthoai == null) {
                 throw new AppException(ErrorCode.TENDIENTHOAI);
             }

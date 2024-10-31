@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.webbanhang.dto.request.ThongtindienthoaiRequest;
+import com.example.webbanhang.dto.request.ThongtindienthoaisRequest;
 import com.example.webbanhang.dto.response.ThongtindienthoaiResponse;
 import com.example.webbanhang.entity.Dienthoai;
 import com.example.webbanhang.entity.Thongtindienthoai;
@@ -56,8 +56,8 @@ public class ThongtindienthoaiService {
     //    }
 
     @Transactional
-    public ThongtindienthoaiResponse createThongtindienthoai(ThongtindienthoaiRequest request) {
-        if (request.getTensanpham() == null || request.getTensanpham().isEmpty()) {
+    public ThongtindienthoaiResponse createThongtindienthoai(ThongtindienthoaisRequest request) {
+        if (request.getDienthoaiId() == null || request.getDienthoaiId() == 0) {
             throw new AppException(ErrorCode.TENSANPHAM);
         }
         if (request.getBaohanh() == null || request.getBaohanh().isEmpty()) {
@@ -69,7 +69,7 @@ public class ThongtindienthoaiService {
         if (request.getTinhtrangmay() == null || request.getTinhtrangmay().isEmpty()) {
             throw new AppException(ErrorCode.TINHTRANGMAY);
         }
-        Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
+        Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
         if (dienthoai == null) {
             throw new AppException(ErrorCode.TENDIENTHOAI);
         }
@@ -78,7 +78,7 @@ public class ThongtindienthoaiService {
             throw new AppException(ErrorCode.THONGTINDIENTHOAI);
         }
 
-        Thongtindienthoai thongtindienthoai = thongtindienthoaiMapper.toThongtindienthoai(request);
+        Thongtindienthoai thongtindienthoai = thongtindienthoaiMapper.upThongtindienthoai(request);
         thongtindienthoai.setDienthoai(dienthoai);
         Thongtindienthoai savedThongtindienthoai = thongtindienthoaiRepository.save(thongtindienthoai);
         return thongtindienthoaiMapper.toThongtindienthoaiResponse(savedThongtindienthoai);
@@ -115,14 +115,14 @@ public class ThongtindienthoaiService {
     //        return thongtindienthoaiMapper.toThongtindienthoaiResponse(updatedThongtindienthoai);
     //    }
     @Transactional
-    public ThongtindienthoaiResponse updateThongtindienthoai(Long id, ThongtindienthoaiRequest request) {
+    public ThongtindienthoaiResponse updateThongtindienthoai(Long id, ThongtindienthoaisRequest request) {
         Thongtindienthoai thongtindienthoai = thongtindienthoaiRepository
                 .findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.THONGTINDIENTHOAI));
 
         // Kiểm tra nếu tensanpham được cung cấp
-        if (request.getTensanpham() != null && !request.getTensanpham().isEmpty()) {
-            Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
+        if (request.getDienthoaiId() != null && request.getDienthoaiId() != 0) {
+            Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
 
             // Nếu tensanpham mới không tồn tại trong bảng dienthoai
             if (dienthoai == null) {
@@ -160,5 +160,9 @@ public class ThongtindienthoaiService {
         Thongtindienthoai thongtindienthoai =
                 thongtindienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DANHMUC));
         return thongtindienthoaiMapper.toThongtindienthoaiResponse(thongtindienthoai);
+    }
+
+    public void deleteThongtindienthoai(Long id) {
+        thongtindienthoaiRepository.deleteById(id);
     }
 }

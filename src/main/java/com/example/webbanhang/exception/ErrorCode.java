@@ -37,6 +37,7 @@ public enum ErrorCode {
     HEDIEUHANHTONTAI(5020, "Hệ điều hành tồn tại", HttpStatus.BAD_REQUEST),
     DANHMUC(5014, "Danh mục không tồn tại", HttpStatus.NOT_FOUND),
     DIENTHOAI(5015, "Diện thoại đã tồn tại", HttpStatus.BAD_REQUEST),
+    DIENTHOAI_KYTHUAT(5015, "Diện thoại không tồn tại", HttpStatus.BAD_REQUEST),
     MAUSAC(5016, "Màu sắc không tồn tại", HttpStatus.NOT_FOUND),
     THONGTINPHANLOAIDIENTHOAI(5017, "Thông tin phân loại không tồn tại", HttpStatus.NOT_FOUND),
     KHOHANG(5018, "Hiện tại không còn hàng", HttpStatus.BAD_REQUEST),

@@ -46,15 +46,32 @@ public class ThongsokythuatService {
         return thongsokythuatMapper.toThongsokythuatResponse(savedThongsokythuat);
     }
 
+    @Transactional
+    public ThongsokythuatResponse createThongsokythuatId(ThongsokythuatsRequest request) {
+        Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
+        if (dienthoai == null) {
+            throw new AppException(ErrorCode.TENDIENTHOAI);
+        }
+
+        if (thongsokythuatRepository.findByDienthoaiId(dienthoai.getId()) != null) {
+            throw new AppException(ErrorCode.THONGSOKYTHUAT);
+        }
+
+        Thongsokythuat thongsokythuat = thongsokythuatMapper.upThongsokythuat(request);
+        thongsokythuat.setDienthoai(dienthoai);
+        Thongsokythuat savedThongsokythuat = thongsokythuatRepository.save(thongsokythuat);
+        return thongsokythuatMapper.upThongsokythuatResponse(savedThongsokythuat);
+    }
+
     public ThongsokythuatResponse findById(Long id) {
         Thongsokythuat thongsokythuat =
-                thongsokythuatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DANHMUC));
+                thongsokythuatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DIENTHOAI_KYTHUAT));
         return thongsokythuatMapper.toThongsokythuatResponse(thongsokythuat);
     }
 
     public ThongsokythuatResponse updateThongsokythuat(Long id, ThongsokythuatsRequest request) {
         Thongsokythuat thongsokythuat =
-                thongsokythuatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DANHMUC));
+                thongsokythuatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DIENTHOAI_KYTHUAT));
 
         if (request.getDienthoaiId() != null && request.getDienthoaiId() != 0) {
             Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
@@ -231,5 +248,9 @@ public class ThongsokythuatService {
 
         Thongsokythuat updatedThongsokythuat = thongsokythuatRepository.save(thongsokythuat);
         return thongsokythuatMapper.upThongsokythuatResponse(updatedThongsokythuat);
+    }
+
+    public void deleteThongsokythuat(Long id) {
+        thongsokythuatRepository.deleteById(id);
     }
 }

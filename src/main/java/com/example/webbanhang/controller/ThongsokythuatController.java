@@ -28,6 +28,13 @@ public class ThongsokythuatController {
                 .build();
     }
 
+    @PostMapping("/dienthoai")
+    public ApiResponse<ThongsokythuatResponse> createThongsokythuatId(@RequestBody ThongsokythuatsRequest request) {
+        return ApiResponse.<ThongsokythuatResponse>builder()
+                .result(thongsokythuatService.createThongsokythuatId(request))
+                .build();
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<ThongsokythuatResponse> getDanhmucId(@PathVariable Long id) {
         return ApiResponse.<ThongsokythuatResponse>builder()
@@ -41,5 +48,11 @@ public class ThongsokythuatController {
         return ApiResponse.<ThongsokythuatResponse>builder()
                 .result(thongsokythuatService.updateThongsokythuat(id, request))
                 .build();
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteThongsokythuat(@PathVariable Long id) {
+        thongsokythuatService.deleteThongsokythuat(id);
+        return "Xoá thành công";
     }
 }
