@@ -3,7 +3,7 @@ package com.example.webbanhang.controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
-import com.example.webbanhang.dto.request.ThongtindienthoaiRequest;
+import com.example.webbanhang.dto.request.ThongtindienthoaisRequest;
 import com.example.webbanhang.dto.response.ThongtindienthoaiResponse;
 import com.example.webbanhang.service.ThongtindienthoaiService;
 
@@ -22,7 +22,7 @@ public class ThongtindienthoaiController {
 
     @PostMapping
     public ApiResponse<ThongtindienthoaiResponse> createThongtindienthoai(
-            @RequestBody ThongtindienthoaiRequest request) {
+            @RequestBody ThongtindienthoaisRequest request) {
         return ApiResponse.<ThongtindienthoaiResponse>builder()
                 .result(thongtindienthoaiService.createThongtindienthoai(request))
                 .build();
@@ -30,7 +30,7 @@ public class ThongtindienthoaiController {
 
     @PutMapping("/{id}")
     public ApiResponse<ThongtindienthoaiResponse> updateThongtindienthoai(
-            @PathVariable Long id, @RequestBody ThongtindienthoaiRequest request) {
+            @PathVariable Long id, @RequestBody ThongtindienthoaisRequest request) {
         return ApiResponse.<ThongtindienthoaiResponse>builder()
                 .result(thongtindienthoaiService.updateThongtindienthoai(id, request))
                 .build();
@@ -41,5 +41,11 @@ public class ThongtindienthoaiController {
         return ApiResponse.<ThongtindienthoaiResponse>builder()
                 .result(thongtindienthoaiService.findThongtindienthoai(id))
                 .build();
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteThongtindienthoai(@PathVariable Long id) {
+        thongtindienthoaiService.deleteThongtindienthoai(id);
+        return "Xoá thành công";
     }
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
-import com.example.webbanhang.dto.request.MausacRequest;
 import com.example.webbanhang.dto.request.MausacsRequest;
 import com.example.webbanhang.dto.response.MausacResponse;
 import com.example.webbanhang.service.MausacService;
@@ -31,7 +30,7 @@ public class MausacController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<MausacResponse> updateMausac(@PathVariable Long id, @RequestBody MausacRequest request) {
+    public ApiResponse<MausacResponse> updateMausac(@PathVariable Long id, @RequestBody MausacsRequest request) {
         return ApiResponse.<MausacResponse>builder()
                 .result(mausacService.updateMausac(id, request))
                 .build();
@@ -49,5 +48,11 @@ public class MausacController {
         return ApiResponse.<MausacResponse>builder()
                 .result(mausacService.getmausacId(id))
                 .build();
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteMausac(@PathVariable Long id) {
+        mausacService.deleteMausac(id);
+        return "Xoá thành công";
     }
 }
