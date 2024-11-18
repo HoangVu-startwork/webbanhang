@@ -1,5 +1,7 @@
 package com.example.webbanhang.dto.request;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ThuonghieumenuRequest {
-    private String hinhanh;
-    private String label;
-    private String text;
-    private String tinhtrang;
+public class NhapkhosRequest {
+    private String email;
+    private String soluong;
     private Long dienthoaiId;
-    private String dob;
+    private Long mausacId;
+    private LocalDate dob;
 }

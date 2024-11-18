@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ThuonghieumenuResponse {
+public class ThuonghieumenusResponse {
     private Long id;
     private String hinhanh;
     private String label;
@@ -17,4 +17,5 @@ public class ThuonghieumenuResponse {
     private String tinhtrang;
     private Long dienthoaiId;
     private String dob;
+    private String tenSanPham;
 }

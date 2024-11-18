@@ -1,5 +1,7 @@
 package com.example.webbanhang.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.KhodienthoaiRequest;
@@ -52,5 +54,12 @@ public class KhodienthoaiService {
         khodienthoai.setMausac(mausac);
         Khodienthoai savedKhodienthoai = khodienthoaiRepository.save(khodienthoai);
         return khodienthoaiMapper.toKhodienthoaiResponse(savedKhodienthoai);
+    }
+
+    public List<KhodienthoaiResponse> findAllKhodienthoai() {
+        List<Khodienthoai> khodienthoai = khodienthoaiRepository.findAll();
+        return khodienthoai.stream()
+                .map(khodienthoaiMapper::toKhodienthoaiResponse)
+                .toList();
     }
 }

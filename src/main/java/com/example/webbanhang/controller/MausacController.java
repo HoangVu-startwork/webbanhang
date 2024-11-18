@@ -55,4 +55,11 @@ public class MausacController {
         mausacService.deleteMausac(id);
         return "Xoá thành công";
     }
+
+    @GetMapping("/dienthoai/{dienthoaiId}")
+    public ApiResponse<List<MausacResponse>> getMausacsByDienthoaiId(@PathVariable Long dienthoaiId) {
+        return ApiResponse.<List<MausacResponse>>builder()
+                .result(mausacService.findByDienthoaiId(dienthoaiId))
+                .build();
+    }
 }

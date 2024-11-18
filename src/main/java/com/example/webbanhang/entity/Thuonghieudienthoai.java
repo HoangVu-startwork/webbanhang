@@ -21,7 +21,11 @@ public class Thuonghieudienthoai {
 
     private String hinhanh;
 
-    @ManyToOne
+    private String tinhtrang;
+
+    private String dob;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "dienthoai_id")
     private Dienthoai dienthoai;
 }

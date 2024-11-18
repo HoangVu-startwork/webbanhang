@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.webbanhang.entity.Nhapkho;
 
 @Repository
-public interface NhapkhoRepository extends JpaRepository<Nhapkho, Long> {}
+public interface NhapkhoRepository extends JpaRepository<Nhapkho, Long> {
+    Nhapkho findByid(Long id);
+}

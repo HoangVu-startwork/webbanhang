@@ -112,4 +112,10 @@ public class MausacService {
         Mausac mausacs = mausacRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MAUSAC));
         return mausacMapper.toMausacResponse(mausacs);
     }
+
+    public List<MausacResponse> findByDienthoaiId(Long dienthoaiId) {
+        return mausacRepository.findByDienthoaiId(dienthoaiId).stream()
+                .map(mausacMapper::toMausacResponse)
+                .toList();
+    }
 }

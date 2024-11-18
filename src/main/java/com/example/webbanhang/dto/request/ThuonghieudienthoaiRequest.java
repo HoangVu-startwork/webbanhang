@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ThuonghieudienthoaiRequest {
     private String tenthuonghieu;
-
+    private String dob;
     private String hinhanh;
+    private String tinhtrang;
     private Long dienthoaiId;
 }

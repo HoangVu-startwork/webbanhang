@@ -29,6 +29,13 @@ public class MuclucController {
                 .build();
     }
 
+    @PutMapping("/{id}")
+    public ApiResponse<MuclucResponse> updateMucluc(@PathVariable Long id, @RequestBody MuclucRequest request) {
+        return ApiResponse.<MuclucResponse>builder()
+                .result(muclucService.updateMucluc(id, request))
+                .build();
+    }
+
     @GetMapping
     ApiResponse<List<MuclucResponse>> getAllDanhmuc() {
         return ApiResponse.<List<MuclucResponse>>builder()

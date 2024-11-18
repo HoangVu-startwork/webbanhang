@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.DienthoaiRequest;
 import com.example.webbanhang.dto.request.DienthoaihethongRequest;
+import com.example.webbanhang.dto.request.DienthoaisRequest;
 import com.example.webbanhang.dto.request.SoSanhDienThoaiResponse;
 import com.example.webbanhang.dto.response.*;
 import com.example.webbanhang.entity.*;
@@ -69,12 +70,14 @@ public class DienthoaiService {
     }
 
     @Transactional
-    public DienthoaiResponse updateDienthoai(Long id, DienthoaiRequest request) {
+    public DienthoaiResponse updateDienthoai(Long id, DienthoaisRequest request) {
         Dienthoai dienthoai =
                 dienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TENDIENTHOAI));
 
-        if (request.getTenphanloai() != null && !request.getTenphanloai().isEmpty()) {
-            Thongtinphanloai thongtinphanloai = thongtinphanloaiRepository.findByTenphanloai(request.getTenphanloai());
+        if (request.getThongtinphanloaiId() != null
+                && !request.getThongtinphanloaiId()
+                        .equals(dienthoai.getThongtinphanloai().getId())) {
+            Thongtinphanloai thongtinphanloai = thongtinphanloaiRepository.findByid(request.getThongtinphanloaiId());
             if (thongtinphanloai == null) {
                 throw new AppException(ErrorCode.DANHMUC);
             }
@@ -898,5 +901,16 @@ public class DienthoaiService {
         });
 
         return results;
+    }
+
+    public DienthoaiResponse getDienthoaiById(Long id) {
+        Dienthoai dienthoai =
+                dienthoaiRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TENDIENTHOAI));
+        return dienthoaiMapper.toDienthoaiResponse(dienthoai);
+    }
+
+    public List<DienthoaiResponse> findAlldienthoai() {
+        List<Dienthoai> dienthoais = dienthoaiRepository.findAll();
+        return dienthoais.stream().map(dienthoaiMapper::toDienthoaiResponse).toList();
     }
 }

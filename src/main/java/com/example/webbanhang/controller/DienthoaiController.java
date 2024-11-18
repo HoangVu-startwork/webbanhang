@@ -7,10 +7,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.*;
-import com.example.webbanhang.dto.response.DienthoaiResponse;
-import com.example.webbanhang.dto.response.DienthoaihethongResponse;
-import com.example.webbanhang.dto.response.ThongtinalldienthoaiResponse;
-import com.example.webbanhang.dto.response.ThongtinphanloaidienthoaiResponse;
+import com.example.webbanhang.dto.response.*;
 import com.example.webbanhang.repository.DienthoaiRepository;
 import com.example.webbanhang.service.DienthoaiService;
 
@@ -37,7 +34,7 @@ public class DienthoaiController {
 
     @PutMapping("/{id}")
     public ApiResponse<DienthoaiResponse> updateDienthoai(
-            @PathVariable Long id, @RequestBody DienthoaiRequest request) {
+            @PathVariable Long id, @RequestBody DienthoaisRequest request) {
         return ApiResponse.<DienthoaiResponse>builder()
                 .result(dienthoaiService.updateDienthoai(id, request))
                 .build();
@@ -215,5 +212,19 @@ public class DienthoaiController {
                 tinhtrangList,
                 tensanpham,
                 chipsetList);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<DienthoaiResponse> getDienthoaiId(@PathVariable Long id) {
+        return ApiResponse.<DienthoaiResponse>builder()
+                .result(dienthoaiService.getDienthoaiById(id))
+                .build();
+    }
+
+    @GetMapping
+    ApiResponse<List<DienthoaiResponse>> getAllDienthoai() {
+        return ApiResponse.<List<DienthoaiResponse>>builder()
+                .result(dienthoaiService.findAlldienthoai())
+                .build();
     }
 }

@@ -2,12 +2,14 @@ package com.example.webbanhang.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.NhapkhoRequest;
+import com.example.webbanhang.dto.request.NhapkhosRequest;
 import com.example.webbanhang.dto.response.NhapkhoResponse;
 import com.example.webbanhang.entity.*;
 import com.example.webbanhang.exception.AppException;
@@ -33,15 +35,15 @@ public class NhapkhoService {
     UserRepository userRepository;
 
     @Transactional
-    public NhapkhoResponse nhapKho(NhapkhoRequest request) {
+    public NhapkhoResponse nhapKho(NhapkhosRequest request) {
         // Retrieve Dienthoai and Mausac objects using their IDs from the request
-        Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
+        Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
         if (dienthoai == null) {
             throw new AppException(ErrorCode.TENDIENTHOAI);
         }
 
         // Tìm thông tin màu sắc
-        Mausac mausac = mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), request.getTenmausac());
+        Mausac mausac = mausacRepository.findByDienthoai_IdAndId(dienthoai.getId(), request.getMausacId());
         if (mausac == null) {
             throw new AppException(ErrorCode.MAUSAC);
         }
@@ -51,7 +53,7 @@ public class NhapkhoService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         // Convert request to entity
-        Nhapkho nhapkho = nhapkhoMapper.toGiohang(request);
+        Nhapkho nhapkho = nhapkhoMapper.toGiohangs(request);
 
         // Set Dienthoai and Mausac in Nhapkho entity
         nhapkho.setDienthoai(dienthoai);
@@ -170,5 +172,17 @@ public class NhapkhoService {
             khodienthoai.setSoluong(String.valueOf(updatedSoluong));
             khodienthoaiRepository.save(khodienthoai);
         }
+    }
+
+    public List<NhapkhoResponse> findAllNhapkho() {
+        List<Nhapkho> nhapkho = nhapkhoRepository.findAll();
+        return nhapkho.stream().map(nhapkhoMapper::toNhapkhoResponse).toList();
+    }
+
+    public NhapkhoResponse getNhapkho(Long id) {
+        Nhapkho nhapkho =
+                nhapkhoRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NHAPKHO_NOT_FOUND));
+
+        return nhapkhoMapper.toNhapkhoResponse(nhapkho);
     }
 }

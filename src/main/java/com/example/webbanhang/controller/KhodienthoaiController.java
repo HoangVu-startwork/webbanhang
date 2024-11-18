@@ -1,9 +1,8 @@
 package com.example.webbanhang.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.KhodienthoaiRequest;
@@ -27,6 +26,13 @@ public class KhodienthoaiController {
     public ApiResponse<KhodienthoaiResponse> createKhodienthoai(@RequestBody KhodienthoaiRequest request) {
         return ApiResponse.<KhodienthoaiResponse>builder()
                 .result(khodienthoaiService.addKhodienthoai(request))
+                .build();
+    }
+
+    @GetMapping
+    ApiResponse<List<KhodienthoaiResponse>> getAllHedieuhanh() {
+        return ApiResponse.<List<KhodienthoaiResponse>>builder()
+                .result(khodienthoaiService.findAllKhodienthoai())
                 .build();
     }
 }

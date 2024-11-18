@@ -69,4 +69,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Danhgia> danhgias;
+
+    @OneToMany(mappedBy = "user")
+    private List<Thongsouser> thongsousers;
 }

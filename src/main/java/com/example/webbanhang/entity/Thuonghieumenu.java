@@ -19,8 +19,9 @@ public class Thuonghieumenu {
     private String label;
     private String text;
     private String tinhtrang;
+    private String dob;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "dienthoai_id")
     private Dienthoai dienthoai;
 }

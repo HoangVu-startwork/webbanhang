@@ -34,25 +34,37 @@ public class UploadController {
         try {
             // Kiểm tra nếu file rỗng
             if (file.isEmpty()) {
-                log.warn("Uploaded file is empty.");
                 return ResponseEntity.badRequest().body("File not found");
             }
 
             // Tải ảnh lên Cloudinary
             Map<?, ?> uploadResult =
                     cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "image-mucluc"));
-
-            // Log kết quả upload
-            log.info("Uploaded image URL: {}", uploadResult.get("secure_url"));
-
             // Trả về URL của ảnh đã upload
             return ResponseEntity.ok((String) uploadResult.get("secure_url"));
         } catch (IOException e) {
-            log.error("Failed to upload image", e);
             return ResponseEntity.status(500).body("Failed to upload image: " + e.getMessage());
         } catch (Exception e) {
-            log.error("An unexpected error occurred", e);
             return ResponseEntity.status(500).body("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/image-thuonghieu")
+    public ResponseEntity<String> uploadImageThuonghieu(@RequestParam("image") MultipartFile file) {
+        try {
+            // Kiểm tra nếu file rỗng
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("Không tìm thấy dữ liệu");
+            }
+            // Tải ảnh lên Cloudinary
+            Map<?, ?> uploadResult =
+                    cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "image-mucluc"));
+            // Trả về URL của ảnh đã upload
+            return ResponseEntity.ok((String) uploadResult.get("secure_url"));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Không tải được hình ảnh lên: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Đã xảy ra lỗi không mong muốn: " + e.getMessage());
         }
     }
 
@@ -61,9 +73,12 @@ public class UploadController {
         try {
             // Trích xuất public_id từ URL
             String publicId = extractPublicIdFromUrl(imageUrl);
-            if (publicId == null) {
-                return ResponseEntity.badRequest().body("Invalid image URL");
+            if (publicId == null || publicId.isEmpty()) {
+                // log.error("URL ảnh không hợp lệ: " + imageUrl);
+                return ResponseEntity.badRequest().body("URL ảnh không hợp lệ");
             }
+
+            // log.info("Đang xóa ảnh với public ID: " + publicId);
 
             // Xóa ảnh khỏi Cloudinary
             Map<?, ?> result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
@@ -71,28 +86,38 @@ public class UploadController {
             // Kiểm tra kết quả xóa
             String resultStatus = (String) result.get("result");
             if ("ok".equals(resultStatus)) {
-                return ResponseEntity.ok("Image deleted successfully");
+                return ResponseEntity.ok("Xóa ảnh thành công");
             } else {
-                return ResponseEntity.status(400).body("Failed to delete image");
+                // log.error("Xóa ảnh thất bại. Phản hồi từ Cloudinary: " + result);
+                return ResponseEntity.status(400).body("Xóa ảnh thất bại: " + result.get("result"));
             }
         } catch (URISyntaxException e) {
-            log.error("Invalid URL format", e);
-            return ResponseEntity.badRequest().body("Invalid URL format: " + e.getMessage());
+            // log.error("Định dạng URL không hợp lệ", e);
+            return ResponseEntity.badRequest().body("Định dạng URL không hợp lệ: " + e.getMessage());
         } catch (Exception e) {
-            log.error("Failed to delete image", e);
-            return ResponseEntity.status(500).body("Failed to delete image: " + e.getMessage());
+            // log.error("Xóa ảnh thất bại", e);
+            return ResponseEntity.status(500).body("Xóa ảnh thất bại: " + e.getMessage());
         }
     }
 
     private String extractPublicIdFromUrl(String imageUrl) throws URISyntaxException {
         URI uri = new URI(imageUrl);
-        String path = uri.getPath(); // /du6ybb3by/image/upload/v1727429115/test-avart/file_xxcjpq.png
+        String path = uri.getPath(); // /du6ybb3by/image/upload/v1724915806/vutgzevznfdmbwn6lsxy.png
+        // log.info("Đường dẫn của URI: " + path);
         String[] segments = path.split("/");
+        if (segments.length < 3) {
+            // log.error("Đường dẫn URI không đủ các đoạn cần thiết: " + path);
+            return null; // Không hợp lệ nếu không đủ đoạn đường dẫn
+        }
 
         // Public ID là tất cả sau "upload/" và trước ".<file extension>"
-        String publicIdWithExtension = segments[segments.length - 1]; // file_xxcjpq.png
-        String publicId = publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf(".")); // file_xxcjpq
-        return segments[segments.length - 2] + "/" + publicId; // test-avart/file_xxcjpq
+        String publicIdWithExtension = segments[segments.length - 1]; // vutgzevznfdmbwn6lsxy.png
+        // log.info("Public ID kèm phần mở rộng: " + publicIdWithExtension);
+        String publicId =
+                publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf(".")); // vutgzevznfdmbwn6lsxy
+        String fullPublicId = segments[segments.length - 2] + "/" + publicId; // v1724915806/vutgzevznfdmbwn6lsxy
+        // log.info("Public ID đầy đủ: " + fullPublicId);
+        return fullPublicId;
     }
 
     @PostMapping("/image-dienthoai")
@@ -100,7 +125,6 @@ public class UploadController {
         try {
             // Kiểm tra nếu file rỗng
             if (file.isEmpty()) {
-                log.warn("Uploaded file is empty.");
                 return ResponseEntity.badRequest().body("File not found");
             }
 
@@ -108,16 +132,11 @@ public class UploadController {
             Map<?, ?> uploadResult =
                     cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "dienthoai"));
 
-            // Log kết quả upload
-            log.info("Uploaded image URL: {}", uploadResult.get("secure_url"));
-
             // Trả về URL của ảnh đã upload
             return ResponseEntity.ok((String) uploadResult.get("secure_url"));
         } catch (IOException e) {
-            log.error("Failed to upload image", e);
             return ResponseEntity.status(500).body("Failed to upload image: " + e.getMessage());
         } catch (Exception e) {
-            log.error("An unexpected error occurred", e);
             return ResponseEntity.status(500).body("An unexpected error occurred: " + e.getMessage());
         }
     }
@@ -127,7 +146,6 @@ public class UploadController {
         try {
             // Kiểm tra nếu không có file nào được upload
             if (files.length == 0) {
-                log.warn("No files uploaded.");
                 return ResponseEntity.badRequest().body("No files found");
             }
 
@@ -137,17 +155,11 @@ public class UploadController {
             // Tải từng ảnh lên Cloudinary
             for (MultipartFile file : files) {
                 if (file.isEmpty()) {
-                    log.warn("One of the uploaded files is empty.");
                     continue; // Bỏ qua file rỗng
                 }
-
                 // Tải ảnh lên Cloudinary
                 Map<?, ?> uploadResult =
                         cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "anhduyetdienthoai"));
-
-                // Log kết quả upload
-                log.info("Uploaded image URL: {}", uploadResult.get("secure_url"));
-
                 // Thêm URL vào danh sách
                 uploadedUrls.add((String) uploadResult.get("secure_url"));
             }
@@ -156,10 +168,8 @@ public class UploadController {
             String responseUrls = String.join(",", uploadedUrls);
             return ResponseEntity.ok(responseUrls);
         } catch (IOException e) {
-            log.error("Failed to upload images", e);
             return ResponseEntity.status(500).body("Failed to upload images: " + e.getMessage());
         } catch (Exception e) {
-            log.error("An unexpected error occurred", e);
             return ResponseEntity.status(500).body("An unexpected error occurred: " + e.getMessage());
         }
     }
