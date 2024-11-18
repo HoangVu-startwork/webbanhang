@@ -73,7 +73,9 @@ public class ThongsokythuatService {
         Thongsokythuat thongsokythuat =
                 thongsokythuatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DIENTHOAI_KYTHUAT));
 
-        if (request.getDienthoaiId() != null && request.getDienthoaiId() != 0) {
+        if (request.getDienthoaiId() != null
+                && !request.getDienthoaiId()
+                        .equals(thongsokythuat.getDienthoai().getId())) {
             Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
 
             // Nếu tensanpham mới không tồn tại trong bảng dienthoai

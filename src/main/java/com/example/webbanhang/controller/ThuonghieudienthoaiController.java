@@ -2,11 +2,12 @@ package com.example.webbanhang.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.example.webbanhang.dto.request.ApiResponse;
+import com.example.webbanhang.dto.request.ThuonghieudienthoaiRequest;
 import com.example.webbanhang.dto.response.ThuonghieudienthoaiResponse;
+import com.example.webbanhang.dto.response.ThuonghieudienthoaisResponse;
 import com.example.webbanhang.service.ThuonghieudienthoaiService;
 
 import lombok.AccessLevel;
@@ -23,7 +24,36 @@ public class ThuonghieudienthoaiController {
     ThuonghieudienthoaiService thuonghieudienthoaiService;
 
     @GetMapping("/all")
-    public List<ThuonghieudienthoaiResponse> getAllThuonghieudienthoai() {
+    public List<ThuonghieudienthoaisResponse> getAllThuonghieudienthoai() {
         return thuonghieudienthoaiService.getAllThuonghieudienthoai();
+    }
+
+    @GetMapping("/all-thuonghieu")
+    public List<ThuonghieudienthoaisResponse> getAllThuonghieudienthoaiweb() {
+        return thuonghieudienthoaiService.getAllThuonghieudienthoaiweb();
+    }
+
+    @PostMapping("/add")
+    public ThuonghieudienthoaiResponse addThuonghieudienthoai(@RequestBody ThuonghieudienthoaiRequest request) {
+        return thuonghieudienthoaiService.addThuonghieudienthoai(request);
+    }
+
+    @PutMapping("/update/{id}")
+    public ThuonghieudienthoaiResponse updateThuonghieudienthoai(
+            @PathVariable Long id, @RequestBody ThuonghieudienthoaiRequest request) {
+        return thuonghieudienthoaiService.updateThuonghieudienthoai(id, request);
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<ThuonghieudienthoaisResponse> getIdThuonghieudienthoai(@PathVariable Long id) {
+        return ApiResponse.<ThuonghieudienthoaisResponse>builder()
+                .result(thuonghieudienthoaiService.findThuonghieudienthoai(id))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteThuonghieudienthoai(@PathVariable Long id) {
+        thuonghieudienthoaiService.deletethuonghieudienthoai(id);
+        return "Xoá thương hiệu điện thoại thành công";
     }
 }

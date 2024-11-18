@@ -29,6 +29,14 @@ public class HedieuhanhController {
                 .build();
     }
 
+    @PutMapping("/{id}")
+    public ApiResponse<HedieuhanhResponse> updateHedieuhanh(
+            @PathVariable Long id, @RequestBody HedieuhanhRequest request) {
+        return ApiResponse.<HedieuhanhResponse>builder()
+                .result(hedieuhanhService.updateHedieuhanh(id, request))
+                .build();
+    }
+
     @GetMapping
     ApiResponse<List<HedieuhanhResponse>> getAllHedieuhanh() {
         return ApiResponse.<List<HedieuhanhResponse>>builder()

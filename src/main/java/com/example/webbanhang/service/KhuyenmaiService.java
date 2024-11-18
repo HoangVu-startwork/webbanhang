@@ -97,29 +97,26 @@ public class KhuyenmaiService {
 
         Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
 
-        if (dienthoai == null) {
-            throw new AppException(ErrorCode.TENDIENTHOAI);
-        }
-
-        if (request.getDienthoaiId() != null && request.getDienthoaiId() != 0) {
+        if (request.getDienthoaiId() != null
+                && !request.getDienthoaiId().equals(khuyenmai.getDienthoai().getId())) {
             khuyenmai.setDienthoai(dienthoai);
         }
 
         if (request.getPhantramkhuyenmai() != null
-                && request.getPhantramkhuyenmai().isEmpty()) {
+                && !request.getPhantramkhuyenmai().isEmpty()) {
             khuyenmai.setPhantramkhuyenmai(request.getPhantramkhuyenmai());
         }
 
         if (request.getNoidungkhuyenmai() != null
-                && request.getNoidungkhuyenmai().isEmpty()) {
+                && !request.getNoidungkhuyenmai().isEmpty()) {
             khuyenmai.setNoidungkhuyenmai(request.getNoidungkhuyenmai());
         }
 
-        if (request.getNgaybatdau() != null && request.getNgaybatdau().isEmpty()) {
+        if (request.getNgaybatdau() != null && !request.getNgaybatdau().isEmpty()) {
             khuyenmai.setNgaybatdau(String.valueOf(LocalDateTime.parse(request.getNgaybatdau(), DATE_TIME_FORMATTER)));
         }
 
-        if (request.getNgayketkhuc() != null && request.getNgayketkhuc().isEmpty()) {
+        if (request.getNgayketkhuc() != null && !request.getNgayketkhuc().isEmpty()) {
             khuyenmai.setNgayketkhuc(
                     String.valueOf(LocalDateTime.parse(request.getNgayketkhuc(), DATE_TIME_FORMATTER)));
         }

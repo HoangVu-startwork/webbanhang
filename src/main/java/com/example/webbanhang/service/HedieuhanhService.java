@@ -36,6 +36,18 @@ public class HedieuhanhService {
                 savedHedieuhanh); // Bạn cần phương thức để chuyển Mucluc thành MuclucResponse
     }
 
+    public HedieuhanhResponse updateHedieuhanh(Long id, HedieuhanhRequest request) {
+        Hedieuhanh hedieuhanh =
+                hedieuhanhRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.HEDIEUHANH));
+
+        if (request.getTenhedieuhanh() != null && !request.getTenhedieuhanh().isEmpty()) {
+            hedieuhanh.setTenhedieuhanh(request.getTenhedieuhanh());
+        }
+
+        Hedieuhanh updatedHedieuhanh = hedieuhanhRepository.save(hedieuhanh);
+        return hedieuhanhMapper.toHedieuhanhResponse(updatedHedieuhanh);
+    }
+
     //    public List<HedieuhanhResponse> getAllHedieuhanh() {
     //        return hedieuhanhRepository.findAll().stream()
     //                .map(hedieuhanhMapper::toHedieuhanhResponse)

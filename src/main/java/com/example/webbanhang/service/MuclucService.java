@@ -35,6 +35,17 @@ public class MuclucService {
         return muclucMapper.toMuclucResponse(savedMucluc); // Bạn cần phương thức để chuyển Mucluc thành MuclucResponse
     }
 
+    public MuclucResponse updateMucluc(Long id, MuclucRequest request) {
+        Mucluc mucluc = muclucRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MUCLUCTONTAI));
+
+        if (request.getTenmucluc() != null && !request.getTenmucluc().isEmpty()) {
+            mucluc.setTenmucluc(request.getTenmucluc());
+        }
+
+        Mucluc updatedMucluc = muclucRepository.save(mucluc);
+        return muclucMapper.toMuclucResponse(updatedMucluc);
+    }
+
     public List<MuclucResponse> getAllDanhmuc() {
         return muclucRepository.findAll().stream()
                 .map(muclucMapper::toMuclucResponse)

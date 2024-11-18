@@ -30,6 +30,12 @@ public class HoadonController {
         return ApiResponse.<HoadonResponse>builder().result(response).build();
     }
 
+    @PostMapping("/hoadon")
+    public ApiResponse<HoadonResponse> createHoadon1(@RequestBody HoadonRequest request) {
+        HoadonResponse response = hoadonService.createHoadon1(request);
+        return ApiResponse.<HoadonResponse>builder().result(response).build();
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<HoadonResponse> getHoadonById(@PathVariable Long id) {
         return ApiResponse.<HoadonResponse>builder()

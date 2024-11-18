@@ -121,7 +121,9 @@ public class ThongtindienthoaiService {
                 .orElseThrow(() -> new AppException(ErrorCode.THONGTINDIENTHOAI));
 
         // Kiểm tra nếu tensanpham được cung cấp
-        if (request.getDienthoaiId() != null && request.getDienthoaiId() != 0) {
+        if (request.getDienthoaiId() != null
+                && !request.getDienthoaiId()
+                        .equals(thongtindienthoai.getDienthoai().getId())) {
             Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
 
             // Nếu tensanpham mới không tồn tại trong bảng dienthoai

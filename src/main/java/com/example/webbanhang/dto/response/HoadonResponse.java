@@ -19,5 +19,6 @@ public class HoadonResponse {
     private double tongtien;
     private String dob;
     private String userId;
+    private String trangthai;
     private List<ChitiethoadonResponse> chitiethoadons;
 }

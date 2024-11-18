@@ -26,6 +26,8 @@ public class Hoadon {
 
     private double tongtien;
 
+    private String trangthai;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

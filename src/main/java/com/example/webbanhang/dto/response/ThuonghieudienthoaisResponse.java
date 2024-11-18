@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ThuonghieumenuResponse {
+public class ThuonghieudienthoaisResponse {
     private Long id;
+    private String tenthuonghieu;
     private String hinhanh;
-    private String label;
-    private String text;
-    private String tinhtrang;
     private Long dienthoaiId;
+    private String tenSanPham;
+    private String tinhtrang;
     private String dob;
 }
