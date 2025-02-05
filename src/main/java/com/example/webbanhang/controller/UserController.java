@@ -74,4 +74,11 @@ public class UserController {
     UserResponse updatePasswrd(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
         return userService.updatePassword(userId, request);
     }
+
+    @GetMapping("/allUser")
+    ApiResponse<List<UserResponse>> getAllUserAs() {
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userService.AllUser())
+                .build();
+    }
 }

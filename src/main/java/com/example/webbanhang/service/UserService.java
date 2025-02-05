@@ -226,6 +226,11 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
+
+    public List<UserResponse> AllUser() {
+        List<User> user = userRepository.findAll();
+        return user.stream().map(userMapper::toUserResponse).toList();
+    }
 }
 
 // Annotation @Autowired trong Spring đơn giản là để Spring tự động tiêm một dependency vào bean của bạn.

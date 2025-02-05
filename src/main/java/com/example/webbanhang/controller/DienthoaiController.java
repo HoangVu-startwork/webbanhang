@@ -227,4 +227,17 @@ public class DienthoaiController {
                 .result(dienthoaiService.findAlldienthoai())
                 .build();
     }
+
+    @GetMapping("/kiemtra/{dienthoaiId}/mausac/{mausacId}")
+    public ApiResponse<String> checkDienthoaiMausac(@PathVariable Long dienthoaiId, @PathVariable Long mausacId) {
+        return ApiResponse.<String>builder()
+                .result(dienthoaiService.checkDienthoaiMausac(dienthoaiId, mausacId))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteDienthoai(@PathVariable Long id) {
+        dienthoaiService.deleteDienthoai(id);
+        return "Xoá điện thoại thành công";
+    }
 }

@@ -32,6 +32,7 @@ public class SecurityConfig {
         "/thuonghieumenu/all",
         "/danhmuc/all",
         "/dienthoai/*/mausac/*",
+        "/dienthoai/kiemtra/*/mausac/*",
         "/dienthoai/filter",
         "/dienthoai/filter/*",
         "/dienthoai/dienthoai-filter",

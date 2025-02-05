@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class GiohangRequest {
     private String email;
     private String soluong;
-    private String tenmausac;
-    private String tensanpham;
+    private Long mausacId;
     private Long dienthoaiId;
 }

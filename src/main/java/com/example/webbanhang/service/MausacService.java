@@ -118,4 +118,9 @@ public class MausacService {
                 .map(mausacMapper::toMausacResponse)
                 .toList();
     }
+
+    public String deleteByDienthoaiId(Long dienthoaiId) {
+        int delete = mausacRepository.deleteByDienthoai_Id(dienthoaiId);
+        return "Xoá thành công" + delete;
+    }
 }

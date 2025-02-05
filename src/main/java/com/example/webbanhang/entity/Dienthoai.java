@@ -50,7 +50,7 @@ public class Dienthoai {
     @OneToMany(mappedBy = "dienthoai")
     private List<Khuyenmai> khuyenmais;
 
-    @OneToMany(mappedBy = "dienthoai")
+    @OneToMany(mappedBy = "dienthoai", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Mausac> mausacs;
 
     @OneToMany(mappedBy = "dienthoai")

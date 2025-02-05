@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class KhodienthoaiRequest {
     private String soluong;
-    private String tenmausac;
+    private Long mausacId;
     private String tensanpham;
 }

@@ -24,4 +24,6 @@ public class Khodienthoai {
     private Mausac mausac;
 
     private String soluong;
+
+    private String tongsoluong;
 }

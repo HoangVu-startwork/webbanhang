@@ -10,4 +10,5 @@ public class KhodienthoaiResponse {
     private Long dienthoaiId;
     private String soluong;
     private Long mausacId;
+    private String tongsoluong;
 }

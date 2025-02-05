@@ -30,7 +30,7 @@ public class KhodienthoaiController {
     }
 
     @GetMapping
-    ApiResponse<List<KhodienthoaiResponse>> getAllHedieuhanh() {
+    public ApiResponse<List<KhodienthoaiResponse>> getAllHedieuhanh() {
         return ApiResponse.<List<KhodienthoaiResponse>>builder()
                 .result(khodienthoaiService.findAllKhodienthoai())
                 .build();

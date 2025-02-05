@@ -42,8 +42,7 @@ public class GiohangService {
         }
 
         // Find color information
-        Mausac mausac =
-                mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), giohangRequest.getTenmausac());
+        Mausac mausac = mausacRepository.findByDienthoai_IdAndId(dienthoai.getId(), giohangRequest.getMausacId());
         if (mausac == null) {
             throw new AppException(ErrorCode.MAUSAC);
         }

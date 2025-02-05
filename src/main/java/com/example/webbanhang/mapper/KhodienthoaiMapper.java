@@ -7,7 +7,9 @@ import com.example.webbanhang.dto.request.KhodienthoaiRequest;
 import com.example.webbanhang.dto.response.KhodienthoaiResponse;
 import com.example.webbanhang.entity.Khodienthoai;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        uses = {DienthoaiMapper.class, MausacMapper.class, UserMapper.class})
 public interface KhodienthoaiMapper {
     Khodienthoai toKhodienthoai(KhodienthoaiRequest request);
 
