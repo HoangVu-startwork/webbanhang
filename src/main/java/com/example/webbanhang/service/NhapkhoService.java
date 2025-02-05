@@ -8,9 +8,8 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.webbanhang.dto.request.NhapkhoRequest;
 import com.example.webbanhang.dto.request.NhapkhosRequest;
-import com.example.webbanhang.dto.response.NhapkhoResponse;
+import com.example.webbanhang.dto.response.NhapkhosResponse;
 import com.example.webbanhang.entity.*;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
@@ -35,7 +34,7 @@ public class NhapkhoService {
     UserRepository userRepository;
 
     @Transactional
-    public NhapkhoResponse nhapKho(NhapkhosRequest request) {
+    public NhapkhosResponse nhapKho(NhapkhosRequest request) {
         // Retrieve Dienthoai and Mausac objects using their IDs from the request
         Dienthoai dienthoai = dienthoaiRepository.findByid(request.getDienthoaiId());
         if (dienthoai == null) {
@@ -75,6 +74,11 @@ public class NhapkhoService {
             int updatedSoluong =
                     Integer.parseInt(existingKhodienthoai.getSoluong()) + Integer.parseInt(request.getSoluong());
             existingKhodienthoai.setSoluong(String.valueOf(updatedSoluong));
+
+            int updatedSoluongtong =
+                    Integer.parseInt(existingKhodienthoai.getTongsoluong()) + Integer.parseInt(request.getSoluong());
+            existingKhodienthoai.setTongsoluong(String.valueOf(updatedSoluongtong));
+
             khodienthoaiRepository.save(existingKhodienthoai);
         } else {
             // Create new Khodienthoai
@@ -82,6 +86,7 @@ public class NhapkhoService {
                     .dienthoai(nhapkho.getDienthoai())
                     .mausac(nhapkho.getMausac())
                     .soluong(request.getSoluong())
+                    .tongsoluong(request.getSoluong())
                     .build();
             khodienthoaiRepository.save(newKhodienthoai);
         }
@@ -94,7 +99,7 @@ public class NhapkhoService {
     }
 
     @Transactional
-    public NhapkhoResponse updateNhapkho(Long id, NhapkhoRequest request) {
+    public NhapkhosResponse updateNhapkho(Long id, NhapkhosRequest request) {
         // Lấy entity Nhapkho hiện có
         // lấy thông tin của Nhapkho dựa trên id được truyền vào.
         // Nếu không tìm thấy Nhapkho, nó sẽ ném ra một ngoại lệ (RuntimeException)
@@ -108,9 +113,9 @@ public class NhapkhoService {
         // để chuyển đổi một chuỗi ký tự (string) thành một số nguyên (int)
 
         // Cập nhật Dienthoai nếu được cung cấp
-        if (request.getTensanpham() != null) {
+        if (request.getDienthoaiId() != null) {
             Dienthoai newDienthoai =
-                    dienthoaiRepository.findByTensanpham(request.getTensanpham()); // tìm dienthoai dựa vào tensanpham
+                    dienthoaiRepository.findByid(request.getDienthoaiId()); // tìm dienthoai dựa vào tensanpham
             if (newDienthoai == null) {
                 throw new AppException(ErrorCode.TENDIENTHOAI);
             }
@@ -125,9 +130,9 @@ public class NhapkhoService {
         }
 
         // Cập nhật Mausac nếu được cung cấp
-        if (request.getTenmausac() != null) {
-            Mausac newMausac = mausacRepository.findByDienthoaiIdAndTenmausac(
-                    existingNhapkho.getDienthoai().getId(), request.getTenmausac());
+        if (request.getMausacId() != null) {
+            Mausac newMausac = mausacRepository.findByDienthoai_IdAndId(
+                    existingNhapkho.getDienthoai().getId(), request.getMausacId());
             if (newMausac == null) {
                 throw new AppException(ErrorCode.MAUSAC);
             }
@@ -169,17 +174,19 @@ public class NhapkhoService {
             // quantityChange là giá trị dương, số lượng tồn kho sẽ tăng.
             // quantityChange là giá trị âm, số lượng tồn kho sẽ giảm.
             int updatedSoluong = Integer.parseInt(khodienthoai.getSoluong()) + quantityChange;
+            int updatedSoluongtong = Integer.parseInt(khodienthoai.getTongsoluong()) + quantityChange;
             khodienthoai.setSoluong(String.valueOf(updatedSoluong));
+            khodienthoai.setTongsoluong(String.valueOf(updatedSoluongtong));
             khodienthoaiRepository.save(khodienthoai);
         }
     }
 
-    public List<NhapkhoResponse> findAllNhapkho() {
+    public List<NhapkhosResponse> findAllNhapkho() {
         List<Nhapkho> nhapkho = nhapkhoRepository.findAll();
         return nhapkho.stream().map(nhapkhoMapper::toNhapkhoResponse).toList();
     }
 
-    public NhapkhoResponse getNhapkho(Long id) {
+    public NhapkhosResponse getNhapkho(Long id) {
         Nhapkho nhapkho =
                 nhapkhoRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NHAPKHO_NOT_FOUND));
 

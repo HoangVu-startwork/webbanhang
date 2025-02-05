@@ -19,10 +19,7 @@ import com.example.webbanhang.entity.*;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.DienthoaiMapper;
-import com.example.webbanhang.repository.DienthoaiRepository;
-import com.example.webbanhang.repository.KhodienthoaiRepository;
-import com.example.webbanhang.repository.ThongtinphanloaiRepository;
-import com.example.webbanhang.repository.UserRepository;
+import com.example.webbanhang.repository.*;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +38,7 @@ public class DienthoaiService {
     ModelMapper modelMapper;
     KhodienthoaiRepository khodienthoaiRepository;
     JdbcTemplate jdbcTemplate;
+    MausacRepository mausacRepository;
 
     @Transactional
     public DienthoaiResponse createDienthoai(DienthoaiRequest request) {
@@ -880,21 +878,37 @@ public class DienthoaiService {
             row.put("thongsokythuat_id", rs.getLong("thongsokythuat_id"));
             row.put("khuyenmai_id", rs.getLong("khuyenmai_id"));
             // Xử lý danh sách màu sắc
+            //            String mausacList = rs.getString("mausac_list");
+            //            if (mausacList != null && !mausacList.isEmpty()) {
+            //                List<Map<String, Object>> mausacs = new ArrayList<>();
+            //                String[] mausacItems = mausacList.split(";");
+            //                for (String mausacItem : mausacItems) {
+            //                    String[] mausacDetails = mausacItem.split(",");
+            //                    Map<String, Object> mausac = new HashMap<>();
+            //                    mausac.put("id", Long.parseLong(mausacDetails[0]));
+            //                    mausac.put("tenmausac", mausacDetails[1]);
+            //                    mausac.put("hinhanh", mausacDetails[2]);
+            //                    mausac.put("giaban", Double.parseDouble(mausacDetails[3]));
+            //                    mausac.put("soluong", Integer.parseInt(mausacDetails[4])); // Số lượng theo màu sắc
+            //                    mausacs.add(mausac);
+            //                }
+            //                row.put("mausacs", mausacs);
+            //            }
             String mausacList = rs.getString("mausac_list");
             if (mausacList != null && !mausacList.isEmpty()) {
-                List<Map<String, Object>> mausacs = new ArrayList<>();
-                String[] mausacItems = mausacList.split(";");
-                for (String mausacItem : mausacItems) {
-                    String[] mausacDetails = mausacItem.split(",");
-                    Map<String, Object> mausac = new HashMap<>();
-                    mausac.put("id", Long.parseLong(mausacDetails[0]));
-                    mausac.put("tenmausac", mausacDetails[1]);
-                    mausac.put("hinhanh", mausacDetails[2]);
-                    mausac.put("giaban", Double.parseDouble(mausacDetails[3]));
-                    mausac.put("soluong", Integer.parseInt(mausacDetails[4])); // Số lượng theo màu sắc
-                    mausacs.add(mausac);
+                String[] mausacArray = mausacList.split(";");
+                List<Map<String, Object>> mausacDetails = new ArrayList<>();
+                for (String mausac : mausacArray) {
+                    String[] mausacAttributes = mausac.split(",");
+                    Map<String, Object> mausacMap = new LinkedHashMap<>();
+                    mausacMap.put("id", mausacAttributes[0]);
+                    mausacMap.put("tenmausac", mausacAttributes[1]);
+                    mausacMap.put("hinhanh", mausacAttributes[2]);
+                    mausacMap.put("giaban", mausacAttributes[3]);
+                    mausacMap.put("soluong", mausacAttributes[4]);
+                    mausacDetails.add(mausacMap);
                 }
-                row.put("mausacs", mausacs);
+                row.put("mausac_list", mausacDetails);
             }
 
             return row;
@@ -912,5 +926,14 @@ public class DienthoaiService {
     public List<DienthoaiResponse> findAlldienthoai() {
         List<Dienthoai> dienthoais = dienthoaiRepository.findAll();
         return dienthoais.stream().map(dienthoaiMapper::toDienthoaiResponse).toList();
+    }
+
+    public String checkDienthoaiMausac(Long dienthoaiId, Long mausacId) {
+        boolean exists = mausacRepository.existsByDienthoai_IdAndId(dienthoaiId, mausacId);
+        return exists ? "Có" : "Không";
+    }
+
+    public void deleteDienthoai(Long id) {
+        dienthoaiRepository.deleteById(id);
     }
 }

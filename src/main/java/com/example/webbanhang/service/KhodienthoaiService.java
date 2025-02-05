@@ -38,7 +38,7 @@ public class KhodienthoaiService {
         }
 
         // Tìm thông tin màu sắc
-        Mausac mausac = mausacRepository.findByDienthoaiIdAndTenmausac(dienthoai.getId(), request.getTenmausac());
+        Mausac mausac = mausacRepository.findByDienthoai_IdAndId(dienthoai.getId(), request.getMausacId());
         if (mausac == null) {
             throw new AppException(ErrorCode.MAUSAC);
         }

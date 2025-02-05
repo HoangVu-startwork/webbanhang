@@ -33,20 +33,54 @@ public class KhuyenmaiService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    //    public KhuyenmaiResponse saveKhuyenmai(KhuyenmaiRequest request) {
+    //        Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
+    //        if (dienthoai == null) {
+    //            throw new AppException(ErrorCode.THOIGIANKHUYENMAI);
+    //        }
+    //
+    //        Khuyenmai khuyenmai = khuyenmaiMapper.toKhuyenmai(request);
+    //        khuyenmai.setDienthoai(dienthoai);
+    //        khuyenmai.setNgaybatdau(String.valueOf(LocalDateTime.parse(request.getNgaybatdau(),
+    // DATE_TIME_FORMATTER)));
+    //        khuyenmai.setNgayketkhuc(String.valueOf(LocalDateTime.parse(request.getNgayketkhuc(),
+    // DATE_TIME_FORMATTER)));
+    //
+    //        Khuyenmai saveKhuyenmai = khuyenmaiRepository.save(khuyenmai);
+    //
+    //        return khuyenmaiMapper.toKhuyenmaiResponse(saveKhuyenmai);
+    //    }
+
     public KhuyenmaiResponse saveKhuyenmai(KhuyenmaiRequest request) {
+        // Tìm điện thoại theo tên sản phẩm
         Dienthoai dienthoai = dienthoaiRepository.findByTensanpham(request.getTensanpham());
         if (dienthoai == null) {
             throw new AppException(ErrorCode.TENDIENTHOAI);
         }
 
+        // Lấy ngày hiện tại
+        LocalDateTime currentDate = LocalDateTime.now();
+
+        // Kiểm tra nếu đã có khuyến mãi từ ngày hiện tại trở đi
+        Khuyenmai existingKhuyenmai =
+                khuyenmaiRepository.findByDienthoai_IdAndNgaybatdauAfter(dienthoai.getId(), currentDate.toString());
+        if (existingKhuyenmai != null) {
+            throw new AppException(ErrorCode.THOIGIANKHUYENMAI);
+        }
+
+        // Nếu không có, thêm khuyến mãi mới
         Khuyenmai khuyenmai = khuyenmaiMapper.toKhuyenmai(request);
         khuyenmai.setDienthoai(dienthoai);
+
+        // Gán ngày bắt đầu và ngày kết thúc
         khuyenmai.setNgaybatdau(String.valueOf(LocalDateTime.parse(request.getNgaybatdau(), DATE_TIME_FORMATTER)));
         khuyenmai.setNgayketkhuc(String.valueOf(LocalDateTime.parse(request.getNgayketkhuc(), DATE_TIME_FORMATTER)));
 
-        Khuyenmai saveKhuyenmai = khuyenmaiRepository.save(khuyenmai);
+        // Lưu vào cơ sở dữ liệu
+        Khuyenmai savedKhuyenmai = khuyenmaiRepository.save(khuyenmai);
 
-        return khuyenmaiMapper.toKhuyenmaiResponse(saveKhuyenmai);
+        // Trả về response
+        return khuyenmaiMapper.toKhuyenmaiResponse(savedKhuyenmai);
     }
 
     public List<KhuyenmaiResponse> getKhuyenmaiByDienthoaiId(Long dienthoaiId) {

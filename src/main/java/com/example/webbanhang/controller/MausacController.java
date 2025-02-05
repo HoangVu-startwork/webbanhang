@@ -62,4 +62,10 @@ public class MausacController {
                 .result(mausacService.findByDienthoaiId(dienthoaiId))
                 .build();
     }
+
+    @DeleteMapping("/dienthoai/{dienthoaiId}")
+    public ApiResponse<String> deleteMausacByDienthoaiId(@PathVariable Long dienthoaiId) {
+        String result = mausacService.deleteByDienthoaiId(dienthoaiId);
+        return ApiResponse.<String>builder().result(result).build();
+    }
 }

@@ -5,9 +5,8 @@ import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
-import com.example.webbanhang.dto.request.NhapkhoRequest;
 import com.example.webbanhang.dto.request.NhapkhosRequest;
-import com.example.webbanhang.dto.response.NhapkhoResponse;
+import com.example.webbanhang.dto.response.NhapkhosResponse;
 import com.example.webbanhang.service.NhapkhoService;
 
 import lombok.AccessLevel;
@@ -24,29 +23,29 @@ public class NhapkhoController {
     NhapkhoService nhapkhoService;
 
     @PostMapping
-    public ApiResponse<NhapkhoResponse> createNhapkho(@RequestBody NhapkhosRequest request) {
-        return ApiResponse.<NhapkhoResponse>builder()
+    public ApiResponse<NhapkhosResponse> createNhapkho(@RequestBody NhapkhosRequest request) {
+        return ApiResponse.<NhapkhosResponse>builder()
                 .result(nhapkhoService.nhapKho(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<NhapkhoResponse> updateNhapkho(@PathVariable Long id, @RequestBody NhapkhoRequest request) {
-        return ApiResponse.<NhapkhoResponse>builder()
+    public ApiResponse<NhapkhosResponse> updateNhapkho(@PathVariable Long id, @RequestBody NhapkhosRequest request) {
+        return ApiResponse.<NhapkhosResponse>builder()
                 .result(nhapkhoService.updateNhapkho(id, request))
                 .build();
     }
 
     @GetMapping
-    ApiResponse<List<NhapkhoResponse>> getAllHedieuhanh() {
-        return ApiResponse.<List<NhapkhoResponse>>builder()
+    ApiResponse<List<NhapkhosResponse>> getAllNhapkho() {
+        return ApiResponse.<List<NhapkhosResponse>>builder()
                 .result(nhapkhoService.findAllNhapkho())
                 .build();
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<NhapkhoResponse> getHedieuhanhId(@PathVariable Long id) {
-        return ApiResponse.<NhapkhoResponse>builder()
+    public ApiResponse<NhapkhosResponse> getHedieuhanhId(@PathVariable Long id) {
+        return ApiResponse.<NhapkhosResponse>builder()
                 .result(nhapkhoService.getNhapkho(id))
                 .build();
     }

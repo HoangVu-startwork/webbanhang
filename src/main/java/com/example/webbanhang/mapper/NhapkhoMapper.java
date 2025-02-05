@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 
 import com.example.webbanhang.dto.request.NhapkhoRequest;
 import com.example.webbanhang.dto.request.NhapkhosRequest;
-import com.example.webbanhang.dto.response.NhapkhoResponse;
+import com.example.webbanhang.dto.response.NhapkhosResponse;
 import com.example.webbanhang.entity.Nhapkho;
 
 @Mapper(
@@ -22,5 +22,7 @@ public interface NhapkhoMapper {
     @Mapping(source = "dienthoai.id", target = "dienthoaiId")
     @Mapping(source = "mausac.id", target = "mausacId")
     @Mapping(source = "user.id", target = "userId")
-    NhapkhoResponse toNhapkhoResponse(Nhapkho savedNhapkho);
+    @Mapping(source = "dienthoai.tensanpham", target = "tenSanPham")
+    @Mapping(source = "mausac.tenmausac", target = "tenMauSac")
+    NhapkhosResponse toNhapkhoResponse(Nhapkho savedNhapkho);
 }
