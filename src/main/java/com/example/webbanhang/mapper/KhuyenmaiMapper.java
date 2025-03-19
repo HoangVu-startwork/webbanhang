@@ -15,5 +15,6 @@ public interface KhuyenmaiMapper {
     Khuyenmai toKhuyenmaiId(KhuyenmaisRequest request);
 
     @Mapping(source = "dienthoai.id", target = "dienthoaiId")
+    @Mapping(source = "id", target = "id")
     KhuyenmaiResponse toKhuyenmaiResponse(Khuyenmai savedKhuyenmai);
 }

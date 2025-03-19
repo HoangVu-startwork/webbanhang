@@ -24,4 +24,7 @@ public interface KhuyenmaiRepository extends JpaRepository<Khuyenmai, Long> {
     List<Khuyenmai> findByDienthoaiId(Long dienthoaiId);
 
     List<Khuyenmai> findByDienthoai(Dienthoai dienthoai);
+
+    @Query("SELECT k FROM Khuyenmai k WHERE k.dienthoai.id = :dienthoaiId ORDER BY k.ngaybatdau DESC")
+    List<Khuyenmai> findLatestKhuyenmaiByDienthoaiId(@Param("dienthoaiId") Long dienthoaiId);
 }

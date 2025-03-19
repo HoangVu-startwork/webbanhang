@@ -26,9 +26,20 @@ public class Payment {
     private LocalDateTime createDate;
     private String currency;
 
+    @Column(nullable = false)
+    private String mahd;
+
     private String status;
+
+    @Column(nullable = false)
     private String transactionId;
+
     private String vnpResponseCode;
     private String vnpTransactionNo;
     private String vnpOrderInfo;
+
+    private String email;
+    private String diachi;
+
+    private String productIds;
 }

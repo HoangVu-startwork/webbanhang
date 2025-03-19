@@ -20,9 +20,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
-@Configuration
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Configuration // Đánh dấu class này là một Spring Configuration, nơi bạn có thể định nghĩa các Bean cho ứng dụng.
+@RequiredArgsConstructor // Tự động tạo constructor với tất cả các trường final, giúp giảm boilerplate code.
+@FieldDefaults(
+        level = AccessLevel.PRIVATE,
+        makeFinal = true) // Thiết lập tất cả các trường trong class này là private và final mặc định.
 @Slf4j
 public class ApplicationInitConfig {
 

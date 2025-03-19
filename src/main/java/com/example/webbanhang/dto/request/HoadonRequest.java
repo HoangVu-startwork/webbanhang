@@ -16,9 +16,9 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HoadonRequest {
+    private String mahd;
     private String email;
     private String diachi;
-    private String dob;
 
     @NotEmpty
     List<Long> productIds;

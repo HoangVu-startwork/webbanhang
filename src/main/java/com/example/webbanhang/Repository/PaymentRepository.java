@@ -10,4 +10,8 @@ import com.example.webbanhang.entity.Payment;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByTransactionId(String transactionId);
+
+    boolean existsByMahd(String mahd);
+
+    Optional<Payment> findFirstByTransactionId(String transactionId);
 }

@@ -13,4 +13,8 @@ public interface HoadonRepository extends JpaRepository<Hoadon, Long> {
     Optional<Hoadon> findTopByOrderByIdDesc();
 
     List<Hoadon> findByUserId(String userId);
+
+    Optional<Hoadon> findFirstByTransactionId(String transactionId);
+
+    Optional<Hoadon> findByMahd(String mahd);
 }

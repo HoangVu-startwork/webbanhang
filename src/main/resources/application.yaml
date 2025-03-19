@@ -25,12 +25,12 @@ spring:
     show-sql: true # Chỉ định xem Hibernate có nên hiển thị các câu lệnh SQL mà nó tạo ra hay không. Ở đây, nó được đặt là true
   datasource: #  Cung cấp cấu hình cho nguồn dữ liệu (database) mà ứng dụng sử dụng
     driver-class-name: com.mysql.cj.jdbc.Driver # Chỉ định tên lớp driver JDBC được sử dụng để kết nối với cơ sở dữ liệu. Ở đây, nó là com.mysql.cj.jdbc.Driver.
-    url: jdbc:mysql://root:xyoYZOCSgJcLFCKGarZKfzqSJyJsPWZj@junction.proxy.rlwy.net:22320/railway?createDatabaseIfNotExist=true # Chứa URL kết nối đến cơ sở dữ liệu MySQL
+    url: jdbc:mysql://root:rhaEIxruqwRumeROvysNXfKztUZpOCGY@centerbeam.proxy.rlwy.net:10466/railway?createDatabaseIfNotExist=true # Chứa URL kết nối đến cơ sở dữ liệu MySQL
 #    username: root
 #    password: epDvvpzTNaYpVynvKLDAtZJBKOoSHxOA
     # url: jdbc:mysql://14.186.89.186:3306/Webbanhang?createDatabaseIfNotExist=true
     username: root
-    password: xyoYZOCSgJcLFCKGarZKfzqSJyJsPWZj
+    password: rhaEIxruqwRumeROvysNXfKztUZpOCGY
 
   servlet:
     multipart:
