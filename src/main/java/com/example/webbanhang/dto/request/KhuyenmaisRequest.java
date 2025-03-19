@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class KhuyenmaisRequest {
+    private Long id;
     private String phantramkhuyenmai;
     private String noidungkhuyenmai;
     private String ngaybatdau;

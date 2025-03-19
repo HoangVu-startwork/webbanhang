@@ -11,6 +11,7 @@ import lombok.*;
 @Builder
 @Entity
 public class KhuyenmaiResponse {
+    private Long id;
     private String phantramkhuyenmai;
     private String noidungkhuyenmai;
     private String ngaybatdau;

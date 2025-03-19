@@ -311,7 +311,7 @@ public class HoadonService {
 
     //
     @Transactional
-    public HoadonResponse createHoadon1(HoadonRequest request) {
+    public HoadonResponse createHoadonTienmat(HoadonRequest request) {
         // Lấy thông tin người dùng
         User user = userRepository
                 .findByEmail(request.getEmail())
@@ -322,7 +322,7 @@ public class HoadonService {
         DateTimeFormatter formattert = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime currentDateT = LocalDateTime.now();
         String formattedDate = currentDateT.format(formattert);
-
+        System.out.println("productIdsString: " + request.getProductIds());
         // Tạo và lưu hóa đơn mới vào cơ sở dữ liệu
         Hoadon hoadon = Hoadon.builder()
                 .mahd(newMahd)
@@ -424,7 +424,7 @@ public class HoadonService {
 
             // Cập nhật tổng tiền và trạng thái của hóa đơn
             hoadon.setTongtien(tongtien);
-            hoadon.setTrangthai("Thanh toán thành công"); // Cập nhật trạng thái thành công
+            hoadon.setTrangthai("Thanh toán bằng tiền mặt (chưa thanh toán)"); // Cập nhật trạng thái thành công
             hoadonRepository.save(hoadon);
 
             // Kiểm tra và cập nhật thông tin vào bảng Thongsouser
@@ -453,6 +453,126 @@ public class HoadonService {
                 .tongtien(hoadon.getTongtien())
                 .userId(user.getId())
                 .trangthai(hoadon.getTrangthai()) // Trả về trạng thái
+                .build();
+    }
+
+    @Transactional
+    public HoadonResponse createHoadon1(HoadonRequest request) {
+        //        User user = userRepository
+        //                .findFirstByEmail(request.getEmail())
+        //                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findFirstByEmail(request.getEmail()).stream()
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        String newMahd = request.getMahd();
+        LocalDateTime currentDateT = LocalDateTime.now();
+
+        // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = currentDateT.format(formatter);
+
+        Hoadon hoadon = Hoadon.builder()
+                .mahd(newMahd)
+                .diachi(request.getDiachi())
+                .tongtien(0.0)
+                .dob(formattedDate)
+                .trangthai("Không thành công")
+                .user(user)
+                .build();
+        hoadonRepository.save(hoadon);
+
+        double tongtien = 0.0;
+        List<Giohang> giohangList = request.getProductIds().stream()
+                .map(giohangRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        try {
+            for (Giohang giohang : giohangList) {
+                List<Khodienthoai> khodienthoaiList = khodienthoaiRepository.findLatestByDienthoaiIdMausacId(
+                        giohang.getDienthoai().getId(), giohang.getMausac().getId());
+
+                if (khodienthoaiList.isEmpty()) {
+                    throw new AppException(ErrorCode.SANPHAMHOADON);
+                }
+
+                Khodienthoai khodienthoai = khodienthoaiList.get(0); // Lấy sản phẩm mới nhất
+
+                int availableQuantity = Integer.parseInt(khodienthoai.getSoluong());
+                int requestedQuantity = Integer.parseInt(giohang.getSoluong());
+
+                if (availableQuantity < requestedQuantity) {
+                    throw new AppException(ErrorCode.SANPHAMHOADON);
+                }
+
+                double giamgia = 0.0;
+                List<Khuyenmai> khuyenmaiList = khuyenmaiRepository.findLatestKhuyenmaiByDienthoaiId(
+                        giohang.getDienthoai().getId());
+
+                for (Khuyenmai km : khuyenmaiList) {
+                    //                    LocalDateTime ngayBatDau = LocalDateTime.parse(km.getNgaybatdau(), formatter);
+                    //                    LocalDateTime ngayKetKhuc = LocalDateTime.parse(km.getNgayketkhuc(),
+                    // formatter);
+                    LocalDateTime ngayBatDau =
+                            LocalDateTime.parse(km.getNgaybatdau(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    LocalDateTime ngayKetKhuc =
+                            LocalDateTime.parse(km.getNgayketkhuc(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+                    if (!currentDateT.isBefore(ngayBatDau) && !currentDateT.isAfter(ngayKetKhuc)) {
+                        giamgia = Math.max(giamgia, Double.parseDouble(km.getPhantramkhuyenmai()));
+                    }
+                }
+
+                double giadienthoai = Double.parseDouble(giohang.getDienthoai().getGiaban());
+                double thanhgia = giadienthoai * (1 - giamgia / 100);
+                double giatong = thanhgia * requestedQuantity;
+
+                Chitiethoadon chitiethoadon = Chitiethoadon.builder()
+                        .dienthoai(giohang.getDienthoai())
+                        .mausac(giohang.getMausac())
+                        .soluong(giohang.getSoluong())
+                        .giadienthoai(giadienthoai)
+                        .thanhgia(thanhgia)
+                        .giatong(giatong)
+                        .giamgia(giamgia)
+                        .hoadon(hoadon)
+                        .build();
+                chitiethoadonRepository.save(chitiethoadon);
+
+                khodienthoai.setSoluong(String.valueOf(availableQuantity - requestedQuantity));
+                khodienthoaiRepository.save(khodienthoai);
+
+                tongtien += giatong;
+            }
+
+            hoadon.setTongtien(tongtien);
+            hoadon.setTrangthai("Thanh toán thành công chuyển khoản");
+            hoadonRepository.save(hoadon);
+
+            giohangRepository.deleteAllById(request.getProductIds());
+
+            Optional<Thongsouser> optionalThongsouser = thongsouserRepository.findByUserId(user.getId());
+            Thongsouser thongsouser = optionalThongsouser.orElse(
+                    Thongsouser.builder().user(user).tien(0.0).build());
+            thongsouser.setTien(thongsouser.getTien() + tongtien);
+            thongsouserRepository.save(thongsouser);
+
+        } catch (AppException e) {
+            hoadon.setTrangthai("Không thành công");
+            hoadonRepository.save(hoadon);
+            throw e;
+        }
+
+        return HoadonResponse.builder()
+                .id(hoadon.getId())
+                .mahd(hoadon.getMahd())
+                .diachi(hoadon.getDiachi())
+                .dob(hoadon.getDob())
+                .tongtien(hoadon.getTongtien())
+                .userId(user.getId())
+                .trangthai(hoadon.getTrangthai())
                 .build();
     }
 }

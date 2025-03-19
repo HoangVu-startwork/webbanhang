@@ -18,6 +18,7 @@ public class Hoadon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String mahd;
 
     private String dob;
@@ -27,6 +28,9 @@ public class Hoadon {
     private double tongtien;
 
     private String trangthai;
+
+    @Column(nullable = false, unique = true)
+    private String transactionId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

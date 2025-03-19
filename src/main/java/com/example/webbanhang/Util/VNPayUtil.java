@@ -2,15 +2,34 @@ package com.example.webbanhang.Util;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Random;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import com.example.webbanhang.repository.PaymentRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Service
+@Component
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VNPayUtil {
+
+    PaymentRepository paymentRepository;
+
     public static String hmacSHA512(final String key, final String data) {
         try {
             if (key == null || data == null) {
@@ -58,5 +77,44 @@ public class VNPayUtil {
                         (encodeKey ? URLEncoder.encode(entry.getKey(), StandardCharsets.US_ASCII) : entry.getKey())
                                 + "=" + URLEncoder.encode(entry.getValue(), StandardCharsets.US_ASCII))
                 .collect(Collectors.joining("&"));
+    }
+
+    public static Map<String, String> parseOrderInfo(String orderInfo) {
+        Map<String, String> result = new HashMap<>();
+
+        // Giả sử vnp_OrderInfo có định dạng "key1=value1|key2=value2|..."
+        if (orderInfo != null && !orderInfo.isEmpty()) {
+            String[] pairs = orderInfo.split("\\|");
+            for (String pair : pairs) {
+                String[] keyValue = pair.split("=");
+                if (keyValue.length == 2) {
+                    result.put(keyValue[0], keyValue[1]);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static String convertProductIdsToJson(List<Long> productIds) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(productIds); // Chuyển List<Long> thành JSON string
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return "[]"; // Trả về chuỗi rỗng nếu có lỗi
+        }
+    }
+
+    public static String convertProductIdsToString(List<Long> productIds) {
+        return productIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+    }
+
+    public String generateUniqueMaHD() {
+        String mahd;
+
+        do {
+            mahd = "HD-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        } while (paymentRepository.existsByMahd(mahd));
+        return mahd;
     }
 }

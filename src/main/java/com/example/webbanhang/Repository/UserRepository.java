@@ -1,5 +1,6 @@
 package com.example.webbanhang.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,10 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
 
     boolean existsById(String id);
+
+    Optional<User> findFirstByEmailOrderByIdDesc(String email);
+
+    List<User> findFirstByEmail(String email);
 }
 
 // JpaRepository là một interface có sẵn trong Spring Data JPA cung cấp các phương thức tiêu chuẩn để thao tác với cơ sở
