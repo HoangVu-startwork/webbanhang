@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.GiohangRequest;
+import com.example.webbanhang.dto.request.GiohangsRequest;
 import com.example.webbanhang.dto.response.GiohangResponse;
 import com.example.webbanhang.entity.*;
 import com.example.webbanhang.exception.AppException;
@@ -50,6 +51,74 @@ public class GiohangService {
         // Find user information
         User user = userRepository
                 .findByEmail(giohangRequest.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+        // Check stock quantity in Khodienthoai
+        Khodienthoai khodienthoai =
+                khodienthoaiRepository.findByDienthoaiIdAndMausacId(dienthoai.getId(), mausac.getId());
+        if (khodienthoai == null) {
+            throw new AppException(ErrorCode.KHOHANG);
+        }
+
+        int availableQuantity = Integer.parseInt(khodienthoai.getSoluong());
+        int requestedQuantity = Integer.parseInt(giohangRequest.getSoluong());
+
+        if (availableQuantity == 0) {
+            throw new AppException(ErrorCode.KHOHANG);
+        }
+
+        if (availableQuantity < requestedQuantity) {
+            throw new AppException(ErrorCode.KHOHANGGIOHANG);
+        }
+
+        // Check if phone and color are already in the cart
+        Optional<Giohang> existingCartItem = giohangRepository.findByUserId_AndDienthoaiId_And_MausacId(
+                user.getId(), dienthoai.getId(), mausac.getId());
+
+        Giohang giohang;
+        if (existingCartItem.isPresent()) {
+            // If already present, increase quantity
+            giohang = existingCartItem.get();
+            int newQuantity = Integer.parseInt(giohang.getSoluong()) + requestedQuantity;
+            giohang.setSoluong(String.valueOf(newQuantity));
+        } else {
+            // If not present, create new cart item
+            giohang = Giohang.builder()
+                    .dienthoai(dienthoai)
+                    .mausac(mausac)
+                    .user(user)
+                    .soluong(giohangRequest.getSoluong())
+                    .build();
+        }
+
+        // Save cart item
+        Giohang savedGiohang = giohangRepository.save(giohang);
+
+        // Create response
+        return GiohangResponse.builder()
+                .dienthoaiId(savedGiohang.getDienthoai().getId())
+                .mausacId(savedGiohang.getMausac().getId())
+                .soluong(savedGiohang.getSoluong())
+                .userId(savedGiohang.getUser().getId())
+                .build();
+    }
+
+    public GiohangResponse addToCarts(GiohangsRequest giohangRequest) {
+        // Find phone information
+        Dienthoai dienthoai = dienthoaiRepository.findByid(giohangRequest.getDienthoaiId());
+        if (dienthoai == null) {
+            throw new AppException(ErrorCode.TENDIENTHOAI);
+        }
+
+        // Find color information
+        Mausac mausac = mausacRepository.findByDienthoai_IdAndId(dienthoai.getId(), giohangRequest.getMausacId());
+        if (mausac == null) {
+            throw new AppException(ErrorCode.MAUSAC);
+        }
+
+        // Find user information using userId instead of email
+        User user = userRepository
+                .findById(giohangRequest.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         // Check stock quantity in Khodienthoai

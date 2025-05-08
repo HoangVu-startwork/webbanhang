@@ -173,7 +173,10 @@ public class DienthoaiController {
             @RequestParam(required = false) String thietbidikem,
             @RequestParam(required = false) String tinhtrang,
             @RequestParam(required = false) String tensanpham,
-            @RequestParam(required = false) String chipset) {
+            @RequestParam(required = false) String chipset,
+            @RequestParam(required = false) Long idLoaisanpham, // Thêm idLoaisanpham
+            @RequestParam(required = false) Long idThongtinphanloai, // Thêm idThongtinphanloai
+            @RequestParam(required = false) Long idDanhmuc) {
 
         List<String> ramList = ram != null && !ram.isEmpty() ? Arrays.asList(ram.split(",")) : null;
         List<String> hedieuhanhList =
@@ -211,7 +214,10 @@ public class DienthoaiController {
                 thietbidikemList,
                 tinhtrangList,
                 tensanpham,
-                chipsetList);
+                chipsetList,
+                idLoaisanpham,
+                idThongtinphanloai, // Thêm vào đây
+                idDanhmuc);
     }
 
     @GetMapping("/{id}")

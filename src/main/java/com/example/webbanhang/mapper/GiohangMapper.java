@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.example.webbanhang.dto.request.GiohangRequest;
+import com.example.webbanhang.dto.request.GiohangsRequest;
 import com.example.webbanhang.dto.response.GiohangResponse;
 import com.example.webbanhang.entity.Giohang;
 
@@ -12,6 +13,8 @@ import com.example.webbanhang.entity.Giohang;
 public interface GiohangMapper {
 
     Giohang toGiohang(GiohangRequest request);
+
+    Giohang toGiohangs(GiohangsRequest request);
 
     @Mapping(source = "dienthoai.id", target = "dienthoaiId")
     @Mapping(source = "dienthoai.tensanpham", target = "tensanpham")

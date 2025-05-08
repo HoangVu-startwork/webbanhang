@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.GiohangRequest;
+import com.example.webbanhang.dto.request.GiohangsRequest;
 import com.example.webbanhang.dto.response.GiohangResponse;
 import com.example.webbanhang.service.GiohangService;
 
@@ -26,6 +27,13 @@ public class GiohangController {
     public ApiResponse<GiohangResponse> createKhodienthoai(@RequestBody GiohangRequest request) {
         return ApiResponse.<GiohangResponse>builder()
                 .result(giohangService.addToCart(request))
+                .build();
+    }
+
+    @PostMapping("/themgoihangs")
+    public ApiResponse<GiohangResponse> createKhodienthoai(@RequestBody GiohangsRequest request) {
+        return ApiResponse.<GiohangResponse>builder()
+                .result(giohangService.addToCarts(request))
                 .build();
     }
 
