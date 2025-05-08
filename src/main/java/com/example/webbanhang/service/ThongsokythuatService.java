@@ -235,6 +235,10 @@ public class ThongsokythuatService {
             thongsokythuat.setCacloaicambien(request.getCacloaicambien());
         }
 
+        if (request.getTuongthich() != null && !request.getTuongthich().isEmpty()) {
+            thongsokythuat.setTuongthich(request.getTuongthich());
+        }
+
         if (request.getTinhnangdacbiet() != null
                 && !request.getTinhnangdacbiet().isEmpty()) {
             thongsokythuat.setTinhnangdacbiet(request.getTinhnangdacbiet());

@@ -46,6 +46,7 @@ public class ThongsokythuatsRequest {
     private String cacloaicambien;
     private String tinhnangdacbiet;
     private String dacdiennoibat;
+    private String tuongthich;
     private String chitiet;
     private Long dienthoaiId;
 }

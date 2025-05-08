@@ -39,6 +39,7 @@ public class ThongsokythuatResponse {
     private String chatlieukhungvien;
     private String chisokhangnuocbui;
     private String kieumanhinh;
+    private String tuongthich;
     private String cambienvantai;
     private String cacloaicambien;
     private String tinhnangdacbiet;

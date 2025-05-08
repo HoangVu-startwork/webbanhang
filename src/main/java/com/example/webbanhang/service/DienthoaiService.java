@@ -670,7 +670,10 @@ public class DienthoaiService {
             List<String> thietbidikem,
             List<String> tinhtrang,
             String tensanpham,
-            List<String> chipset) {
+            List<String> chipset,
+            Long loaisanphamId,
+            Long thongtinphanloaiId,
+            Long danhmucId) {
 
         StringBuilder sql = new StringBuilder();
         sql.append(
@@ -699,7 +702,7 @@ public class DienthoaiService {
         sql.append("LEFT JOIN khuyenmai km ON dt.id = km.dienthoai_id ");
         sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
         sql.append("LEFT JOIN khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
-        sql.append("WHERE 1=1 ");
+        sql.append("WHERE dt.tinhtrang = 'Mở' ");
         List<Object> parameters = new ArrayList<>();
         // Thêm các điều kiện lọc cho RAM
         if (ram != null && !ram.isEmpty()) {
@@ -839,6 +842,23 @@ public class DienthoaiService {
             sql.append(") ");
         }
 
+        if (loaisanphamId != null) {
+            sql.append("AND lsp.id = ? ");
+            parameters.add(loaisanphamId);
+        }
+
+        // Thêm điều kiện lọc theo id thongtinphanloai
+        if (thongtinphanloaiId != null) {
+            sql.append("AND ttpl.id = ? ");
+            parameters.add(thongtinphanloaiId);
+        }
+
+        // Thêm điều kiện lọc theo id danhmuc
+        if (danhmucId != null) {
+            sql.append("AND dm.id = ? ");
+            parameters.add(danhmucId);
+        }
+
         sql.append("GROUP BY dt.id, tt.id, tsk.id, km.id ");
 
         // Thực hiện truy vấn
@@ -877,23 +897,6 @@ public class DienthoaiService {
             row.put("thongtindienthoai_id", rs.getLong("thongtindienthoai_id"));
             row.put("thongsokythuat_id", rs.getLong("thongsokythuat_id"));
             row.put("khuyenmai_id", rs.getLong("khuyenmai_id"));
-            // Xử lý danh sách màu sắc
-            //            String mausacList = rs.getString("mausac_list");
-            //            if (mausacList != null && !mausacList.isEmpty()) {
-            //                List<Map<String, Object>> mausacs = new ArrayList<>();
-            //                String[] mausacItems = mausacList.split(";");
-            //                for (String mausacItem : mausacItems) {
-            //                    String[] mausacDetails = mausacItem.split(",");
-            //                    Map<String, Object> mausac = new HashMap<>();
-            //                    mausac.put("id", Long.parseLong(mausacDetails[0]));
-            //                    mausac.put("tenmausac", mausacDetails[1]);
-            //                    mausac.put("hinhanh", mausacDetails[2]);
-            //                    mausac.put("giaban", Double.parseDouble(mausacDetails[3]));
-            //                    mausac.put("soluong", Integer.parseInt(mausacDetails[4])); // Số lượng theo màu sắc
-            //                    mausacs.add(mausac);
-            //                }
-            //                row.put("mausacs", mausacs);
-            //            }
             String mausacList = rs.getString("mausac_list");
             if (mausacList != null && !mausacList.isEmpty()) {
                 String[] mausacArray = mausacList.split(";");
