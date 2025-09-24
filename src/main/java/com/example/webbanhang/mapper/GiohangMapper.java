@@ -16,11 +16,13 @@ public interface GiohangMapper {
 
     Giohang toGiohangs(GiohangsRequest request);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "dienthoai.id", target = "dienthoaiId")
     @Mapping(source = "dienthoai.tensanpham", target = "tensanpham")
     @Mapping(source = "mausac.id", target = "mausacId")
     @Mapping(source = "mausac.tenmausac", target = "tenmausac")
     @Mapping(target = "mausacGiaban", source = "mausac.giaban")
+    @Mapping(target = "mausacHinhanh", source = "mausac.hinhanh")
     GiohangResponse toGiohangResponse(Giohang savedGiohang);
 
     @Named("longToString")

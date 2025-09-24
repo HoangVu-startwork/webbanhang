@@ -25,12 +25,12 @@ spring:
     show-sql: true # Chỉ định xem Hibernate có nên hiển thị các câu lệnh SQL mà nó tạo ra hay không. Ở đây, nó được đặt là true
   datasource: #  Cung cấp cấu hình cho nguồn dữ liệu (database) mà ứng dụng sử dụng
     driver-class-name: com.mysql.cj.jdbc.Driver # Chỉ định tên lớp driver JDBC được sử dụng để kết nối với cơ sở dữ liệu. Ở đây, nó là com.mysql.cj.jdbc.Driver.
-    url: jdbc:mysql://root:CICgzNJRkwzMzgbLbXfLjiqYrnwUJBLa@switchyard.proxy.rlwy.net:24139/railway?createDatabaseIfNotExist=true # Chứa URL kết nối đến cơ sở dữ liệu MySQL
+    url: jdbc:mysql://root:gNEcdTmFnDHfNxUrPhudltHWKIEhcSUT@shuttle.proxy.rlwy.net:54825/railway?createDatabaseIfNotExist=true # Chứa URL kết nối đến cơ sở dữ liệu MySQL
 #    username: root
 #    password: epDvvpzTNaYpVynvKLDAtZJBKOoSHxOA
     # url: jdbc:mysql://14.186.89.186:3306/Webbanhang?createDatabaseIfNotExist=true
     username: root
-    password: CICgzNJRkwzMzgbLbXfLjiqYrnwUJBLa
+    password: gNEcdTmFnDHfNxUrPhudltHWKIEhcSUT
     hikari:
       minimum-idle: 5
       maximum-pool-size: 20
@@ -70,8 +70,8 @@ payment:
   vnPay:
     url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
     returnUrl: http://localhost:8090/identity/api/vn-pay-callback
-    tmnCode: HSFS090M
-    secretKey: ITQ4NNJVNJXB6ALE72MHALDHMDZJ3NRT
+    tmnCode: QUSJ9J29
+    secretKey: 6ZZN1UKLM53G3FKBXK7MBLTUB5RS88T0
     version: 2.1.0
     command: pay
     orderType: other

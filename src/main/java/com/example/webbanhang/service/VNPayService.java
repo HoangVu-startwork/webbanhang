@@ -87,35 +87,6 @@ public class VNPayService {
                 .build();
     }
 
-    //    public void savePaymentInfo(
-    //            String transactionId, String vnpResponseCode, String vnpTransactionNo,
-    //            String email, String diachi, String productIdsString, HttpServletRequest request) {
-    //
-    //        String bankCode = request.getParameter("vnp_BankCode");
-    //        String cardType = request.getParameter("vnp_CardType"); // Nếu có
-    //        long amount = Long.parseLong(request.getParameter("vnp_Amount"));
-    //        String vnpOrderInfo = request.getParameter("vnp_OrderInfo"); // Lấy thông tin order từ request
-    ////        String productIdsString = VNPayUtil.convertProductIdsToString(productIdsString);
-    //        System.out.println("productIdsString: " + productIdsString);
-    //        String mahd = vnPayUtil.generateUniqueMaHD();
-    //        Payment payment = Payment.builder()
-    //                .transactionId(transactionId)
-    //                .vnpResponseCode(vnpResponseCode)
-    //                .vnpTransactionNo(vnpTransactionNo)
-    //                .bankCode(bankCode)
-    //                .mahd(mahd)
-    //                .cardType(cardType)
-    //                .amount(amount / 100)
-    //                .createDate(LocalDateTime.now())
-    //                .vnpOrderInfo(vnpOrderInfo) // Thêm thông tin order vào entity
-    //                .email(email)  // Thêm thông tin email
-    //                .diachi(diachi) // Thêm thông tin địa chỉ
-    //                .productIds(productIdsString) // Thêm danh sách ID sản phẩm
-    //                .build();
-    //
-    //        paymentRepository.save(payment);
-    //    }
-
     @Transactional
     public void savePaymentInfo(
             String transactionId,
@@ -157,6 +128,7 @@ public class VNPayService {
                 .email(email)
                 .diachi(diachi)
                 .mahd(mahd)
+                .transactionId(transactionId)
                 .productIds(productIds)
                 .build();
 

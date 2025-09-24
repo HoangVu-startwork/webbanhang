@@ -1,6 +1,7 @@
 package com.example.webbanhang.service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -18,11 +19,13 @@ import com.example.webbanhang.dto.request.UserUpdateRequest;
 import com.example.webbanhang.dto.response.UserResponse;
 import com.example.webbanhang.entity.Role;
 import com.example.webbanhang.entity.User;
+import com.example.webbanhang.entity.Xephanguser;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
 import com.example.webbanhang.mapper.UserMapper;
 import com.example.webbanhang.repository.RoleRepository;
 import com.example.webbanhang.repository.UserRepository;
+import com.example.webbanhang.repository.XephanguserRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +45,8 @@ public class UserService {
 
     PasswordEncoder passwordEncoder;
 
+    XephanguserRepository xephanguserRepository;
+
     public UserResponse createUser(UserCreationRequest request) {
         // Kiểm tra xem email đã tồn tại hay chưa
 
@@ -58,6 +63,7 @@ public class UserService {
         // mã hóa password
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setDob(currentDateTime);
+        user.setTongtien(0.0);
         HashSet<Role> roles = new HashSet<>();
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
         try {
@@ -220,11 +226,42 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    public UserResponse getMyInfo() {
+    public UserResponse getMyInfo1() {
         var context = SecurityContextHolder.getContext();
         String email = context.getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
+    }
+
+    public UserResponse getMyInfo() {
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        double tongtien = user.getTongtien();
+
+        // Lấy tất cả hạng
+        List<Xephanguser> xephangList = xephanguserRepository.findAll();
+
+        // Tìm hạng cao nhất mà tongtien >= giatien
+        Xephanguser hang = xephangList.stream()
+                .filter(x -> tongtien >= x.getGiatien())
+                .max(Comparator.comparingDouble(Xephanguser::getGiatien))
+                .orElse(null);
+
+        if (hang != null) {
+            System.out.println("User đạt hạng: " + hang.getHangmuc());
+        } else {
+            System.out.println("User chưa đạt hạng nào.");
+        }
+
+        // Gán vào response
+        UserResponse response = userMapper.toUserResponse(user);
+        if (hang != null) {
+            response.setHangmuc(hang.getHangmuc());
+        }
+        return response;
     }
 
     public List<UserResponse> AllUser() {

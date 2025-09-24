@@ -220,6 +220,63 @@ public class DienthoaiController {
                 idDanhmuc);
     }
 
+    @GetMapping("/danhmuc-dienthoai-filter")
+    public List<Map<String, Object>> filterPhoneProducts2(
+            @RequestParam(required = false) String ram,
+            @RequestParam(required = false) String hedieuhanh,
+            @RequestParam(required = false) String boNho,
+            @RequestParam(required = false) Long giaTu,
+            @RequestParam(required = false) Long giaDen,
+            @RequestParam(required = false) String tinhnangdacbiet,
+            @RequestParam(required = false) String kichthuocmanhinh,
+            @RequestParam(required = false) String tinhnagcamera,
+            @RequestParam(required = false) String tansoquet,
+            @RequestParam(required = false) String kieumanhinh,
+            @RequestParam(required = false) String thietbidikem,
+            @RequestParam(required = false) String chipset,
+            @RequestParam(required = false) Long idLoaisanpham, // thêm
+            @RequestParam(required = false) Long idThongtinphanloai, // thêm
+            @RequestParam(required = false) Long idDanhmuc) { // thêm
+
+        List<String> ramList = ram != null && !ram.isEmpty() ? Arrays.asList(ram.split(",")) : null;
+        List<String> hedieuhanhList =
+                hedieuhanh != null && !hedieuhanh.isEmpty() ? Arrays.asList(hedieuhanh.split(",")) : null;
+        List<String> boNhoList = boNho != null && !boNho.isEmpty() ? Arrays.asList(boNho.split(",")) : null;
+        List<String> tinhnangdacbietList = tinhnangdacbiet != null && !tinhnangdacbiet.isEmpty()
+                ? Arrays.asList(tinhnangdacbiet.split(","))
+                : null;
+        List<String> kichthuocmanhinhList = kichthuocmanhinh != null && !kichthuocmanhinh.isEmpty()
+                ? Arrays.asList(kichthuocmanhinh.split(","))
+                : null;
+        List<String> tinhnagcameraList =
+                tinhnagcamera != null && !tinhnagcamera.isEmpty() ? Arrays.asList(tinhnagcamera.split(",")) : null;
+        List<String> tansoquetList =
+                tansoquet != null && !tansoquet.isEmpty() ? Arrays.asList(tansoquet.split(",")) : null;
+        List<String> kieumanhinhList =
+                kieumanhinh != null && !kieumanhinh.isEmpty() ? Arrays.asList(kieumanhinh.split(",")) : null;
+        List<String> thietbidikemList =
+                thietbidikem != null && !thietbidikem.isEmpty() ? Arrays.asList(thietbidikem.split(",")) : null;
+        List<String> chipsetList = chipset != null && !chipset.isEmpty() ? Arrays.asList(chipset.split(",")) : null;
+
+        return dienthoaiService.getPhoneProductsWithFilters2(
+                ramList,
+                hedieuhanhList,
+                boNhoList,
+                giaTu,
+                giaDen,
+                tinhnangdacbietList,
+                kichthuocmanhinhList,
+                tinhnagcameraList,
+                tansoquetList,
+                kieumanhinhList,
+                thietbidikemList,
+                chipsetList,
+                idLoaisanpham, // truyền thêm
+                idThongtinphanloai, // truyền thêm
+                idDanhmuc // truyền thêm
+                );
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<DienthoaiResponse> getDienthoaiId(@PathVariable Long id) {
         return ApiResponse.<DienthoaiResponse>builder()

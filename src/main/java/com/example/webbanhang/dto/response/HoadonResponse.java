@@ -20,5 +20,8 @@ public class HoadonResponse {
     private String dob;
     private String userId;
     private String trangthai;
+    private String ghichu;
+    private double giagiamhang;
+    private String noidung;
     private List<ChitiethoadonResponse> chitiethoadons;
 }

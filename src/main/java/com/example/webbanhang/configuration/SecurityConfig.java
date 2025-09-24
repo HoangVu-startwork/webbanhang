@@ -37,6 +37,8 @@ public class SecurityConfig {
         "/dienthoai/filter/*",
         "/dienthoai/dienthoai-filter",
         "/dienthoai/dienthoai-filter/*",
+        "/dienthoai/danhmuc-dienthoai-filter",
+        "/dienthoai/danhmuc-dienthoai-filter/*",
         "/dienthoai/hedieuhanh/*",
         "/dienthoai/loaisanpham/*",
         "/dienthoai/danhmuc/*",
@@ -46,13 +48,21 @@ public class SecurityConfig {
         "/danhgia/all",
         "danhgia/tongsao/*",
         "/loaisanpham",
+        "/thongtinphanloai/loaisanpham/*",
         "/loaisanpham/*",
+        "/loaisanpham/danhmuc/",
+        "/loaisanpham/danhmuc/*",
         "danhmuc/mucluc/*",
         "/danhgia/*",
         "/danhmuc/*",
         "/nhucaudienthoai",
         "/nhucaudienthoai/nhucaudienthoai/*",
-        "/thuonghieu/all-thuonghieu"
+        "/thuonghieu/all-thuonghieu",
+        "/xephanguser/all",
+        "/xephanguser/*",
+        "/uudaimuahang/all",
+        "/uudaimuahang/*",
+        "/uudaimuahang/xephanguser/*"
     };
 
     private static final String[] PUBLIC_POST_ENDPOINTS = {
