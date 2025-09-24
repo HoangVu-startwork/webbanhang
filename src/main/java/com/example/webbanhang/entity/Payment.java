@@ -31,7 +31,7 @@ public class Payment {
 
     private String status;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String transactionId;
 
     private String vnpResponseCode;

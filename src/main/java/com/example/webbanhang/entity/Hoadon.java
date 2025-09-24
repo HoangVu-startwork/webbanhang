@@ -27,7 +27,15 @@ public class Hoadon {
 
     private double tongtien;
 
+    private double giagiamhang;
+
     private String trangthai;
+
+    private String ghichu;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String noidung;
 
     @Column(nullable = false, unique = true)
     private String transactionId;

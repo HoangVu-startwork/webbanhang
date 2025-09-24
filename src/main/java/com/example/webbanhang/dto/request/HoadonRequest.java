@@ -19,7 +19,11 @@ public class HoadonRequest {
     private String mahd;
     private String email;
     private String diachi;
+    private String ghichu;
+    private String noidung;
 
     @NotEmpty
     List<Long> productIds;
+
+    private String transactionId;
 }

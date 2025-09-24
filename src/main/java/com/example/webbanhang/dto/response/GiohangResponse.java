@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class GiohangResponse {
+    private Long id;
     private Long dienthoaiId;
     private String tensanpham;
     private Long mausacId;
@@ -15,4 +16,5 @@ public class GiohangResponse {
     private String userId;
     private String mausacGiaban;
     private String phantramKhuyenmai;
+    private String mausacHinhanh;
 }

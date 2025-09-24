@@ -2,11 +2,14 @@ package com.example.webbanhang.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.GiohangRequest;
 import com.example.webbanhang.dto.request.GiohangsRequest;
+import com.example.webbanhang.dto.request.UpdateQuantityRequest;
 import com.example.webbanhang.dto.response.GiohangResponse;
 import com.example.webbanhang.service.GiohangService;
 
@@ -53,5 +56,10 @@ public class GiohangController {
         return ApiResponse.<List<GiohangResponse>>builder()
                 .result(giohangService.getGioHangWithDiscount(userId))
                 .build();
+    }
+
+    @PatchMapping("/quantity")
+    public GiohangResponse updateQuantity(@Valid @RequestBody UpdateQuantityRequest req) {
+        return giohangService.updateQuantity(req);
     }
 }

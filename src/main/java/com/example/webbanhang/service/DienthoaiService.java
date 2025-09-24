@@ -702,7 +702,8 @@ public class DienthoaiService {
         sql.append("LEFT JOIN khuyenmai km ON dt.id = km.dienthoai_id ");
         sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
         sql.append("LEFT JOIN khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
-        sql.append("WHERE dt.tinhtrang = 'Mở' ");
+        sql.append("WHERE 1=1 ");
+        //        sql.append("WHERE dt.tinhtrang = 'Mở' ");
         List<Object> parameters = new ArrayList<>();
         // Thêm các điều kiện lọc cho RAM
         if (ram != null && !ram.isEmpty()) {
@@ -934,6 +935,207 @@ public class DienthoaiService {
     public String checkDienthoaiMausac(Long dienthoaiId, Long mausacId) {
         boolean exists = mausacRepository.existsByDienthoai_IdAndId(dienthoaiId, mausacId);
         return exists ? "Có" : "Không";
+    }
+
+    public List<Map<String, Object>> getPhoneProductsWithFilters2(
+            List<String> ram,
+            List<String> hedieuhanh,
+            List<String> boNho,
+            Long giaTu,
+            Long giaDen,
+            List<String> tinhnangdacbiet,
+            List<String> kichthuocmanhinh,
+            List<String> tinhnagcamera,
+            List<String> tansoquet,
+            List<String> kieumanhinh,
+            List<String> thietbidikem,
+            List<String> chipset,
+            Long idLoaisanpham, // thêm
+            Long idThongtinphanloai, // thêm
+            Long idDanhmuc) { // thêm
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT dt.id, dt.tensanpham, ms.tenmausac, ms.hinhanh, ms.giaban, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.phantramkhuyenmai ELSE NULL END AS phantramkhuyenmai, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.noidungkhuyenmai ELSE NULL END AS noidungkhuyenmai, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.ngaybatdau ELSE NULL END AS ngaybatdau, ");
+        sql.append(
+                "CASE WHEN CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc THEN km.ngayketkhuc ELSE NULL END AS ngayketkhuc, ");
+        sql.append("tt.tinhtrangmay, tt.thietbidikem, tt.baohanh, ");
+        sql.append("ms.id AS mausac_id, ");
+        sql.append("tt.id AS thongtindienthoai_id, ");
+        sql.append("km.id AS khuyenmai_id, ");
+        sql.append("COALESCE(kd.soluong, 0) AS soluong ");
+        sql.append("FROM dienthoai dt ");
+        sql.append("JOIN ( ");
+        sql.append("    SELECT m.dienthoai_id, m.tenmausac, m.hinhanh, m.giaban, m.id ");
+        sql.append("    FROM mausac m ");
+        sql.append("    JOIN ( ");
+        sql.append("        SELECT dienthoai_id, MIN(id) AS id ");
+        sql.append("        FROM mausac ");
+        sql.append("        GROUP BY dienthoai_id ");
+        sql.append("    ) sub ON m.dienthoai_id = sub.dienthoai_id AND m.id = sub.id ");
+        sql.append(") ms ON dt.id = ms.dienthoai_id ");
+        sql.append("LEFT JOIN thongtinphanloai ttpl ON dt.thongtinphanloai_id = ttpl.id ");
+        sql.append("LEFT JOIN loaisanpham lsp ON ttpl.loaisanpham_id = lsp.id ");
+        sql.append("LEFT JOIN danhmuc dm ON lsp.danhmuc_id = dm.id ");
+        sql.append("LEFT JOIN hedieuhanh hd ON dm.hedieuhanh_id = hd.id ");
+        sql.append("LEFT JOIN thongsokythuat tsk ON dt.id = tsk.dienthoai_id ");
+        sql.append("LEFT JOIN thongtindienthoai tt ON dt.id = tt.dienthoai_id ");
+        sql.append("LEFT JOIN khuyenmai km ON dt.id = km.dienthoai_id ");
+        sql.append("AND CURRENT_TIMESTAMP BETWEEN km.ngaybatdau AND km.ngayketkhuc ");
+        sql.append("LEFT JOIN khodienthoai kd ON dt.id = kd.dienthoai_id AND ms.id = kd.mausac_id ");
+        sql.append("WHERE dt.tinhtrang = 'Mở' ");
+
+        List<Object> parameters = new ArrayList<>();
+
+        // ram
+        if (ram != null && !ram.isEmpty()) {
+            sql.append("AND dt.ram IN (");
+            for (int i = 0; i < ram.size(); i++) {
+                sql.append("?");
+                if (i < ram.size() - 1) sql.append(", ");
+                parameters.add(ram.get(i));
+            }
+            sql.append(") ");
+        }
+
+        // hedieuhanh
+        if (hedieuhanh != null && !hedieuhanh.isEmpty()) {
+            sql.append("AND hd.tenhedieuhanh IN (");
+            for (int i = 0; i < hedieuhanh.size(); i++) {
+                sql.append("?");
+                if (i < hedieuhanh.size() - 1) sql.append(", ");
+                parameters.add(hedieuhanh.get(i));
+            }
+            sql.append(") ");
+        }
+
+        // bonho
+        if (boNho != null && !boNho.isEmpty()) {
+            sql.append("AND dt.bonho IN (");
+            for (int i = 0; i < boNho.size(); i++) {
+                sql.append("?");
+                if (i < boNho.size() - 1) sql.append(", ");
+                parameters.add(boNho.get(i));
+            }
+            sql.append(") ");
+        }
+
+        // khoảng giá
+        if (giaTu != null && giaDen != null) {
+            sql.append("AND ms.giaban BETWEEN ? AND ? ");
+            parameters.add(giaTu);
+            parameters.add(giaDen);
+        }
+
+        // tính năng đặc biệt
+        if (tinhnangdacbiet != null && !tinhnangdacbiet.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tinhnangdacbiet.size(); i++) {
+                sql.append("tsk.tinhnangdacbiet LIKE ?");
+                if (i < tinhnangdacbiet.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tinhnangdacbiet.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        // kích thước màn hình
+        if (kichthuocmanhinh != null && !kichthuocmanhinh.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < kichthuocmanhinh.size(); i++) {
+                String size = kichthuocmanhinh.get(i);
+                try {
+                    double sizeValue = Double.parseDouble(size);
+                    if (sizeValue < 6) {
+                        sql.append("tsk.kichthuocmanhinh < 6");
+                    } else {
+                        sql.append("tsk.kichthuocmanhinh >= 6");
+                    }
+                } catch (NumberFormatException e) {
+                    sql.append("tsk.kichthuocmanhinh LIKE ?");
+                    parameters.add("%" + size + "%");
+                }
+                if (i < kichthuocmanhinh.size() - 1) sql.append(" OR ");
+            }
+            sql.append(") ");
+        }
+
+        // camera
+        if (tinhnagcamera != null && !tinhnagcamera.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tinhnagcamera.size(); i++) {
+                sql.append("tsk.tinhnagcamera LIKE ?");
+                if (i < tinhnagcamera.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tinhnagcamera.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        // tần số quét
+        if (tansoquet != null && !tansoquet.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < tansoquet.size(); i++) {
+                sql.append("tsk.tansoquet LIKE ?");
+                if (i < tansoquet.size() - 1) sql.append(" OR ");
+                parameters.add("%" + tansoquet.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        // kiểu màn hình
+        if (kieumanhinh != null && !kieumanhinh.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < kieumanhinh.size(); i++) {
+                sql.append("tsk.kieumanhinh LIKE ?");
+                if (i < kieumanhinh.size() - 1) sql.append(" OR ");
+                parameters.add("%" + kieumanhinh.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        // thiết bị đi kèm
+        if (thietbidikem != null && !thietbidikem.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < thietbidikem.size(); i++) {
+                sql.append("tt.thietbidikem LIKE ?");
+                if (i < thietbidikem.size() - 1) sql.append(" OR ");
+                parameters.add("%" + thietbidikem.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        // chipset
+        if (chipset != null && !chipset.isEmpty()) {
+            sql.append("AND (");
+            for (int i = 0; i < chipset.size(); i++) {
+                sql.append("tsk.chipset LIKE ?");
+                if (i < chipset.size() - 1) sql.append(" OR ");
+                parameters.add("%" + chipset.get(i) + "%");
+            }
+            sql.append(") ");
+        }
+
+        // bộ lọc mới
+        if (idLoaisanpham != null) {
+            sql.append("AND lsp.id = ? ");
+            parameters.add(idLoaisanpham);
+        }
+
+        if (idThongtinphanloai != null) {
+            sql.append("AND ttpl.id = ? ");
+            parameters.add(idThongtinphanloai);
+        }
+
+        if (idDanhmuc != null) {
+            sql.append("AND dm.id = ? ");
+            parameters.add(idDanhmuc);
+        }
+
+        return jdbcTemplate.queryForList(sql.toString(), parameters.toArray());
     }
 
     public void deleteDienthoai(Long id) {

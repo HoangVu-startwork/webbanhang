@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.GiohangRequest;
 import com.example.webbanhang.dto.request.GiohangsRequest;
+import com.example.webbanhang.dto.request.UpdateQuantityRequest;
 import com.example.webbanhang.dto.response.GiohangResponse;
 import com.example.webbanhang.entity.*;
 import com.example.webbanhang.exception.AppException;
@@ -194,27 +196,120 @@ public class GiohangService {
         updateCartQuantityBasedOnStock();
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Transactional // quan trọng: đảm bảo save() thật sự commit
+    @Scheduled(fixedRate = 1000, initialDelay = 0)
+    // @Transactional:
+    // → Đảm bảo toàn bộ method chạy trong một transaction.
+    // → Khi bạn gọi giohangRepository.save(...), dữ liệu sẽ được commit vào DB ngay cuối transaction.
+    //
+    // @Scheduled(fixedRate = 1000, initialDelay = 0):
+    // → Đây là Scheduler của Spring.
+    // → fixedRate = 1000: cứ 1 giây lại chạy method 1 lần (tính từ lúc bắt đầu chạy).
+    // → initialDelay = 0: không chờ, chạy ngay lần đầu khi app khởi động.
     public void updateCartQuantityBasedOnStock() {
-        List<Giohang> cartItems = giohangRepository.findAll();
-        for (Giohang cartItem : cartItems) {
-            Khodienthoai stock = khodienthoaiRepository.findByDienthoaiIdAndMausacId(
-                    cartItem.getDienthoai().getId(), cartItem.getMausac().getId());
+        try {
+            List<Giohang> cartItems = giohangRepository.findAll();
+            if (cartItems.isEmpty()) {
+                log.debug("[CartSync] No cart items.");
+                return;
+            }
 
-            if (stock != null) {
-                int availableQuantity = Integer.parseInt(stock.getSoluong());
-                int cartQuantity = Integer.parseInt(cartItem.getSoluong());
+            for (Giohang cartItem : cartItems) {
+                if (cartItem.getDienthoai() == null || cartItem.getMausac() == null) {
+                    log.warn("[CartSync] Missing phone/color for cartItem id={}", cartItem.getId());
+                    continue;
+                }
+
+                Khodienthoai stock = khodienthoaiRepository.findByDienthoaiIdAndMausacId(
+                        cartItem.getDienthoai().getId(), cartItem.getMausac().getId());
+
+                if (stock == null) {
+                    log.debug("[CartSync] No stock for cartItem id={}", cartItem.getId());
+                    continue;
+                }
+
+                Integer availableQuantity = safeToInt(stock.getSoluong());
+                Integer cartQuantity = safeToInt(cartItem.getSoluong());
+
+                if (availableQuantity == null || cartQuantity == null) {
+                    log.warn(
+                            "[CartSync] Non-numeric qty. stock='{}', cart='{}' (id={})",
+                            stock.getSoluong(),
+                            cartItem.getSoluong(),
+                            cartItem.getId());
+                    continue;
+                }
+
+                String before = cartItem.getSoluong();
 
                 if (availableQuantity == 0) {
                     cartItem.setSoluong("0");
+                } else if (cartQuantity == 0 && availableQuantity >= 1) {
+                    cartItem.setSoluong("1");
                 } else if (availableQuantity < cartQuantity) {
                     cartItem.setSoluong(String.valueOf(availableQuantity));
-                }
+                } // else: giữ nguyên
 
-                giohangRepository.save(cartItem);
+                if (!before.equals(cartItem.getSoluong())) {
+                    giohangRepository.save(cartItem);
+                    log.info(
+                            "[CartSync] Updated cartItem id={} from {} -> {} (stock={})",
+                            cartItem.getId(),
+                            before,
+                            cartItem.getSoluong(),
+                            availableQuantity);
+                }
             }
+        } catch (Exception e) {
+            log.error("[CartSync] Error while syncing cart quantities", e);
+            // Không rethrow để scheduler không bị “chết” chu kỳ tiếp theo
         }
     }
+
+    private Integer safeToInt(String s) {
+        try {
+            if (s == null) return null;
+            s = s.trim();
+            if (s.isEmpty()) return null;
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+    //    Nhận vào chuỗi s.
+    // Nếu null hoặc rỗng → trả về null.
+    // Nếu parse được → trả về số nguyên.
+    // Nếu parse lỗi → trả về null.
+    // Mục đích: giúp tránh crash khi dữ liệu trong DB là chuỗi rác.
+
+    //    @Scheduled(fixedRate = 1000)
+    //    public void updateCartQuantityBasedOnStock() {
+    //        List<Giohang> cartItems = giohangRepository.findAll();
+    //        for (Giohang cartItem : cartItems) {
+    //            Khodienthoai stock = khodienthoaiRepository.findByDienthoaiIdAndMausacId(
+    //                    cartItem.getDienthoai().getId(), cartItem.getMausac().getId());
+    //
+    //            if (stock != null) {
+    //                int availableQuantity = Integer.parseInt(stock.getSoluong());
+    //                int cartQuantity = Integer.parseInt(cartItem.getSoluong());
+    //
+    //                if (availableQuantity == 0) {
+    //                    // Trường hợp kho hết hàng → giỏ hàng = 0
+    //                    cartItem.setSoluong("0");
+    //
+    //                } else if (cartQuantity == 0 && availableQuantity >= 1) {
+    //                    // Nếu giỏ hàng đang = 0 nhưng kho còn hàng thì set lại = 1
+    //                    cartItem.setSoluong("1");
+    //
+    //                } else if (availableQuantity < cartQuantity) {
+    //                    // Nếu giỏ hàng nhiều hơn số lượng tồn thì giảm về tồn
+    //                    cartItem.setSoluong(String.valueOf(availableQuantity));
+    //                }
+    //
+    //                giohangRepository.save(cartItem);
+    //            }
+    //        }
+    //    }
 
     //    public List<GiohangResponse> getCartItems(String userId) {
     //        List<Giohang> cartItems = giohangRepository.findByUserId(userId);
@@ -246,5 +341,37 @@ public class GiohangService {
                     return response;
                 })
                 .toList();
+    }
+
+    @Transactional
+    public GiohangResponse updateQuantity(UpdateQuantityRequest req) {
+        Giohang cart = giohangRepository
+                .findById(req.getGiohangId())
+                .orElseThrow(() -> new AppException(ErrorCode.TENDIENTHOAI));
+
+        // Lấy tồn kho theo (dienthoai, mausac)
+        Khodienthoai stock = khodienthoaiRepository.findByDienthoaiIdAndMausacId(
+                cart.getDienthoai().getId(), cart.getMausac().getId());
+
+        if (stock == null) {
+            throw new AppException(ErrorCode.KHOHANG); // không có bản ghi kho
+        }
+
+        int available = Integer.parseInt(stock.getSoluong());
+        if (available <= 0) {
+            throw new AppException(ErrorCode.KHOHANG); // hết hàng
+        }
+
+        // clamp số lượng trong [1..available]
+        int desired = Math.max(1, Math.min(req.getQuantity(), available));
+
+        cart.setSoluong(String.valueOf(desired));
+        Giohang saved = giohangRepository.save(cart);
+
+        GiohangResponse res = giohangMapper.toGiohangResponse(saved);
+        // (nếu cần %) khuyến mại
+        String phantram = khuyenmaiService.getPhanTramKhuyenMai(saved.getDienthoai());
+        res.setPhantramKhuyenmai(phantram);
+        return res;
     }
 }

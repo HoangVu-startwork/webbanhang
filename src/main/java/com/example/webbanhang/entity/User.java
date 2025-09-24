@@ -40,6 +40,7 @@ public class User {
     private String firsName;
     private String lastName;
     private String dob;
+    private double tongtien;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
