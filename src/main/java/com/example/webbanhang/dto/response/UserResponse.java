@@ -1,5 +1,6 @@
 package com.example.webbanhang.dto.response;
 
+import java.util.List;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class UserResponse {
     private String ngaysinh;
     private double tongtien;
     private String hangmuc;
+    private List<UudaimuahangResponse> uudaimuahang;
     private String dob;
     private Set<RoleResponse> roles;
 }

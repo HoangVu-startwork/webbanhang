@@ -1,5 +1,7 @@
 package com.example.webbanhang.service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +54,7 @@ public class VNPayService {
             String email,
             String diachi,
             List<Long> productIds,
+            String ghichu,
             HttpServletRequest request) {
 
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
@@ -64,10 +67,17 @@ public class VNPayService {
         String ipAddress = VNPayUtil.getIpAddress(request);
         vnpParamsMap.put("vnp_IpAddr", ipAddress);
 
-        // Tạo chuỗi vnp_OrderInfo chứa các thông tin bổ sung
+        String encodedEmail = URLEncoder.encode(email == null ? "" : email, StandardCharsets.UTF_8);
+        String encodedDiachi = URLEncoder.encode(diachi == null ? "" : diachi, StandardCharsets.UTF_8);
+        String encodedProductIds = URLEncoder.encode(
+                productIds == null ? "" : productIds.toString().replaceAll("[\\[\\] ]", ""), StandardCharsets.UTF_8);
+        String encodedGhichu = URLEncoder.encode(ghichu == null ? "" : ghichu, StandardCharsets.UTF_8);
+
+        // thêm key ghichu rõ ràng
         String orderInfo = String.format(
-                "email=%s|diachi=%s|productIds=%s",
-                email, diachi, productIds.toString().replaceAll("[\\[\\] ]", ""));
+                "email=%s|diachi=%s|productIds=%s|ghichu=%s",
+                encodedEmail, encodedDiachi, encodedProductIds, encodedGhichu);
+
         vnpParamsMap.put("vnp_OrderInfo", orderInfo);
 
         // Build query URL
@@ -94,6 +104,7 @@ public class VNPayService {
             String vnpTransactionNo,
             String email,
             String diachi,
+            String ghichu,
             String productIdsString,
             HttpServletRequest request) {
 
@@ -115,6 +126,7 @@ public class VNPayService {
                 .vnpOrderInfo(vnpOrderInfo)
                 .email(email)
                 .diachi(diachi)
+                .ghichu(ghichu)
                 .productIds(productIdsString)
                 .build();
 
@@ -130,6 +142,7 @@ public class VNPayService {
                 .mahd(mahd)
                 .transactionId(transactionId)
                 .productIds(productIds)
+                .ghichu(ghichu)
                 .build();
 
         hoadonService.createHoadon1(hoadonRequest);

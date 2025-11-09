@@ -81,3 +81,9 @@ cloudinary:
   cloud-name: du6ybb3by
   api-key: 684341482256711
   api-secret: Kke94i9pRqvfTM4daFhH8dDsmFg
+
+
+app:
+  frontend:
+    success-url: "http://localhost:3000/thanhcong"
+    fail-url: "http://localhost:3000/thatbai"

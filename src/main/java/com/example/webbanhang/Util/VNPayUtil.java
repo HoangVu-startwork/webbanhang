@@ -1,5 +1,6 @@
 package com.example.webbanhang.Util;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -80,19 +81,19 @@ public class VNPayUtil {
     }
 
     public static Map<String, String> parseOrderInfo(String orderInfo) {
-        Map<String, String> result = new HashMap<>();
-
-        // Giả sử vnp_OrderInfo có định dạng "key1=value1|key2=value2|..."
-        if (orderInfo != null && !orderInfo.isEmpty()) {
-            String[] pairs = orderInfo.split("\\|");
-            for (String pair : pairs) {
-                String[] keyValue = pair.split("=");
-                if (keyValue.length == 2) {
-                    result.put(keyValue[0], keyValue[1]);
-                }
+        if (orderInfo == null || orderInfo.isEmpty()) return Collections.emptyMap();
+        Map<String, String> map = new HashMap<>();
+        String[] parts = orderInfo.split("\\|");
+        for (String p : parts) {
+            String[] kv = p.split("=", 2);
+            if (kv.length == 2) {
+                // nếu chưa decode ở caller thì decode ở đây: URLDecoder.decode(kv[1], "UTF-8")
+                String key = kv[0].trim();
+                String value = URLDecoder.decode(kv[1], StandardCharsets.UTF_8);
+                map.put(key, value);
             }
         }
-        return result;
+        return map;
     }
 
     public static String convertProductIdsToJson(List<Long> productIds) {

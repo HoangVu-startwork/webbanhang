@@ -1,7 +1,9 @@
 package com.example.webbanhang.service;
 
 import java.text.Normalizer;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -15,7 +17,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanhang.dto.request.HoadonRequest;
+import com.example.webbanhang.dto.response.DailySummaryResponse;
 import com.example.webbanhang.dto.response.HoadonResponse;
+import com.example.webbanhang.dto.response.HoadonSummaryResponse;
+import com.example.webbanhang.dto.response.MonthlySummaryResponse;
 import com.example.webbanhang.entity.*;
 import com.example.webbanhang.exception.AppException;
 import com.example.webbanhang.exception.ErrorCode;
@@ -32,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class HoadonService {
+
     private final UserRepository userRepository;
     private final GiohangRepository giohangRepository;
     private final KhodienthoaiRepository khodienthoaiRepository;
@@ -188,6 +194,10 @@ public class HoadonService {
         return hoadons.stream().map(hoadonMapper::toHoadonResponse).toList();
     }
 
+    public List<HoadonResponse> getAllHoadon() {
+        List<Hoadon> hoadons = hoadonRepository.findAll();
+        return hoadons.stream().map(hoadonMapper::toHoadonResponse).toList();
+    }
     //    public List<HoadonResponse> getHoadonByUserId(String userId) {
     //        List<Hoadon> hoadons = hoadonRepository.findByUserId(userId);
     //        return hoadons.stream().map(hoadonMapper::toHoadonResponse).collect(Collectors.toList());
@@ -1169,5 +1179,64 @@ public class HoadonService {
     // java.util.Locale.US → dùng dấu . thay vì dấu , (ví dụ ở VN là 5.000,00 nhưng ở US là 5000.00).
     private String formatMoney(double v) {
         return String.format(java.util.Locale.US, "%.2f", v);
+    }
+
+    private final DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE; // yyyy-MM-dd
+
+    /**
+     * Lấy summary theo ngày chuỗi "yyyy-MM-dd".
+     */
+    public DailySummaryResponse getSummaryByDateString(String dateString) {
+        DailySummaryResponse res = hoadonRepository.findDailySummaryByDob(dateString);
+        // nếu repository trả null (không có dòng), tạo mặc định
+        if (res == null) {
+            return new DailySummaryResponse(dateString, 0L, 0.0);
+        }
+        return res;
+    }
+
+    /**
+     * Lấy summary cho "today" theo timezone Asia/Ho_Chi_Minh
+     */
+    public DailySummaryResponse getSummaryForToday() {
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        String dateString = today.format(fmt);
+        return getSummaryByDateString(dateString);
+    }
+
+    public List<DailySummaryResponse> getAllDailySummaries() {
+        return hoadonRepository.findAllDailySummaries();
+    }
+
+    public MonthlySummaryResponse getMoonthlyStatistics(int year, int month) {
+        String ym = String.format("%04d-%02d", year, month);
+
+        List<DailySummaryResponse> daily = hoadonRepository.findDailySummariesByYearMonth(ym);
+
+        Object[] totals = hoadonRepository.findMonthlyTotalsByYearMonth(ym);
+
+        Long totalCount = 0L;
+        Double totalAmount = 0.0;
+
+        if (totals != null && totals.length == 2) {
+            if (totals[0] != null) totalCount = ((Number) totals[0]).longValue();
+            if (totals[1] != null) totalAmount = ((Number) totals[1]).doubleValue();
+        }
+
+        return new MonthlySummaryResponse(year, month, totalCount, totalAmount, daily);
+    }
+
+    public HoadonSummaryResponse getHoadonSummary() {
+        Object[] totals = hoadonRepository.getTotalOrdersAndAndAmount();
+        Long totalOrders = 0L;
+        Double totalAmount = 0.0;
+        return new HoadonSummaryResponse(totalOrders, totalAmount);
+    }
+
+    public HoadonSummaryResponse getUserSummary(String userId) {
+        Object[] result = hoadonRepository.getTotalOrdersAndAmountByUser(userId);
+        long totalOrders = (long) result[0];
+        double totalAmount = (double) result[1];
+        return new HoadonSummaryResponse(totalOrders, totalAmount);
     }
 }
