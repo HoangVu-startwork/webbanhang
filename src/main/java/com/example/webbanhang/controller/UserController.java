@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.webbanhang.dto.request.ApiResponse;
 import com.example.webbanhang.dto.request.UserCreationRequest;
 import com.example.webbanhang.dto.request.UserUpdateRequest;
+import com.example.webbanhang.dto.response.RankCountResponse;
 import com.example.webbanhang.dto.response.UserResponse;
 import com.example.webbanhang.service.UserService;
 
@@ -80,5 +81,11 @@ public class UserController {
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.AllUser())
                 .build();
+    }
+
+    // Tổng số lượng user xếp hạng
+    @GetMapping("/rank-hangmuc")
+    public List<RankCountResponse> getUserCountsByRank() {
+        return userService.getUserCountByRank();
     }
 }

@@ -40,6 +40,7 @@ public class Payment {
 
     private String email;
     private String diachi;
+    private String ghichu;
 
     private String productIds;
 }

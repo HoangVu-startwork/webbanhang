@@ -61,6 +61,7 @@ public enum ErrorCode {
     KHONGTONTAI(5037, "Dữ liệu không tồn tại", HttpStatus.NOT_FOUND),
     NHAPKHO_NOT_FOUND(5036, "Dữ liệu nhap kho không tồn tại", HttpStatus.NOT_FOUND),
     GIOAHANG_NOT_FOUND(5037, "Dữ liệu sản phẩm giỏ hàng không tồn tại", HttpStatus.NOT_FOUND),
+    INVALID_MONTH(5038, "Tháng không hợp lệ (1-12)", HttpStatus.BAD_REQUEST),
     THOIGIANKHUYENMAI(5038, "Thoi gian khuyen mai khong hop le", HttpStatus.BAD_REQUEST);
 
     private final int code;
